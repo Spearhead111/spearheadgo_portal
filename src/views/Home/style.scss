@@ -46,8 +46,16 @@
   }
 
   .home-page-content {
-    display: flex;
-    flex-direction: column;
-    background-color: $white;
+    background-color: rgb(var(--v-theme-background));
+    padding: 50px 0 100px;
+    .page-content {
+      display: flex;
+      margin: auto;
+      width: 90%;
+      padding: 0 50px;
+      .profile {
+        display: flex;
+      }
+    }
   }
 }

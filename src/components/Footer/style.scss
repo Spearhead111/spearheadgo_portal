@@ -4,12 +4,12 @@
   width: 100%;
   // min-height: 20%;
   min-width: 700px;
-  background-color: $white;
+  background-color: $color-background;
   .footer-svg {
     position: absolute;
     bottom: 0;
     width: 100%;
-    background-color: $white;
+    background-color: $color-background;
     z-index: 1;
   }
   .footer-content {
