@@ -7,8 +7,19 @@ import vue from '@vitejs/plugin-vue'
 export default defineConfig({
   plugins: [vue()],
   resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+    alias: [
+      {
+        find: '@',
+        replacement: fileURLToPath(new URL('./src', import.meta.url))
+      }
+    ],
+    extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json']
+  },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: '@import "./src/style/common.scss";' // 加载全局样式，使用scss特性
+      }
     }
   },
   server: {
@@ -19,5 +30,8 @@ export default defineConfig({
         changeOrigin: true // 允许跨域
       }
     }
+  },
+  define: {
+    __VUE_PROD_DEVTOOLS__: true // 开启vue-devtools调试工具
   }
 })

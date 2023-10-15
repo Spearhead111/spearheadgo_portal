@@ -1,0 +1,24 @@
+.footer-wrapper {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  // min-height: 20%;
+  min-width: 700px;
+  background-color: $white;
+  .footer-svg {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background-color: $white;
+    z-index: 1;
+  }
+  .footer-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    position: absolute;
+
+    bottom: 0;
+    z-index: 2;
+  }
+}

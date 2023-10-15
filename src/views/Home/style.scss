@@ -1,0 +1,53 @@
+.home-page-wrapper {
+  .home-page-background {
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+    img {
+      position: fixed;
+      height: 100%;
+      width: 100%;
+      object-fit: cover; /* 保持原始宽高比，裁剪多余部分 */
+      object-position: center; /* 将图片放在img元素的中心 */
+      z-index: -1;
+    }
+    .banner-wave1 {
+      position: absolute;
+      height: 84px;
+      width: 200%;
+      bottom: 0;
+      z-index: 2;
+      background: url('@/assets/bannerWave1.png') repeat-x;
+    }
+    .banner-wave2 {
+      position: absolute;
+      bottom: 0;
+      height: 100px;
+      width: 400%;
+      z-index: 1;
+      background: url('@/assets/bannerWave2.png') repeat-x;
+    }
+    .banner-wave1,
+    .banner-wave2 {
+      animation: homePageWave 100s linear infinite;
+    }
+
+    @keyframes homePageWave {
+      0% {
+        background-position: 0 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0 50%;
+      }
+    }
+  }
+
+  .home-page-content {
+    display: flex;
+    flex-direction: column;
+    background-color: $white;
+  }
+}

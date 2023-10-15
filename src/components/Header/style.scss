@@ -1,0 +1,58 @@
+.header-wrapper {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  width: 100%;
+  transition: $transitionAll;
+  z-index: 1000;
+  &:hover {
+    background-color: rgba($color: black, $alpha: 0.5);
+  }
+  .logo-name {
+    padding-left: 30px;
+    h2 {
+      color: $white;
+      font-weight: bold;
+      cursor: pointer;
+      font-family: Comic Sans MS;
+    }
+  }
+  .header-menu {
+    display: flex;
+    height: 100%;
+    li {
+      display: flex;
+      align-items: center;
+      position: relative;
+      margin-right: 40px;
+      cursor: pointer;
+      span {
+        font-size: 18px;
+        // font-weight: bold;
+        font-family: FZKaTong-M19S;
+        color: $white;
+        transition: $transitionAll;
+      }
+      ::before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        width: 0;
+        height: 8px;
+        background-color: $orange;
+        border-radius: 4px;
+        transition: $transitionAll;
+      }
+      &:hover {
+        span {
+          color: $orange;
+        }
+        ::before {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
