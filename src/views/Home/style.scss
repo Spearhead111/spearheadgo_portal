@@ -57,14 +57,45 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+        overflow: hidden;
         .avatar-content {
+          width: 100%;
           height: 130px;
           display: flex;
           align-items: center;
+          justify-content: center;
+          background-image: linear-gradient(
+            to left top,
+            #e89fc9,
+            #db9fd3,
+            #cca1db,
+            #baa3e2,
+            #a5a5e6,
+            #93acec,
+            #7fb3ef,
+            #6cb9ef,
+            #5dc5f0,
+            #58d0ec,
+            #60dae5,
+            #73e3dc
+          );
         }
         h2 {
           font-weight: bold;
           font-family: Comic Sans MS;
+        }
+        .contact-type-wrapper {
+          display: flex;
+          align-items: center;
+          width: 100%;
+          height: 50px;
+          .contact-type-item {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+          }
         }
       }
     }
