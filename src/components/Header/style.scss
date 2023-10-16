@@ -21,12 +21,13 @@
   }
   .header-menu {
     display: flex;
+    align-items: center;
     height: 100%;
     li {
       display: flex;
       align-items: center;
       position: relative;
-      margin-right: 40px;
+      margin-right: 30px;
       cursor: pointer;
       span {
         font-size: 18px;
@@ -53,6 +54,9 @@
           width: 100%;
         }
       }
+    }
+    .avatar {
+      margin-right: 30px;
     }
   }
 }

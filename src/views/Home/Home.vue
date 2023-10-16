@@ -8,7 +8,11 @@
     <div class="home-page-content">
       <v-container class="page-content bg-background-variant mb-6">
         <v-sheet :elevation="8" :height="400" :width="300" rounded="lg" class="profile">
-          123123
+          <div class="avatar-content">
+            <v-avatar :image="myImg" size="100" @click=""></v-avatar>
+          </div>
+          <h2>SPEARHEAD</h2>
+          <div></div>
         </v-sheet>
       </v-container>
     </div>

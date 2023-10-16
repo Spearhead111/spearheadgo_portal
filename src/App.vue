@@ -1,6 +1,6 @@
 <template>
   <Header />
-  <v-btn style="margin-top: 200px" @click="toggleTheme">点击切换主题</v-btn>
+  <v-btn style="margin-top: 100px" @click="toggleTheme">点击切换主题</v-btn>
   <RouterView id="router-view" />
   <!-- <Footer /> -->
 </template>

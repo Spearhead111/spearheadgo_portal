@@ -7,6 +7,7 @@
       <li v-for="(menuItem, index) in HEAD_MENU" @click="routerJump(menuItem.path)">
         <span>{{ menuItem.des }}</span>
       </li>
+      <v-avatar class="avatar" :image="myImg" size="40" @click=""></v-avatar>
     </ul>
   </div>
 </template>
@@ -16,6 +17,7 @@ import './style.scss'
 import { ref } from 'vue'
 import { HEAD_MENU } from '@/constants'
 import { useRouter } from 'vue-router'
+import myImg from '@/assets/53.jpg'
 
 const router = useRouter()
 const showHeader = ref(true)
