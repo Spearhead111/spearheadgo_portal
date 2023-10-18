@@ -39,9 +39,9 @@
       ::before {
         content: '';
         position: absolute;
-        bottom: 0;
+        bottom: -5px;
         width: 0;
-        height: 8px;
+        height: 5px;
         background-color: $orange;
         border-radius: 4px;
         transition: $transitionAll;

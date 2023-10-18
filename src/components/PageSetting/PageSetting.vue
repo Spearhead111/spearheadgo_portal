@@ -28,13 +28,16 @@ import { computed } from 'vue'
 import { ref } from 'vue'
 import { useTheme } from 'vuetify'
 import './style.scss'
+import { toggleThemeGlobal } from '@/constants'
 
 const theme = useTheme()
 
 const isDarkTheme = computed(() => {
   return theme.global.current.value.dark
 })
+
 const toggleTheme = () => {
   theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark'
+  toggleThemeGlobal(isDarkTheme.value)
 }
 </script>
