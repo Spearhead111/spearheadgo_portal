@@ -1,7 +1,7 @@
 <template>
   <div class="home-page-wrapper">
     <div class="home-page-background">
-      <img :src="myImg" alt="" />
+      <v-img class="home-page-img" cover :src="myImg" alt="" />
       <div class="banner-wave1"></div>
       <div class="banner-wave2"></div>
     </div>
@@ -46,6 +46,39 @@
             </div>
           </v-sheet>
           <div>1</div>
+          <div>1</div>
+          <div>1</div>
+          <div>1</div>
+          <div>1</div>
+          <div>1</div>
+          <div>1</div>
+          <div>1</div>
+          <div>1</div>
+          <div>1</div>
+          <div>1</div>
+          <div>1</div>
+          <div>1</div>
+          <div>1</div>
+          <div>1</div>
+          <div>1</div>
+          <div>1</div>
+          <div>1</div>
+          <div>1</div>
+          <div>1</div>
+          <div>1</div>
+          <div>1</div>
+          <div>1</div>
+          <div>1</div>
+          <div>1</div>
+          <div>1</div>
+          <div>1</div>
+          <div>1</div>
+          <div>1</div>
+          <div>1</div>
+          <div>1</div>
+          <div>1</div>
+          <div>1</div>
+          <div>1</div>
         </div>
         <!-- 右边栏 -->
         <v-container class="right-column" style="padding: 0">
@@ -55,20 +88,39 @@
             <v-tabs bg-color="deep-yellow-darken-4" show-arrows multiple center-active>
               <v-chip
                 class="ma-2 tag-tab-item"
-                :color="tagItem.selected ? tagItem.color : tagItem.color + '30'"
-                @click="clickTag(tagItem)"
+                :color="tagItem.color"
+                @click="clickTag(tagItem, index)"
+                :variant="tagItem.selected ? 'elevated' : 'outlined'"
                 label
-                v-for="tagItem in tagList"
+                v-for="(tagItem, index) in tagList"
               >
                 <v-icon start icon="mdi-label"></v-icon>{{ tagItem.label }}
               </v-chip>
             </v-tabs>
           </v-card>
           <div class="search-input">
-            <v-text-field v-model="searchKey" hide-details label="搜索文章">
-              <v-chip v-for="tagItem in tagList" v-model="tagItem.selected" closable label
-                ><v-icon start icon="mdi-label"></v-icon
-              ></v-chip>
+            <v-text-field
+              v-model="searchKey"
+              :loading="searchArticleLoading"
+              prepend-inner-icon="mdi-magnify"
+              variant="solo"
+              hide-details
+              clearable
+              label="搜索文章"
+              @click:clear="clearSearchKey"
+              @click:prepend-inner="searchArticle"
+              @keyup.enter="searchArticle"
+            >
+              <v-chip
+                v-for="(tagItem, i) in tagListSelected"
+                @click:close="removeTag(i)"
+                :color="tagItem.color"
+                variant="elevated"
+                closable
+                label
+                style="margin-right: 5px; margin-bottom: 5px"
+                ><v-icon start icon="mdi-label"></v-icon>{{ tagItem.label }}</v-chip
+              >
             </v-text-field>
           </div>
         </v-container>
@@ -92,12 +144,14 @@ const QQ_ACCOUNT = '1744734603'
 
 const tagList = ref<any[]>([]) // 文章类型tag列表
 const searchKey = ref('') // 搜索关键字
+const tagListSelected = ref<any[]>([]) // 选中的文章类型tag列表
+const searchArticleLoading = ref(false) // 搜索文章loading
 
 onMounted(() => {
   for (let i = 0; i < 100; i++) {
     tagList.value.push({
       label: 'label' + i,
-      color: '#ffaa34',
+      color: '#' + Math.floor(Math.random() * 16777215).toString(16),
       selected: false
     })
   }
@@ -114,11 +168,55 @@ const copy = (content: string) => {
 }
 
 /** 点击文章类型tag */
-const clickTag = (tag: any) => {
+const clickTag = (tag: any, idx: number) => {
   tag.selected = !tag.selected
-  if (tag.selected && !searchKey.value) {
-    searchKey.value = ' '
+  if (tag.selected) {
+    // 选中的tag添加idx属性，用于记录在原数组中的位置，方便后续直接拿索引
+    tagListSelected.value.push({ ...tag, idx })
+    // 给搜索内容加一个空格，将input撑起来(页面展示优化)
+    !searchKey.value && (searchKey.value = ' ')
+  } else {
+    // 删除选中的tag
+    removeTag(tagListSelected.value.findIndex((item) => item.idx === idx))
   }
-  console.log(tag)
 }
+
+/** 删除选中的tag */
+const removeTag = (i: number) => {
+  // 删除选中的tag
+  const deleteTag = tagListSelected.value.splice(i, 1)[0]
+  // 将tab中的tag选中状态重置
+  tagList.value[deleteTag.idx].selected = false
+}
+
+/** 清除搜索内容 */
+const clearSearchKey = () => {
+  // 清除选择的tag
+  tagListSelected.value = []
+  // 清楚tag的选中态
+  tagList.value.forEach((item) => (item.selected = false))
+  searchKey.value = ''
+}
+
+/** 搜索文章 */
+const searchArticle = () => {
+  searchArticleLoading.value = true
+  setTimeout(() => {
+    searchArticleLoading.value = false
+  }, 1000)
+}
+
+/** 搜索文章 */
+const searchArticleHandler = () => {
+  searchArticle()
+}
+
+/** 搜索文章 */
+const searchArticleKeyupHandler = (e: KeyboardEvent) => {
+  if (e.key === 'Enter') {
+    searchArticle()
+  }
+}
+
+/** 搜索文章 */
 </script>

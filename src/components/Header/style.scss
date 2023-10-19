@@ -8,7 +8,7 @@
   transition: $transitionAll;
   z-index: 1000;
   &:hover {
-    background-color: rgba($color: black, $alpha: 0.5);
+    background-color: rgba($color: rgb(80, 79, 79), $alpha: 0.5);
   }
   .logo-name {
     padding-left: 30px;
@@ -58,5 +58,13 @@
     .avatar {
       margin-right: 30px;
     }
+  }
+}
+.header-wrapper-additional {
+  // color:;
+  box-shadow: 0px 0px 10px 10px rgba(0, 0, 0, 0.1);
+  background-color: var(--header-bg-color);
+  &:hover {
+    background-color: var(--header-bg-color);
   }
 }

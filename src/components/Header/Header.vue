@@ -1,5 +1,8 @@
 <template>
-  <div class="header-wrapper" v-if="showHeader">
+  <div
+    :class="['header-wrapper', lastScrollPosition > 500 ? 'header-wrapper-additional' : '']"
+    v-if="showHeader"
+  >
     <div class="logo-name">
       <h2>SPEARHEAD</h2>
     </div>
@@ -18,15 +21,26 @@ import { ref } from 'vue'
 import { HEAD_MENU } from '@/constants'
 import { useRouter } from 'vue-router'
 import myImg from '@/assets/53.jpg'
+import { onMounted } from 'vue'
 
 const router = useRouter()
-const showHeader = ref(true)
+const showHeader = ref(true) // 是否显示头部
+const lastScrollPosition = ref(window.scrollY) // 最后一次的滚动位置
 
-document.addEventListener('scroll', () => {
-  const scrollY = window.scrollY
-  const height = window.innerHeight
-  showHeader.value = scrollY < height / 2
+onMounted(() => {
+  window.addEventListener('scroll', scrollEvent)
 })
+
+const scrollEvent = () => {
+  const currentScrollPosition = window.scrollY
+  // 用最后一次的滚动位置和当前的滚动位置进行比较
+  if (currentScrollPosition > lastScrollPosition.value) {
+    showHeader.value = false
+  } else {
+    showHeader.value = true
+  }
+  lastScrollPosition.value = currentScrollPosition
+}
 
 /**
  * @description :
