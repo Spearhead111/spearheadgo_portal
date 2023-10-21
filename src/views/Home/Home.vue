@@ -45,44 +45,16 @@
               </v-snackbar>
             </div>
           </v-sheet>
-          <div>1</div>
-          <div>1</div>
-          <div>1</div>
-          <div>1</div>
-          <div>1</div>
-          <div>1</div>
-          <div>1</div>
-          <div>1</div>
-          <div>1</div>
-          <div>1</div>
-          <div>1</div>
-          <div>1</div>
-          <div>1</div>
-          <div>1</div>
-          <div>1</div>
-          <div>1</div>
-          <div>1</div>
-          <div>1</div>
-          <div>1</div>
-          <div>1</div>
-          <div>1</div>
-          <div>1</div>
-          <div>1</div>
-          <div>1</div>
-          <div>1</div>
-          <div>1</div>
-          <div>1</div>
-          <div>1</div>
-          <div>1</div>
-          <div>1</div>
-          <div>1</div>
-          <div>1</div>
-          <div>1</div>
-          <div>1</div>
         </v-container>
         <!-- 右边栏 -->
         <v-container class="right-column pa-0">
-          <v-sheet class="width-100" :elevation="1" rounded="lg" style="height: 10vh"> </v-sheet>
+          <iframe
+            src="https://spearhead-cdn-1314941949.cos.ap-chengdu.myqcloud.com/writeHeadBanner/crocodile.html"
+            frameborder="0"
+            class="width-100 write-banner-iframe"
+            style="border-radius: 15px"
+            scrolling="no"
+          ></iframe>
           <!-- 文章类型tab -->
           <v-card class="tag-tabs">
             <v-tabs bg-color="deep-yellow-darken-4" show-arrows multiple center-active>
@@ -100,29 +72,32 @@
           </v-card>
           <!-- 搜索框 -->
           <div class="search-input">
-            <v-text-field
-              v-model="searchKey"
-              :loading="searchArticleLoading"
-              prepend-inner-icon="mdi-magnify"
-              variant="solo"
-              hide-details
-              clearable
-              label="搜索文章"
-              @click:clear="clearSearchKey"
-              @click:prepend-inner="debounceSearchArticle"
-              @keyup.enter="debounceSearchArticle"
-            >
-              <v-chip
-                v-for="(tagItem, i) in tagListSelected"
-                :key="tagItem.code"
-                @click:close="removeSelectedTag(tagItem.code)"
-                :color="tagItem.color"
-                :model-value="tagItem.selected"
-                closable
-                style="margin-right: 5px; margin-bottom: 5px"
-                ><v-icon start icon="mdi-label"></v-icon><span>{{ tagItem.label }}</span></v-chip
+            <v-form ref="form">
+              <v-text-field
+                v-model="searchKey"
+                :loading="searchArticleLoading"
+                prepend-inner-icon="mdi-magnify"
+                variant="solo"
+                :counter="15"
+                :rules="searchKeyRules"
+                clearable
+                label="搜索文章"
+                @click:clear="clearSearchKey"
+                @click:prepend-inner="debounceSearchArticle"
+                @keyup.enter.naive="debounceSearchArticle"
               >
-            </v-text-field>
+                <v-chip
+                  v-for="(tagItem, i) in tagListSelected"
+                  :key="tagItem.code"
+                  @click:close="removeSelectedTag(tagItem.code)"
+                  :color="tagItem.color"
+                  :model-value="tagItem.selected"
+                  closable
+                  style="margin-right: 5px; margin-bottom: 5px"
+                  ><v-icon start icon="mdi-label"></v-icon><span>{{ tagItem.label }}</span></v-chip
+                >
+              </v-text-field>
+            </v-form>
           </div>
           <v-divider :thickness="2" class="border-opacity-50 ma-5" style="width: 100%"></v-divider>
           <!-- 博客文章 -->
@@ -133,7 +108,7 @@
               v-for="articleProfile in articleProfileData"
             />
           </div>
-          <mavon-editor v-model="content" style="height: 200px; width: 200px" />
+          <!-- <mavon-editor v-model="content" style="height: 200px; width: 200px" /> -->
         </v-container>
       </v-container>
     </div>
@@ -159,7 +134,8 @@ const tagListSelected = ref<any[]>([]) // 选中的文章类型tag列表
 const searchArticleLoading = ref(false) // 搜索文章loading
 const articleProfileData = ref<any[]>([])
 const highlightKey = ref('') // 高亮关键字，用于高亮搜索的关键字
-const content = ref('')
+const form = ref()
+const searchKeyRules = [(v: string | any[]) => v.length <= 15 || '最多支持搜索15个字符']
 
 onMounted(() => {
   for (let i = 0; i < 100; i++) {
@@ -231,7 +207,11 @@ const clearSearchKey = () => {
 }
 
 /** 搜索文章 */
-const searchArticle = () => {
+const searchArticle = async () => {
+  const { valid } = await form.value.validate()
+  if (!valid) {
+    return
+  }
   console.log('search')
   searchArticleLoading.value = true
   setTimeout(() => {
