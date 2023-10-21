@@ -9,5 +9,10 @@ export const HEAD_MENU = {
     des: '目标',
     needAuth: true,
     path: '/goal'
+  },
+  write: {
+    des: '写文章',
+    needAuth: true,
+    path: '/write'
   }
 }

@@ -13,7 +13,10 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@icon-park/vue-next": "^1.4.2",
     "element-plus": "^2.4.0",
+    "lodash": "^4.17.21",
+    "mavon-editor": "^3.0.1",
     "pinia": "^2.1.6",
     "vue": "^3.3.4",
     "vue-router": "^4.2.4",

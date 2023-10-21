@@ -12,6 +12,12 @@ const router = createRouter({
       path: '/goal',
       name: 'Goal',
       component: () => import('@/views/Goal/Goal.vue')
+    },
+    {
+      path: '/write',
+      name: 'Write',
+      component: () => import('@/views/Write/Write.vue'),
+      meta: { needAuth: true }
     }
   ]
 })

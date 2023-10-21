@@ -1,8 +1,20 @@
 @import '@/assets/css/base.css';
+@import './base.scss';
 
 $white: #ffffff;
 $orange: #ffa500;
 $transitionAll: all 0.3s;
+
+$baseFontFamily:
+  system-ui,
+  -apple-system,
+  Helvetica,
+  Arial,
+  sans-serif;
+// 设定重置函数拼接到原始变量之前，若无需拼接则直接继承
+@function ff($fontFamily) {
+  @return $fontFamily, $baseFontFamily;
+}
 
 :root {
   --hover-bg-color: #eeeeee; // theme

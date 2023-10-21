@@ -1,0 +1,45 @@
+.blog-profile-wrapper {
+  .profile-img {
+    > img {
+      cursor: pointer;
+      transition: all 0.5s ease;
+      &:hover {
+        scale: 1.2;
+      }
+    }
+  }
+
+  .blog-profile-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* 设置最多显示4行 */
+    -webkit-box-orient: vertical;
+  }
+
+  .blog-profile-tag-wrapper {
+    display: flex;
+    justify-content: flex-start;
+    margin: 0 10px;
+    .v-chip {
+      margin-right: 5px;
+      cursor: pointer;
+      > .v-chip__content span {
+        font-weight: 300;
+      }
+    }
+  }
+  .blog-profile-icon-wrapper {
+    display: flex;
+    align-items: center;
+
+    > div {
+      display: flex;
+      align-items: center;
+      margin-right: 10px;
+      > span:not(:last-child) {
+        margin-right: 5px;
+      }
+    }
+  }
+}

@@ -1,18 +1,18 @@
 <template>
   <div class="home-page-wrapper">
     <div class="home-page-background">
-      <v-img class="home-page-img" cover :src="myImg" alt="" />
-      <div class="banner-wave1"></div>
-      <div class="banner-wave2"></div>
+      <v-img class="home-page-img" cover :src="HOME_PAGE_BANNER" alt="" />
+      <div class="banner-wave1" :style="{ backgroundImage: `url(${BANNER_WAVE1})` }"></div>
+      <div class="banner-wave2" :style="{ backgroundImage: `url(${BANNER_WAVE2})` }"></div>
     </div>
     <div class="home-page-content">
-      <v-container class="page-content bg-background-variant" style="padding: 0">
+      <v-container class="page-content bg-background-variant pa-0">
         <!-- 左边栏 -->
-        <div class="left-column">
+        <v-container class="left-column pa-0">
           <v-sheet :elevation="8" :height="400" :width="300" rounded="lg" class="profile">
             <div class="avatar-content">
               <StarSky :width="300" :height="150" />
-              <v-avatar class="my-avatar" :image="myImg" size="100" @click=""></v-avatar>
+              <v-avatar class="my-avatar" :image="HOME_PAGE_BANNER" size="100" @click=""></v-avatar>
             </div>
             <h2>SPEARHEAD</h2>
             <div class="contact-type-wrapper">
@@ -37,7 +37,7 @@
                   <div class="contact-type-item" @click="copy(QQ_ACCOUNT)" v-bind="props">
                     <v-icon icon="mdi-qqchat" size="large" color="#7bd4ef" />QQ
                     <div class="contact-type-item__content" style="right: -5px">
-                      <v-img aspect-ratio="1/1" cover :src="qqImg"></v-img>
+                      <v-img aspect-ratio="1/1" cover :src="QQImg"></v-img>
                     </div>
                   </div>
                 </template>
@@ -79,25 +79,26 @@
           <div>1</div>
           <div>1</div>
           <div>1</div>
-        </div>
+        </v-container>
         <!-- 右边栏 -->
-        <v-container class="right-column" style="padding: 0">
-          <v-sheet :elevation="1" rounded="lg" height="100"> </v-sheet>
+        <v-container class="right-column pa-0">
+          <v-sheet class="width-100" :elevation="1" rounded="lg" style="height: 10vh"> </v-sheet>
           <!-- 文章类型tab -->
           <v-card class="tag-tabs">
             <v-tabs bg-color="deep-yellow-darken-4" show-arrows multiple center-active>
               <v-chip
                 class="ma-2 tag-tab-item"
                 :color="tagItem.color"
-                @click="clickTag(tagItem, index)"
+                @click="clickTag(tagItem)"
                 :variant="tagItem.selected ? 'elevated' : 'outlined'"
-                label
+                size="large"
                 v-for="(tagItem, index) in tagList"
               >
-                <v-icon start icon="mdi-label"></v-icon>{{ tagItem.label }}
+                <v-icon start icon="mdi-label"></v-icon><span>{{ tagItem.label }}</span>
               </v-chip>
             </v-tabs>
           </v-card>
+          <!-- 搜索框 -->
           <div class="search-input">
             <v-text-field
               v-model="searchKey"
@@ -108,21 +109,31 @@
               clearable
               label="搜索文章"
               @click:clear="clearSearchKey"
-              @click:prepend-inner="searchArticle"
-              @keyup.enter="searchArticle"
+              @click:prepend-inner="debounceSearchArticle"
+              @keyup.enter="debounceSearchArticle"
             >
               <v-chip
                 v-for="(tagItem, i) in tagListSelected"
-                @click:close="removeTag(i)"
+                :key="tagItem.code"
+                @click:close="removeSelectedTag(tagItem.code)"
                 :color="tagItem.color"
-                variant="elevated"
+                :model-value="tagItem.selected"
                 closable
-                label
                 style="margin-right: 5px; margin-bottom: 5px"
-                ><v-icon start icon="mdi-label"></v-icon>{{ tagItem.label }}</v-chip
+                ><v-icon start icon="mdi-label"></v-icon><span>{{ tagItem.label }}</span></v-chip
               >
             </v-text-field>
           </div>
+          <v-divider :thickness="2" class="border-opacity-50 ma-5" style="width: 100%"></v-divider>
+          <!-- 博客文章 -->
+          <div class="blogs-content-wrapper">
+            <BlogProfile
+              :articleProfile="articleProfile"
+              :highlightKey="highlightKey"
+              v-for="articleProfile in articleProfileData"
+            />
+          </div>
+          <mavon-editor v-model="content" style="height: 200px; width: 200px" />
         </v-container>
       </v-container>
     </div>
@@ -133,9 +144,9 @@
 import './style.scss'
 import { ref } from 'vue'
 import StarSky from '@/components/StarSky/StarSky.vue'
-import myImg from '@/assets/53.jpg'
-import weChatImg from '@/assets/wechat.jpg'
-import qqImg from '@/assets/qq.jpg'
+import BlogProfile from '@/components/BlogProfile/BlogProfile.vue'
+import { HOME_PAGE_BANNER, BANNER_WAVE1, BANNER_WAVE2, weChatImg, QQImg } from '@/constants'
+import { debounce, throttle } from 'lodash'
 import { onMounted } from 'vue'
 
 const MY_GITHUB_URL = 'https://github.com/Spearhead111'
@@ -146,13 +157,22 @@ const tagList = ref<any[]>([]) // 文章类型tag列表
 const searchKey = ref('') // 搜索关键字
 const tagListSelected = ref<any[]>([]) // 选中的文章类型tag列表
 const searchArticleLoading = ref(false) // 搜索文章loading
+const articleProfileData = ref<any[]>([])
+const highlightKey = ref('') // 高亮关键字，用于高亮搜索的关键字
+const content = ref('')
 
 onMounted(() => {
   for (let i = 0; i < 100; i++) {
     tagList.value.push({
       label: 'label' + i,
+      code: 'code' + i,
       color: '#' + Math.floor(Math.random() * 16777215).toString(16),
       selected: false
+    })
+  }
+  for (let i = 0; i < 7; i++) {
+    articleProfileData.value.push({
+      title: 'article' + i
     })
   }
 })
@@ -168,25 +188,36 @@ const copy = (content: string) => {
 }
 
 /** 点击文章类型tag */
-const clickTag = (tag: any, idx: number) => {
+const clickTag = (tag: any) => {
   tag.selected = !tag.selected
   if (tag.selected) {
-    // 选中的tag添加idx属性，用于记录在原数组中的位置，方便后续直接拿索引
-    tagListSelected.value.push({ ...tag, idx })
+    const newTag = {
+      label: tag.label,
+      code: tag.code,
+      color: tag.color,
+      selected: true
+    }
+    tagListSelected.value.push(newTag)
     // 给搜索内容加一个空格，将input撑起来(页面展示优化)
     !searchKey.value && (searchKey.value = ' ')
+    // debounceSearchArticle()
   } else {
     // 删除选中的tag
-    removeTag(tagListSelected.value.findIndex((item) => item.idx === idx))
+    removeSelectedTag(tag.code)
   }
 }
 
 /** 删除选中的tag */
-const removeTag = (i: number) => {
-  // 删除选中的tag
-  const deleteTag = tagListSelected.value.splice(i, 1)[0]
-  // 将tab中的tag选中状态重置
-  tagList.value[deleteTag.idx].selected = false
+const removeSelectedTag = (tagCode: string) => {
+  tagList.value.some((item) => {
+    if (item.code === tagCode) {
+      item.selected = false
+      return true
+    }
+    return false
+  })
+  tagListSelected.value = tagListSelected.value.filter((item) => item.code !== tagCode)
+  // debounceSearchArticle()
 }
 
 /** 清除搜索内容 */
@@ -196,27 +227,20 @@ const clearSearchKey = () => {
   // 清楚tag的选中态
   tagList.value.forEach((item) => (item.selected = false))
   searchKey.value = ''
+  debounceSearchArticle()
 }
 
 /** 搜索文章 */
 const searchArticle = () => {
+  console.log('search')
   searchArticleLoading.value = true
   setTimeout(() => {
+    highlightKey.value = searchKey.value.trim()
+    articleProfileData.value = [...articleProfileData.value]
     searchArticleLoading.value = false
   }, 1000)
 }
 
-/** 搜索文章 */
-const searchArticleHandler = () => {
-  searchArticle()
-}
-
-/** 搜索文章 */
-const searchArticleKeyupHandler = (e: KeyboardEvent) => {
-  if (e.key === 'Enter') {
-    searchArticle()
-  }
-}
-
-/** 搜索文章 */
+/** 防抖搜索文章 */
+const debounceSearchArticle = debounce(searchArticle, 300)
 </script>
