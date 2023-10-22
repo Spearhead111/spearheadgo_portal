@@ -16,3 +16,10 @@ export const HEAD_MENU = {
     path: '/write'
   }
 }
+
+/** 文章组件的查看方式 */
+export const BLOG_VISIBLE_TYPE = {
+  PREVIEW: 'preview', // 预览
+  EDIT: 'edit', // 编辑
+  DETAIL: 'detail' // 详情
+}

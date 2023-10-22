@@ -8,7 +8,7 @@
     <div class="home-page-content">
       <v-container class="page-content bg-background-variant pa-0">
         <!-- 左边栏 -->
-        <v-container class="left-column pa-0">
+        <v-container class="left-column pt-5">
           <v-sheet :elevation="8" :height="400" :width="300" rounded="lg" class="profile">
             <div class="avatar-content">
               <StarSky :width="300" :height="150" />
@@ -25,7 +25,10 @@
                     </div>
                   </div>
                 </template>
-                <span style="font-weight: bold">已复制Spearhead的微信号，期待你的来电😘</span>
+                <span style="font-weight: bold">
+                  <v-icon color="#6bb67e" start icon="mdi-checkbox-marked-circle"></v-icon
+                  >已复制Spearhead的微信号，期待你的来电😘</span
+                >
               </v-snackbar>
               <v-divider :thickness="2" vertical inset />
               <div class="contact-type-item" @click="navigateToMyGithub">
@@ -41,13 +44,16 @@
                     </div>
                   </div>
                 </template>
-                <span style="font-weight: bold">已复制Spearhead的QQ号，期待你的来电😘</span>
+                <span style="font-weight: bold">
+                  <v-icon color="#6bb67e" start icon="mdi-checkbox-marked-circle"></v-icon>
+                  已复制Spearhead的QQ号，期待你的来电😘</span
+                >
               </v-snackbar>
             </div>
           </v-sheet>
         </v-container>
         <!-- 右边栏 -->
-        <v-container class="right-column pa-0">
+        <v-container class="right-column pt-5">
           <iframe
             src="https://spearhead-cdn-1314941949.cos.ap-chengdu.myqcloud.com/writeHeadBanner/crocodile.html"
             frameborder="0"
@@ -72,7 +78,7 @@
           </v-card>
           <!-- 搜索框 -->
           <div class="search-input">
-            <v-form ref="form">
+            <v-form ref="form" @submit.prevent>
               <v-text-field
                 v-model="searchKey"
                 :loading="searchArticleLoading"
@@ -108,7 +114,6 @@
               v-for="articleProfile in articleProfileData"
             />
           </div>
-          <!-- <mavon-editor v-model="content" style="height: 200px; width: 200px" /> -->
         </v-container>
       </v-container>
     </div>

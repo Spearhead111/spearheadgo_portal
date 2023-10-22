@@ -1,5 +1,6 @@
 <template>
-  <div>Goal</div>
+  <div class="">Goal</div>
+  <div class="goal-page-content"></div>
 </template>
 
 <script lang="ts" setup>

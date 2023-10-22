@@ -3,7 +3,7 @@
 </template>
 
 <script lang="ts" setup>
-import { PropType, computed, onMounted, ref } from 'vue'
+import { type PropType, computed, onMounted, ref } from 'vue'
 
 const props = defineProps({
   width: {

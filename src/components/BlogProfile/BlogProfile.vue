@@ -6,9 +6,11 @@
       src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
       cover
     >
-      <v-card-title v-html="highLightWord('文章大标题', highlightKey)"></v-card-title>
+      <v-card-title
+        v-html="highLightWord('文章大标题文章大标题文章大标题', highlightKey)"
+      ></v-card-title>
     </v-img>
-    <v-card-subtitle class="pt-2"> Number 10 </v-card-subtitle>
+    <v-card-subtitle class="pt-2"> 我是五个字我是五个字我是五个字我是五个字 </v-card-subtitle>
     <v-card-subtitle class="pt-1" style="display: flex; align-items: center">
       <calendar-dot
         class="mr-1"

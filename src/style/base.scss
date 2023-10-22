@@ -33,3 +33,25 @@
 .justify-content-around {
   justify-content: space-around;
 }
+
+.margin-auto {
+  margin: auto;
+}
+
+// 自定义一下elmessage的全局样式
+.el-message {
+  color: #ffffff !important;
+  background-color: var(--el-message-text-color);
+  border: 2px solid var(--el-message-text-color);
+  .el-icon,
+  .el-message__content {
+    color: #ffffff !important;
+  }
+  .el-icon {
+    font-size: 18px;
+  }
+  > p {
+    font-weight: bold;
+    font-size: 16px;
+  }
+}
