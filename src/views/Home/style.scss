@@ -182,12 +182,12 @@
           }
         }
 
-        /* 在屏幕宽度大于 1200px 时应用的样式 */
-        @media screen and (min-width: 1680px) {
-          .blogs-content-wrapper > div {
-            width: calc(100% / 3 - 20px);
-          }
-        }
+        // /* 在屏幕宽度大于 1200px 时应用的样式 */
+        // @media screen and (min-width: 1680px) {
+        //   .blogs-content-wrapper > div {
+        //     width: calc(100% / 3 - 20px);
+        //   }
+        // }
 
         .v-chip .v-chip__content span {
           font-weight: 600;

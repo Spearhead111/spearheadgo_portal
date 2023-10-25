@@ -23,6 +23,11 @@ const router = createRouter({
       path: '/articleDetail',
       name: 'ArticleDetail',
       component: () => import('@/views/Blog/Blog.vue')
+    },
+    {
+      path: '/login',
+      name: 'Login',
+      component: () => import('@/views/Login/Login.vue')
     }
   ],
   // 跳转路由后滚动条置顶

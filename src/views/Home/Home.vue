@@ -62,7 +62,7 @@
             scrolling="no"
           ></iframe>
           <!-- 文章类型tab -->
-          <v-card class="tag-tabs">
+          <v-card class="tag-tabs mt-4">
             <v-tabs bg-color="deep-yellow-darken-4" show-arrows multiple center-active>
               <v-chip
                 class="ma-2 tag-tab-item"
@@ -84,7 +84,6 @@
                 v-model="searchKey"
                 :loading="searchArticleLoading"
                 prepend-inner-icon="mdi-magnify"
-                variant="solo"
                 :counter="15"
                 :rules="searchKeyRules"
                 clearable
@@ -108,7 +107,7 @@
               </v-text-field>
             </v-form>
           </div>
-          <v-divider :thickness="2" class="border-opacity-50 ma-5" style="width: 100%"></v-divider>
+          <!-- <v-divider :thickness="2" class="border-opacity-50 ma-5" style="width: 100%"></v-divider> -->
           <!-- 博客文章 -->
           <div class="blogs-content-wrapper">
             <BlogProfile

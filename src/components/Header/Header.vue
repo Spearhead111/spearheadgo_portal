@@ -10,12 +10,22 @@
       <li v-for="(menuItem, index) in HEAD_MENU" @click="routerJump(menuItem.path)">
         <span>{{ menuItem.des }}</span>
       </li>
-      <v-avatar
-        class="avatar"
-        image="https://spearhead-cdn-1314941949.cos.ap-chengdu.myqcloud.com/53.jpg"
-        size="40"
-        @click=""
-      ></v-avatar>
+      <v-menu>
+        <template v-slot:activator="{ props }">
+          <v-avatar
+            v-bind="props"
+            class="avatar"
+            image="https://spearhead-cdn-1314941949.cos.ap-chengdu.myqcloud.com/53.jpg"
+            size="40"
+            @click=""
+          ></v-avatar>
+        </template>
+        <v-list style="position: relative; left: 20px">
+          <v-list-item class="px-2">
+            <v-btn variant="text" @click="toLogin">登录</v-btn>
+          </v-list-item>
+        </v-list>
+      </v-menu>
     </ul>
   </div>
 </template>
@@ -54,5 +64,9 @@ const scrollEvent = () => {
 const routerJump = (path: string): void => {
   if (!path) return
   router.push(path)
+}
+
+const toLogin = () => {
+  router.push('/login')
 }
 </script>
