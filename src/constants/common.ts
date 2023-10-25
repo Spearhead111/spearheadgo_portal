@@ -13,7 +13,7 @@ export const HEAD_MENU = {
   write: {
     des: '写文章',
     needAuth: true,
-    path: '/write'
+    path: '/write?type=create'
   }
 }
 

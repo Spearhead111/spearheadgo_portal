@@ -9,7 +9,7 @@ export const addCodeBtn = (_) => {
     let $numbering = $('<ol/>').addClass('pre-numbering')
     //添加复制按钮，此处使用的是element-ui icon 图标
     // let $copy = $('<i title="copy代码"></i>').addClass('el-icon-document-copy code-copy')
-    let $copy = $('<div><div></div><div>Copy code</div><div></div>').addClass('code-copy')
+    let $copy = $('<div><div ></div><div>Copy code</div><div></div>').addClass('code-copy')
     $(this).parent().addClass('code').append($numbering).append($copy)
     for (let i = 0; i <= lines; i++) {
       $numbering.append($('<li/>'))
@@ -18,6 +18,10 @@ export const addCodeBtn = (_) => {
   //监听复制按钮点击事件
   $('pre.code div.code-copy').click((e) => {
     let text = $(e.target).siblings('code').text()
+    // 下面做了一个判断，因为复制的图标用的div下的div绘制的，兼容点击了div下的div
+    if (!text) {
+      text = $(e.target).parent().siblings('code').text()
+    }
     // let element = $('<textarea>' + text + '</textarea>')
     // $('body').append(element)
     // element[0].select()

@@ -72,7 +72,8 @@
                 size="large"
                 v-for="(tagItem, index) in tagList"
               >
-                <v-icon start icon="mdi-label"></v-icon><span>{{ tagItem.label }}</span>
+                <v-icon start :color="tagItem.iconColor" :icon="tagItem.icon"></v-icon
+                ><span>{{ tagItem.label }}</span>
               </v-chip>
             </v-tabs>
           </v-card>
@@ -98,9 +99,11 @@
                   @click:close="removeSelectedTag(tagItem.code)"
                   :color="tagItem.color"
                   :model-value="tagItem.selected"
+                  variant="elevated"
                   closable
                   style="margin-right: 5px; margin-bottom: 5px"
-                  ><v-icon start icon="mdi-label"></v-icon><span>{{ tagItem.label }}</span></v-chip
+                  ><v-icon start :color="tagItem.iconColor" :icon="tagItem.icon"></v-icon
+                  ><span>{{ tagItem.label }}</span></v-chip
                 >
               </v-text-field>
             </v-form>
@@ -148,12 +151,45 @@ onMounted(() => {
       label: 'label' + i,
       code: 'code' + i,
       color: '#' + Math.floor(Math.random() * 16777215).toString(16),
+      icon: 'mdi-magnify',
+      iconColor: 'white',
       selected: false
     })
   }
   for (let i = 0; i < 7; i++) {
     articleProfileData.value.push({
-      title: 'article' + i
+      articleId: 'article_id_' + i,
+      title: '文章标题' + i,
+      subtitle: '',
+      banner: 'https://spearhead-cdn-1314941949.cos.ap-chengdu.myqcloud.com//53.jpg',
+      createTime: 1672506061000,
+      desc: '五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字',
+      tags: [
+        {
+          label: 'label' + 1,
+          code: 'code' + 1,
+          icon: 'mdi-magnify',
+          iconColor: 'white',
+          color: '#' + Math.floor(Math.random() * 16777215).toString(16)
+        },
+        {
+          label: 'label' + 2,
+          code: 'code' + 2,
+          icon: 'mdi-label',
+          iconColor: 'white',
+          color: '#' + Math.floor(Math.random() * 16777215).toString(16)
+        },
+        {
+          label: 'label' + 3,
+          code: 'code' + 3,
+          icon: 'mdi-label',
+          iconColor: 'white',
+          color: '#' + Math.floor(Math.random() * 16777215).toString(16)
+        }
+      ],
+      view: 0,
+      comments: 0,
+      like: 0
     })
   }
 })
@@ -176,6 +212,8 @@ const clickTag = (tag: any) => {
       label: tag.label,
       code: tag.code,
       color: tag.color,
+      icon: tag.icon,
+      iconColor: tag.iconColor,
       selected: true
     }
     tagListSelected.value.push(newTag)

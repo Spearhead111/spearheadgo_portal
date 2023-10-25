@@ -18,8 +18,17 @@ const router = createRouter({
       name: 'Write',
       component: () => import('@/views/Write/Write.vue'),
       meta: { needAuth: true }
+    },
+    {
+      path: '/articleDetail',
+      name: 'ArticleDetail',
+      component: () => import('@/views/Blog/Blog.vue')
     }
-  ]
+  ],
+  // 跳转路由后滚动条置顶
+  scrollBehavior(to, from, saveScrollPosition) {
+    return { left: 0, top: 0 }
+  }
 })
 
 export default router

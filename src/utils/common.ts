@@ -19,3 +19,8 @@ export const highLightWord = (str: string, keyword: string) => {
   }
   return str
 }
+
+/** 文件流转url */
+export const fileToURL = (file: File) => {
+  return window.URL.createObjectURL(file)
+}

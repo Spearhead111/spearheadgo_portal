@@ -1,4 +1,24 @@
 .blog-profile-wrapper {
+  position: relative;
+
+  .profile-btn-wrapper {
+    display: flex;
+    opacity: 0;
+    flex-direction: column;
+    z-index: 1;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    > button {
+      margin-bottom: 10px;
+    }
+  }
+  &:hover {
+    .profile-btn-wrapper {
+      opacity: 1;
+    }
+  }
+
   .profile-img {
     > img {
       cursor: pointer;

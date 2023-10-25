@@ -24,6 +24,7 @@
   background-color: rgba($color: var(--v-theme-background), $alpha: 1);
   z-index: 1001 !important;
   .v-overlay__content {
+    overflow: auto;
     max-height: none;
     max-width: none;
     height: 100%;
@@ -36,4 +37,8 @@
   code {
     border-radius: 5px;
   }
+}
+
+.tag-label {
+  font-size: 14px;
 }
