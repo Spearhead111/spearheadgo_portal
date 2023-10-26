@@ -12,6 +12,7 @@ import ElementPlus from 'element-plus'
 import '@icon-park/vue-next/styles/index.css'
 import mavonEditor from 'mavon-editor'
 import 'mavon-editor/dist/css/index.css'
+import animate from '@/utils/direction/animate'
 
 import hljs from 'highlight.js'
 // 使用样式，有多种样式可选
@@ -25,6 +26,7 @@ app.use(vuetify)
 app.use(ElementPlus)
 app.use(mavonEditor)
 
+app.directive('animate', animate)
 app.directive('highlight', (el: { querySelectorAll: (arg0: string) => any }) => {
   let blocks = el.querySelectorAll('pre code')
   blocks.forEach((block: HTMLElement) => {

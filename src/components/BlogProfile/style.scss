@@ -1,5 +1,14 @@
 .blog-profile-wrapper {
   position: relative;
+  animation: zoomIn 0.5s ease;
+  @keyframes zoomIn {
+    0% {
+      scale: 0;
+    }
+    100% {
+      scale: 1;
+    }
+  }
 
   .profile-btn-wrapper {
     display: flex;

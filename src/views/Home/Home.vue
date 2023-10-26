@@ -110,11 +110,9 @@
           <!-- <v-divider :thickness="2" class="border-opacity-50 ma-5" style="width: 100%"></v-divider> -->
           <!-- 博客文章 -->
           <div class="blogs-content-wrapper">
-            <BlogProfile
-              :articleProfile="articleProfile"
-              :highlightKey="highlightKey"
-              v-for="articleProfile in articleProfileData"
-            />
+            <div v-for="articleProfile in articleProfileData" v-animate="'animate__zoomIn'">
+              <BlogProfile :articleProfile="articleProfile" :highlightKey="highlightKey" />
+            </div>
           </div>
         </v-container>
       </v-container>
