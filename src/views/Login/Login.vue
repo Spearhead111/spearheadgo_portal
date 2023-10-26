@@ -1,146 +1,151 @@
 <template>
-  <div class="shell">
-    <div class="container b-container" id="b-container">
-      <el-form
-        ref="signInFromRef"
-        :model="signInForm"
-        :rules="signInRules"
-        action=""
-        method=""
-        class="form"
-        id="b-form"
-      >
-        <h2 class="form_title title">登入账号</h2>
-        <!-- <div class="form_icons">
+  <div
+    class="position-relative flex align-center justify-center"
+    style="width: 100vw; height: 100vh"
+  >
+    <div class="shell">
+      <div class="container b-container" id="b-container">
+        <el-form
+          ref="signInFromRef"
+          :model="signInForm"
+          :rules="signInRules"
+          action=""
+          method=""
+          class="form"
+          id="b-form"
+        >
+          <h2 class="form_title title">登入账号</h2>
+          <!-- <div class="form_icons">
           <i class="iconfont icon-QQ"></i>
           <i class="iconfont icon-weixin"></i>
           <i class="iconfont icon-bilibili-line"></i>
         </div> -->
-        <span class="form_span">请输入账号和密码</span>
-        <el-form-item prop="account">
-          <el-input
-            type="text"
-            v-model="signInForm.account"
-            autocomplete="off"
-            placeholder="Account / Email"
-          >
-            <template #prefix> <i class="iconfont icon-zhanghao"></i> </template
-          ></el-input>
-        </el-form-item>
-        <el-form-item prop="password">
-          <el-input
-            type="password"
-            class="form_input"
-            v-model="signInForm.password"
-            autocomplete="off"
-            placeholder="Password"
-            onpaste="return false"
-            oncontextmenu="return false"
-            oncopy="return false"
-            oncut="return false"
-          >
-            <template #prefix>
-              <i class="iconfont icon-mima"></i>
-            </template>
-            <template #suffix>
-              <i class="iconfont icon-xianshikejian" @click="changePwdShow($event)"></i>
-            </template>
-          </el-input>
-        </el-form-item>
-        <a class="form_link">忘记密码？</a>
-        <button class="form_button button submit" @click="submitForm(signInFromRef, 'signIn')">
-          SIGN IN
-        </button>
-      </el-form>
-    </div>
-
-    <div class="container a-container" id="a-container">
-      <el-form
-        ref="signUpFormRef"
-        :model="signUpForm"
-        :rules="signUpRules"
-        action=""
-        method=""
-        class="form"
-        id="a-form"
-      >
-        <h2 class="form_title title">创建账号</h2>
-        <!-- <div class="form_icons">
-          <i class="iconfont icon-QQ"></i>
-          <i class="iconfont icon-weixin"></i>
-          <i class="iconfont icon-bilibili-line"></i>
-        </div> -->
-        <span class="form_span"></span>
-        <el-form-item prop="account">
-          <el-input
-            type="text"
-            class="form_input"
-            v-model="signUpForm.account"
-            placeholder="Account"
-          >
-            <template #prefix> <i class="iconfont icon-zhanghao"></i> </template
-          ></el-input>
-        </el-form-item>
-        <el-form-item prop="email">
-          <el-input type="text" class="form_input" v-model="signUpForm.email" placeholder="Email">
-            <template #prefix>
-              <i class="iconfont icon-youxiang"></i>
-            </template>
-          </el-input>
-        </el-form-item>
-        <el-form-item prop="password">
-          <el-input
-            type="password"
-            class="form_input"
-            v-model="signUpForm.password"
-            placeholder="Password"
-            onpaste="return false"
-            oncontextmenu="return false"
-            oncopy="return false"
-            oncut="return false"
-          >
-            <template #prefix>
-              <i class="iconfont icon-mima"></i>
-            </template>
-          </el-input>
-        </el-form-item>
-        <el-form-item prop="password_again">
-          <el-input
-            type="password"
-            class="form_input"
-            v-model="signUpForm.password_again"
-            placeholder="Password again"
-            onpaste="return false"
-            oncontextmenu="return false"
-            oncopy="return false"
-            oncut="return false"
-          >
-            <template #prefix>
-              <i class="iconfont icon-mima"></i>
-            </template>
-          </el-input>
-        </el-form-item>
-        <button class="form_button button submit" @click="submitForm(signUpFormRef, 'signUp')">
-          SIGN UP
-        </button>
-      </el-form>
-    </div>
-
-    <div class="switch" id="switch-cnt">
-      <div class="switch_circle"></div>
-      <div class="switch_circle switch_circle-t"></div>
-      <div class="switch_container" id="switch-c1">
-        <h2 class="switch_title title" style="letter-spacing: 0">Welcome Back！</h2>
-        <p class="switch_description description">
-          已经有账号了嘛，去登入账号来进入奇妙世界吧！！！
-        </p>
-        <button class="switch_button button switch-btn">SIGN IN</button>
+          <span class="form_span">请输入账号和密码</span>
+          <el-form-item prop="account">
+            <el-input
+              type="text"
+              v-model="signInForm.account"
+              autocomplete="off"
+              placeholder="Account / Email"
+            >
+              <template #prefix> <i class="iconfont icon-zhanghao"></i> </template
+            ></el-input>
+          </el-form-item>
+          <el-form-item prop="password">
+            <el-input
+              type="password"
+              class="form_input"
+              v-model="signInForm.password"
+              autocomplete="off"
+              placeholder="Password"
+              onpaste="return false"
+              oncontextmenu="return false"
+              oncopy="return false"
+              oncut="return false"
+            >
+              <template #prefix>
+                <i class="iconfont icon-mima"></i>
+              </template>
+              <template #suffix>
+                <i class="iconfont icon-xianshikejian" @click="changePwdShow($event)"></i>
+              </template>
+            </el-input>
+          </el-form-item>
+          <a class="form_link">忘记密码？</a>
+          <button class="form_button button submit" @click="submitForm(signInFromRef, 'signIn')">
+            SIGN IN
+          </button>
+        </el-form>
       </div>
 
-      <div class="switch_container is-hidden" id="switch-c2">
-        <h2 class="switch_title title" style="letter-spacing: 0">Hello Friend！</h2>
-        <p class="switch_description description">注册一个新账号，让我们踏入奇妙的旅途！！！</p>
-        <button class="switch_button button switch-btn">SIGN UP</button>
+      <div class="container a-container" id="a-container">
+        <el-form
+          ref="signUpFormRef"
+          :model="signUpForm"
+          :rules="signUpRules"
+          action=""
+          method=""
+          class="form"
+          id="a-form"
+        >
+          <h2 class="form_title title">创建账号</h2>
+          <!-- <div class="form_icons">
+          <i class="iconfont icon-QQ"></i>
+          <i class="iconfont icon-weixin"></i>
+          <i class="iconfont icon-bilibili-line"></i>
+        </div> -->
+          <span class="form_span"></span>
+          <el-form-item prop="account">
+            <el-input
+              type="text"
+              class="form_input"
+              v-model="signUpForm.account"
+              placeholder="Account"
+            >
+              <template #prefix> <i class="iconfont icon-zhanghao"></i> </template
+            ></el-input>
+          </el-form-item>
+          <el-form-item prop="email">
+            <el-input type="text" class="form_input" v-model="signUpForm.email" placeholder="Email">
+              <template #prefix>
+                <i class="iconfont icon-youxiang"></i>
+              </template>
+            </el-input>
+          </el-form-item>
+          <el-form-item prop="password">
+            <el-input
+              type="password"
+              class="form_input"
+              v-model="signUpForm.password"
+              placeholder="Password"
+              onpaste="return false"
+              oncontextmenu="return false"
+              oncopy="return false"
+              oncut="return false"
+            >
+              <template #prefix>
+                <i class="iconfont icon-mima"></i>
+              </template>
+            </el-input>
+          </el-form-item>
+          <el-form-item prop="password_again">
+            <el-input
+              type="password"
+              class="form_input"
+              v-model="signUpForm.password_again"
+              placeholder="Password again"
+              onpaste="return false"
+              oncontextmenu="return false"
+              oncopy="return false"
+              oncut="return false"
+            >
+              <template #prefix>
+                <i class="iconfont icon-mima"></i>
+              </template>
+            </el-input>
+          </el-form-item>
+          <button class="form_button button submit" @click="submitForm(signUpFormRef, 'signUp')">
+            SIGN UP
+          </button>
+        </el-form>
+      </div>
+
+      <div class="switch" id="switch-cnt">
+        <div class="switch_circle"></div>
+        <div class="switch_circle switch_circle-t"></div>
+        <div class="switch_container" id="switch-c1">
+          <h2 class="switch_title title" style="letter-spacing: 0">Welcome Back！</h2>
+          <p class="switch_description description">
+            已经有账号了嘛，去登入账号来进入奇妙世界吧！！！
+          </p>
+          <button class="switch_button button switch-btn">SIGN IN</button>
+        </div>
+
+        <div class="switch_container is-hidden" id="switch-c2">
+          <h2 class="switch_title title" style="letter-spacing: 0">Hello Friend！</h2>
+          <p class="switch_description description">注册一个新账号，让我们踏入奇妙的旅途！！！</p>
+          <button class="switch_button button switch-btn">SIGN UP</button>
+        </div>
       </div>
     </div>
   </div>

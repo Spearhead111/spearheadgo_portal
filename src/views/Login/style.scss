@@ -13,9 +13,6 @@
 
 .shell {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
   margin: auto;
   width: 1000px;
   min-width: 1000px;
@@ -44,7 +41,7 @@
     height: 100%;
     padding: 25px;
     background-color: #ecf0f3;
-    transition: 1.25s;
+    transition: all 1.25s;
   }
 
   .form {
@@ -326,24 +323,29 @@
 /* 设置响应式 */
 @media (max-width: 1200px) {
   .shell {
-    transform: scale(0.7);
+    scale: 0.7;
+    // transform: scale(0.7);
   }
 }
 
 @media (max-width: 1000px) {
   .shell {
-    transform: scale(0.6);
+    scale: 0.6;
+    // transform: scale(0.6);
   }
 }
 
 @media (max-width: 800px) {
   .shell {
-    transform: scale(0.5);
+    scale: 0.5;
+    top: calc(100vh - 50%);
+    // transform: scale(0.5);
   }
 }
 
 @media (max-width: 600px) {
   .shell {
-    transform: scale(0.4);
+    scale: 0.4;
+    // transform: scale(0.4);
   }
 }

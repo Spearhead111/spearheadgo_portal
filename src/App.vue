@@ -1,7 +1,7 @@
 <template>
   <Header />
   <PageSetting />
-  <RouterView id="router-view" />
+  <RouterView id="router-view" :key="key" />
   <!-- 回到顶部 -->
   <v-icon
     class="go-top"
@@ -19,9 +19,15 @@ import { RouterLink, RouterView } from 'vue-router'
 import Header from '@/components/Header/Header.vue'
 import Footer from '@/components/Footer/Footer.vue'
 import PageSetting from '@/components/PageSetting/PageSetting.vue'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
 
+const route = useRoute()
 const showGoTop = ref(false)
+
+const key = computed(() => {
+  return route.path + Math.random()
+})
 
 onMounted(() => {
   window.addEventListener('scroll', showGoTopIcon)
