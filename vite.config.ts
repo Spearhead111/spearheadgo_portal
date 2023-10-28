@@ -25,8 +25,8 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        // 配置需要代理的路径 --> 这里的意思是代理http://localhost:80/api/后的所有路由
-        target: 'http://xxxxx.org', // 目标地址 --> 服务器地址
+        // 配置需要代理的路径 --> 这里的意思是代理http://127.0.0.1:3000/api/后的所有路由
+        target: 'http://127.0.0.1:3000', // 目标地址 --> 服务器地址
         changeOrigin: true // 允许跨域
       }
     }

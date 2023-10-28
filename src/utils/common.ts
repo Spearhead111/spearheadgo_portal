@@ -1,3 +1,5 @@
+import jwt_decode from 'jwt-decode'
+
 /** 时间戳转换 */
 export const formatDate = (timeStap: number) => {
   const date = new Date(timeStap)
@@ -23,4 +25,11 @@ export const highLightWord = (str: string, keyword: string) => {
 /** 文件流转url */
 export const fileToURL = (file: File) => {
   return window.URL.createObjectURL(file)
+}
+
+/** 解析token */
+export const decodeToken = (token: string) => {
+  const userInfo = jwt_decode(token)
+  localStorage.setItem('userInfo', JSON.stringify(userInfo))
+  return userInfo
 }

@@ -21,12 +21,12 @@
           <i class="iconfont icon-bilibili-line"></i>
         </div> -->
           <span class="form_span">请输入账号和密码</span>
-          <el-form-item prop="account">
+          <el-form-item prop="username">
             <el-input
               type="text"
-              v-model="signInForm.account"
+              v-model="signInForm.username"
               autocomplete="off"
-              placeholder="Account / Email"
+              placeholder="Username"
             >
               <template #prefix> <i class="iconfont icon-zhanghao"></i> </template
             ></el-input>
@@ -75,12 +75,12 @@
           <i class="iconfont icon-bilibili-line"></i>
         </div> -->
           <span class="form_span"></span>
-          <el-form-item prop="account">
+          <el-form-item prop="username">
             <el-input
               type="text"
               class="form_input"
-              v-model="signUpForm.account"
-              placeholder="Account"
+              v-model="signUpForm.username"
+              placeholder="Username"
             >
               <template #prefix> <i class="iconfont icon-zhanghao"></i> </template
             ></el-input>
@@ -153,14 +153,16 @@
 
 <script lang="ts" setup>
 import { ref, reactive, onMounted } from 'vue'
-import { FormInstance, FormRules, ElMessage } from 'element-plus'
+import { type FormInstance, type FormRules, ElMessage } from 'element-plus'
 import * as Base64 from 'js-base64'
 import { Validator } from '@/utils/validator'
 // import { LoginService } from '@/service'
 import useUserStore from '@/stores/modules/user'
 import './style.scss'
+import { useRoute, useRouter } from 'vue-router'
 
 const userStore = useUserStore()
+const route = useRouter()
 
 let switchCtn: Element
 let switchC2: Element
@@ -175,24 +177,24 @@ const signInFromRef = ref<FormInstance>()
 const signUpFormRef = ref<FormInstance>()
 // 登录表单数据
 const signInForm = reactive({
-  account: '',
+  username: '',
   password: ''
 })
 // 注册表单数据
 const signUpForm = reactive({
-  account: '',
+  username: '',
   email: '',
   password: '',
   password_again: ''
 })
 // 登录表单的验证规则
 const signInRules = reactive<FormRules>({
-  account: [{ required: true, message: '账号不能为空', trigger: 'change' }],
+  username: [{ required: true, message: '账号不能为空', trigger: 'change' }],
   password: [{ required: true, message: '密码不能为空', trigger: 'change' }]
 })
 // 注册表单的验证规则
 const signUpRules = reactive({
-  account: [{ validator: Validator.standardName, trigger: 'change' }],
+  username: [{ validator: Validator.standardName, trigger: 'change' }],
   email: [{ validator: Validator.checkemail, trigger: 'change' }],
   password: [{ validator: Validator.password, trigger: 'change' }],
   password_again: [{ validator: confirmPwd, trigger: 'change' }]
@@ -228,20 +230,17 @@ const submitForm = (formEl: FormInstance | undefined, type: string) => {
       if (type === 'signIn') {
         // 判断是账号名登录还是邮箱登录
         const loginParams: LoginParams = {
-          password: Base64.encode(Base64.encode(signInForm.password))
+          password: Base64.encode(Base64.encode(signInForm.password)),
+          username: signInForm.username.trim()
         }
-        const signInAccount = signInForm.account.replace(/^\s*|\s*$/g, '')
-        signInForm.account.includes('@')
-          ? (loginParams.email = signInAccount)
-          : (loginParams.account = signInAccount)
         login(loginParams)
       } else {
-        let [account, password, email] = [
-          signUpForm.account,
+        let [username, password, email] = [
+          signUpForm.username,
           Base64.encode(Base64.encode(signUpForm.password)),
           signUpForm.email
         ]
-        register({ account, password, email }, formEl)
+        register({ username, password, email }, formEl)
       }
     } else {
       type === 'signIn' ? console.log('singIn error') : console.log('signUp error')
@@ -250,37 +249,39 @@ const submitForm = (formEl: FormInstance | undefined, type: string) => {
 }
 
 interface RegisterParams {
-  account: string
+  username: string
   password: string
   email: string
 }
 interface LoginParams {
-  account?: string
+  username: string
   password: string
-  email?: string
 }
 /* 提交注册请求 */
-function register(params: RegisterParams, formEl: FormInstance | undefined) {
-  // LoginService.register(params).then(
-  //   (res) => {
-  //     if (res.status === 0) {
-  //       ElMessage({ showClose: true, message: '注册成功，快去登录吧！', type: 'success' })
-  //       formEl && formEl.resetFields()
-  //       changeForm()
-  //     } else {
-  //       ElMessage({ showClose: true, message: res.msg, type: 'error' })
-  //     }
-  //     console.log(res)
-  //   },
-  //   (err) => {
-  //     ElMessage({ showClose: true, message: '注册失败，请稍后再试！', type: 'error' })
-  //   }
-  // )
+async function register(params: RegisterParams, formEl: FormInstance | undefined) {
+  const newParams = {
+    username: params.username,
+    password: params.password,
+    email: params.email
+  }
+  const res = await userStore.register(newParams)
+  if (res && res.result_code === 'success') {
+    formEl && formEl.resetFields()
+    ElMessage.success('注册成功，快去登录吧！')
+    changeForm()
+  } else {
+  }
 }
 
 /* 登录 */
-function login(params: LoginParams) {
-  // userStore.login(params)
+async function login(params: LoginParams) {
+  const res = await userStore.login(params)
+  if (res && res.result_code === 'success') {
+    ElMessage.success('登录成功！')
+    res.data?.token && userStore.saveUserInfo(res.data.token)
+    route.push('/')
+  } else {
+  }
 }
 
 const getButtons = (e: Event) => e.preventDefault()

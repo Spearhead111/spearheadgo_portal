@@ -26,7 +26,10 @@ app.use(vuetify)
 app.use(ElementPlus)
 app.use(mavonEditor)
 
+// 自定义指令
+// 给元素添加动画，元素出现的时候(滑动到)执行动画，必须配合animate.css使用
 app.directive('animate', animate)
+// 代码高亮指令
 app.directive('highlight', (el: { querySelectorAll: (arg0: string) => any }) => {
   let blocks = el.querySelectorAll('pre code')
   blocks.forEach((block: HTMLElement) => {

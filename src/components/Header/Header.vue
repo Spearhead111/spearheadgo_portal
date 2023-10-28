@@ -21,8 +21,11 @@
           ></v-avatar>
         </template>
         <v-list style="position: relative; left: 20px">
-          <v-list-item class="px-2">
+          <v-list-item class="px-2 py-1">
             <v-btn variant="text" @click="toLogin">登录</v-btn>
+          </v-list-item>
+          <v-list-item v-if="userStore.token" class="px-2 py-1">
+            <v-btn variant="text" @click="logOut">注销</v-btn>
           </v-list-item>
         </v-list>
       </v-menu>
@@ -36,6 +39,9 @@ import { ref } from 'vue'
 import { HEAD_MENU } from '@/constants'
 import { useRouter } from 'vue-router'
 import { onMounted } from 'vue'
+import useUserStore from '@/stores/modules/user'
+
+const userStore = useUserStore()
 
 const router = useRouter()
 const showHeader = ref(true) // 是否显示头部
@@ -68,5 +74,9 @@ const routerJump = (path: string): void => {
 
 const toLogin = () => {
   router.push('/login')
+}
+
+const logOut = () => {
+  userStore.logOut()
 }
 </script>
