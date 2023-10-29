@@ -156,7 +156,6 @@ import { ref, reactive, onMounted } from 'vue'
 import { type FormInstance, type FormRules, ElMessage } from 'element-plus'
 import * as Base64 from 'js-base64'
 import { Validator } from '@/utils/validator'
-// import { LoginService } from '@/service'
 import useUserStore from '@/stores/modules/user'
 import './style.scss'
 import { useRoute, useRouter } from 'vue-router'
@@ -321,5 +320,6 @@ onMounted(() => {
   bContainer = document.querySelector('#b-container') as Element
   allButtons = document.querySelectorAll('.submit') as NodeListOf<Element>
   shell()
+  changeForm()
 })
 </script>

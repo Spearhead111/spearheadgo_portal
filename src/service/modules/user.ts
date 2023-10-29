@@ -14,6 +14,12 @@ class userService {
     const url = baseURL + '/auth/login'
     return MyRequest.post<T>(url, params)
   }
+
+  /** 验证用户信息是否有变更 */
+  public verify<T>() {
+    const url = baseURL + '/auth/verify'
+    return MyRequest.get<T>(url)
+  }
 }
 
 export default new userService()

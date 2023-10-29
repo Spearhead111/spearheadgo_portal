@@ -1,7 +1,7 @@
 import { type Directive, type VNode } from 'vue'
 
 // 配合animate.css使用这个自定义指令
-const customDirective: Directive<HTMLElement, string> = {
+export const animateDirective: Directive<HTMLElement, string> = {
   beforeMount(el, binding) {
     // 指令被绑定到元素时调用
     const animateClassName = binding.value
@@ -28,5 +28,3 @@ const customDirective: Directive<HTMLElement, string> = {
     // 元素被卸载时调用
   }
 }
-
-export default customDirective

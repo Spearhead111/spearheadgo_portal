@@ -15,7 +15,7 @@
         <div class="blog-info-content">
           <div>
             <people theme="two-tone" size="20" :fill="['#383838', '#f66002']" :strokeWidth="2" />
-            {{ `spearhead` }}
+            {{ blogInfoDetail.auth || '' }}
           </div>
           <div>
             <calendar-dot
@@ -25,7 +25,7 @@
               :fill="['#333', '#4a90e2', '#ffffff', '#ffffff']"
               :strokeWidth="2"
             />
-            {{ formatDate(1672506061000) }}
+            {{ formatDate(blogInfoDetail.createTime) }}
           </div>
           <div>
             <endocrine
@@ -34,7 +34,7 @@
               :fill="['#333', '#ec2941', '#f5a623', '#f5a623']"
               :strokeWidth="2"
             />
-            <span>{{ 0 }} 浏览</span>
+            <span>{{ blogInfoDetail.view }} 浏览</span>
           </div>
           <div>
             <comments
@@ -43,7 +43,7 @@
               :fill="['#333', '#f88e3f', '#FFF', '#5d92a5']"
               :strokeWidth="2"
             />
-            <span>{{ 0 }} 评论</span>
+            <span>{{ blogInfoDetail.comments }} 评论</span>
           </div>
           <div>
             <Like
@@ -53,7 +53,7 @@
               :strokeWidth="2"
               strokeLinecap="butt"
             />
-            <span>{{ 0 }} 点赞</span>
+            <span>{{ blogInfoDetail.like }} 点赞</span>
           </div>
         </div>
       </div>
@@ -115,6 +115,9 @@ import {
   Loading
 } from '@icon-park/vue-next'
 import { formatDate } from '@/utils'
+import { type ArticleProfile } from '../Home/Home.vue'
+import useArticleStore from '@/stores/modules/article'
+import { useRoute, useRouter } from 'vue-router'
 
 interface Tag {
   label: string
@@ -124,7 +127,7 @@ interface Tag {
   code: string
 }
 
-interface BlogInfo {
+interface BlogInfoProp {
   title: string
   subtitle: string
   content: any
@@ -132,10 +135,15 @@ interface BlogInfo {
   desc: string
   tags: Tag[]
 }
+
+interface BlogInfoDetail extends ArticleProfile {
+  content: string
+}
+
 interface Props {
   type?: string
   previewVisible?: boolean
-  blogInfo?: BlogInfo
+  blogInfo?: BlogInfoProp
 }
 /** 设置默认值 */
 const props = withDefaults(defineProps<Props>(), {
@@ -153,52 +161,54 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits(['update:previewVisible'])
 
-const blogInfoDetail = ref<BlogInfo>({
+const route = useRoute()
+const articleStore = useArticleStore()
+
+const articleId = computed(() => route.query.articleId)
+const blogInfoDetail = ref<BlogInfoDetail | BlogInfoProp>({
   title: '',
   subtitle: '',
   content: '',
   banner: '',
   desc: '',
-  tags: []
+  tags: [],
+  auth: '',
+  authId: '',
+  articleId: '',
+  createTime: 0,
+  updateTime: 0,
+  view: 0,
+  comments: 0,
+  like: 0
 })
 const loading = ref(false)
 
-onMounted(() => {
+onMounted(async () => {
   loading.value = true
   if (props.type === BLOG_VISIBLE_TYPE.DETAIL) {
     // 查看详情 接口获取数据
-    const res = {
-      title: '接口返回标题',
-      subtitle: '接口返回副标题',
-      desc: '接口返回描述',
-      content:
-        '**阿松大**\n阿松大\n## 萨达\n++萨达++\n> 阿松大\n```js\nconst a = 23\n```\nad\nad\nad\nad\nad\nad\nad\nad\nad\nad\nad\nad\nad\nad\nad\n',
-      bannerUrl: 'https://spearhead-cdn-1314941949.cos.ap-chengdu.myqcloud.com//53.jpg',
-      tags: [
-        {
-          label: 'label' + 1,
-          code: 'code' + 1,
-          icon: 'mdi-magnify',
-          iconColor: 'white',
-          color: '#' + Math.floor(Math.random() * 16777215).toString(16)
-        },
-        {
-          label: 'label' + 2,
-          code: 'code' + 2,
-          icon: 'mdi-label',
-          iconColor: 'white',
-          color: '#' + Math.floor(Math.random() * 16777215).toString(16)
-        },
-        {
-          label: 'label' + 3,
-          code: 'code' + 3,
-          icon: 'mdi-label',
-          iconColor: 'white',
-          color: '#' + Math.floor(Math.random() * 16777215).toString(16)
-        }
-      ]
+    const res = await articleStore.getArticleDetail(Number(articleId.value))
+    if (res && res.result_code === 'success') {
+      const data = res.data as any
+      blogInfoDetail.value = {
+        title: data.title,
+        subtitle: data.subtitle,
+        content: data.content,
+        banner: data.banner,
+        desc: data.description,
+        tags: [],
+        articleId: data.id,
+        createTime: new Date(data.create_time).getTime(),
+        updateTime: new Date(data.update_time).getTime(),
+        view: data.view,
+        comments: data.comments,
+        like: data.like,
+        auth: data.author,
+        authId: data.authorId
+      } as BlogInfoDetail
+    } else {
     }
-    blogInfoDetail.value = { ...res, banner: res.bannerUrl }
+    // blogInfoDetail.value = { ...res, banner: res.bannerUrl }
   } else if (props.type === BLOG_VISIBLE_TYPE.PREVIEW) {
     blogInfoDetail.value = { ...props.blogInfo }
     // 判断传入的banner是string还是File，如果是file需要转换成url

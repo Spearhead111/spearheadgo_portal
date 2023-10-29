@@ -111,7 +111,11 @@
           <!-- 博客文章 -->
           <div class="blogs-content-wrapper">
             <div v-for="articleProfile in articleProfileData" v-animate="'animate__zoomIn'">
-              <BlogProfile :articleProfile="articleProfile" :highlightKey="highlightKey" />
+              <BlogProfile
+                :articleProfile="articleProfile"
+                :highlightKey="highlightKey"
+                @refresh="refresh"
+              />
             </div>
           </div>
         </v-container>
@@ -128,21 +132,41 @@ import BlogProfile from '@/components/BlogProfile/BlogProfile.vue'
 import { HOME_PAGE_BANNER, BANNER_WAVE1, BANNER_WAVE2, weChatImg, QQImg } from '@/constants'
 import { debounce, throttle } from 'lodash'
 import { onMounted } from 'vue'
+import useArticleStore from '@/stores/modules/article'
 
+const articleStore = useArticleStore()
 const MY_GITHUB_URL = 'https://github.com/Spearhead111'
 const WECHAT_ACCOUNT = 'Spearhead_2024'
 const QQ_ACCOUNT = '1744734603'
+
+export interface ArticleProfile {
+  articleId: string
+  title: string
+  subtitle: string
+  banner: string
+  createTime: number
+  updateTime: number
+  desc: string
+  tags: []
+  view: number
+  comments: number
+  like: number
+  auth: string
+  authId: string
+}
 
 const tagList = ref<any[]>([]) // 文章类型tag列表
 const searchKey = ref('') // 搜索关键字
 const tagListSelected = ref<any[]>([]) // 选中的文章类型tag列表
 const searchArticleLoading = ref(false) // 搜索文章loading
-const articleProfileData = ref<any[]>([])
+const articleProfileData = ref<ArticleProfile[]>([])
 const highlightKey = ref('') // 高亮关键字，用于高亮搜索的关键字
 const form = ref()
 const searchKeyRules = [(v: string | any[]) => v.length <= 15 || '最多支持搜索15个字符']
+const pageNo = ref(1)
+const pageSize = ref(6)
 
-onMounted(() => {
+onMounted(async () => {
   for (let i = 0; i < 100; i++) {
     tagList.value.push({
       label: 'label' + i,
@@ -153,43 +177,51 @@ onMounted(() => {
       selected: false
     })
   }
-  for (let i = 0; i < 7; i++) {
-    articleProfileData.value.push({
-      articleId: 'article_id_' + i,
-      title: '文章标题' + i,
-      subtitle: '',
-      banner: 'https://spearhead-cdn-1314941949.cos.ap-chengdu.myqcloud.com//53.jpg',
-      createTime: 1672506061000,
-      desc: '五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字五十个字',
-      tags: [
-        {
-          label: 'label' + 1,
-          code: 'code' + 1,
-          icon: 'mdi-magnify',
-          iconColor: 'white',
-          color: '#' + Math.floor(Math.random() * 16777215).toString(16)
-        },
-        {
-          label: 'label' + 2,
-          code: 'code' + 2,
-          icon: 'mdi-label',
-          iconColor: 'white',
-          color: '#' + Math.floor(Math.random() * 16777215).toString(16)
-        },
-        {
-          label: 'label' + 3,
-          code: 'code' + 3,
-          icon: 'mdi-label',
-          iconColor: 'white',
-          color: '#' + Math.floor(Math.random() * 16777215).toString(16)
-        }
-      ],
-      view: 0,
-      comments: 0,
-      like: 0
-    })
-  }
+
+  await getArticleList()
 })
+
+/**
+ * 获取文章列表
+ * @param type 判断是搜索还是查询更多文章
+ */
+const getArticleList = async (type = 'search') => {
+  const params = {
+    search: searchKey.value.trim(),
+    pageNo: pageNo.value,
+    pageSize: pageSize.value
+  }
+  highlightKey.value = params.search
+  const res = await articleStore.getArticleList(params)
+  if (res && res.result_code === 'success') {
+    const { list, total } = res.data as any
+    // 判断是搜索还是查询更多
+    type === 'search' && (articleProfileData.value = [])
+    ;(list as any[]).forEach((item: any) => {
+      articleProfileData.value.push({
+        articleId: item.article_id,
+        title: item.article_title,
+        subtitle: item.article_subtitle,
+        banner: item.article_banner,
+        createTime: new Date(item.article_create_time).getTime(),
+        updateTime: new Date(item.article_update_time).getTime(),
+        desc: item.article_description,
+        tags: [],
+        view: item.article_view,
+        comments: item.article_comments,
+        like: item.article_like,
+        auth: item.author_nickname,
+        authId: item.auth_id
+      })
+    })
+  } else {
+  }
+}
+
+/** 删除完文章更新一下文章列表 */
+const refresh = () => {
+  getArticleList()
+}
 
 /** 跳转到我的GitHub首页 */
 const navigateToMyGithub = () => {
@@ -252,13 +284,11 @@ const searchArticle = async () => {
   if (!valid) {
     return
   }
-  console.log('search')
   searchArticleLoading.value = true
-  setTimeout(() => {
-    highlightKey.value = searchKey.value.trim()
-    articleProfileData.value = [...articleProfileData.value]
-    searchArticleLoading.value = false
-  }, 1000)
+  pageNo.value = 1
+  pageSize.value = 6
+  await getArticleList()
+  searchArticleLoading.value = false
 }
 
 /** 防抖搜索文章 */

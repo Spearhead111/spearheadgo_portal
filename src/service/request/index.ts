@@ -15,6 +15,9 @@ export class ResultData<T = any> {
   result_code?: string
   message?: string
   data?: T
+  // valid() {
+  //   return this.result_code === 'success'
+  // }
 }
 
 // axios 基础配置
@@ -41,7 +44,8 @@ class Request {
         return {
           ...config,
           headers: {
-            Authorization: token
+            Authorization: 'Bearer ' + token,
+            'user-id': useUserStore().getUserId
           }
         }
       },
@@ -60,7 +64,7 @@ class Request {
         const { data, config } = response
         if (data?.data?.token) {
           const token = data?.data?.token
-          localStorage.setItem('accessToken', 'Bearer ' + token)
+          localStorage.setItem('accessToken', token)
           // 解析一下token并存储用户的信息
           decodeToken(token)
         }
@@ -70,8 +74,8 @@ class Request {
         const { response } = error
         console.log(response)
         if (response) {
-          const msg = response.data?.result_code
-          this.handleCode(response.status, msg)
+          const message = response.data?.message
+          this.handleCode(response.status, message)
         }
         if (!window.navigator.onLine) {
           ElMessage.error('网络连接失败，请检查网络')
@@ -82,23 +86,30 @@ class Request {
   }
 
   /* 验证失败提示提示(401) */
-  public reLogin = (msg: string = ''): void => {
-    ElMessageBox.alert(msg, '系统提示', {
-      confirmButtonText: '重新登陆',
-      type: 'warning'
-    })
-      .then(() => {
-        location.href = '/login'
-      })
-      .finally(() => {
-        useUserStore().logOut()
-      })
+  public reLogin = (message: string = ''): void => {
+    // ElMessageBox.alert(message, '系统提示', {
+    //   confirmButtonText: '重新登陆',
+    //   type: 'warning'
+    // })
+    //   .then(() => {
+    //     location.href = '/login'
+    //   })
+    //   .finally(() => {
+    //     useUserStore().logOut()
+    //   })
+    if (!useUserStore().token) {
+      // 如果之前没登陆
+      ElMessage.warning(message + '请先登录')
+    } else {
+      ElMessage.error('用户信息有所变更，请重新登录')
+      useUserStore().logOut()
+    }
   }
 
-  public handleCode = (code: number, responseMsg?: string): void => {
+  public handleCode = (code: number, message?: string): void => {
     switch (code) {
       case 401:
-        this.reLogin(responseMsg)
+        this.reLogin(message)
         break
       case 500:
         ElMessage.error('请求异常，请联系管理员')

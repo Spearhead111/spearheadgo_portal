@@ -5,6 +5,7 @@
       <v-tooltip text="编辑">
         <template v-slot:activator="{ props }">
           <v-btn
+            v-auth="USER_ROLE_MAP.AUTHOR"
             v-bind="props"
             icon="mdi-circle-edit-outline"
             color="orange-darken-1"
@@ -17,14 +18,20 @@
       <!-- 删除 -->
       <v-tooltip text="删除">
         <template v-slot:activator="{ props }">
-          <v-btn v-bind="props" icon="mdi-delete-outline" color="red-accent-4" size="x-small">
+          <v-btn
+            v-auth="USER_ROLE_MAP.ROOT"
+            v-bind="props"
+            icon="mdi-delete-outline"
+            color="red-accent-4"
+            size="x-small"
+          >
             <v-icon class="mdi-delete-outline"></v-icon>
             <!-- 删除文章的二次确认框 -->
             <v-dialog v-model="deleteDialog" activator="parent" width="auto">
               <v-card>
                 <v-card-text>
                   <tips theme="filled" size="18" fill="#fcd53f" :strokeWidth="2" />
-                  确认删除此片文章吗？
+                  确认删除此篇文章吗？
                 </v-card-text>
                 <v-card-actions>
                   <div class="flex">
@@ -41,9 +48,14 @@
       </v-tooltip>
     </div>
     <v-img class="align-end text-white profile-img" height="200" :src="articleProfile.banner" cover>
-      <v-card-title v-html="highLightWord(articleProfile.title, highlightKey)"></v-card-title>
+      <v-card-title
+        v-html="highLightWord(articleProfile.title, highlightKey)"
+        style="position: relative; z-index: 10"
+      ></v-card-title>
     </v-img>
-    <v-card-subtitle class="pt-2"> {{ articleProfile.subtitle }} </v-card-subtitle>
+    <v-card-subtitle class="pt-2">
+      {{ articleProfile.subtitle }}
+    </v-card-subtitle>
     <v-card-subtitle class="pt-1" style="display: flex; align-items: center">
       <calendar-dot
         class="mr-1"
@@ -125,6 +137,8 @@ import { debounce, throttle } from 'lodash'
 import './style.scss'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import { USER_ROLE_MAP } from '@/constants'
+import useArticleStore from '@/stores/modules/article'
 
 interface Tag {
   label: string
@@ -140,11 +154,14 @@ interface ArticleProfile {
   subtitle: string
   banner: string
   createTime: number
+  updateTime: number
   desc: string
   tags: Tag[]
   view: number
   comments: number
   like: number
+  auth: string
+  authId: string
 }
 
 const { articleProfile, highlightKey } = defineProps<{
@@ -152,7 +169,10 @@ const { articleProfile, highlightKey } = defineProps<{
   highlightKey: string // 搜索的高亮关键字
 }>()
 
+const emit = defineEmits(['refresh'])
+
 const router = useRouter()
+const articleStore = useArticleStore()
 const deleteDialog = ref(false) // 删除文章的二次确认dialog
 
 /** 跳转到编辑界面 */
@@ -167,10 +187,14 @@ const edit = () => {
 }
 
 /** 删除文章 */
-const deleteArticle = () => {
-  console.log(`删除这篇文章${articleProfile.articleId}`)
+const deleteArticle = async () => {
+  const res = await articleStore.deleteArticle(Number(articleProfile.articleId))
+  if (res && res.result_code === 'success') {
+    ElMessage.success('删除成功')
+    emit('refresh')
+  } else {
+  }
   deleteDialog.value = false
-  ElMessage.success('删除成功')
 }
 
 /** 查看文章详情 */

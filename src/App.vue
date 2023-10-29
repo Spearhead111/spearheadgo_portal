@@ -21,16 +21,20 @@ import Footer from '@/components/Footer/Footer.vue'
 import PageSetting from '@/components/PageSetting/PageSetting.vue'
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import useUserStore from './stores/modules/user'
 
 const route = useRoute()
+const userStore = useUserStore()
 const showGoTop = ref(false)
 
 const key = computed(() => {
   return route.path + Math.random()
 })
 
-onMounted(() => {
+onMounted(async () => {
   window.addEventListener('scroll', showGoTopIcon)
+  // 校验一下用户当前信息有没有变更，如果变更需要重新登录
+  await userStore.verify()
 })
 
 /** 是否展示回到顶部的按钮icon */
