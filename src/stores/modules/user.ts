@@ -16,21 +16,12 @@ const useUserStore = defineStore('user', {
 
   getters: {
     getRole: (state) => state.userInfo?.role || USER_ROLE_MAP.GUEST,
-    getUserId: (state) => state.userInfo?.id || ''
+    getUserId: (state) => (state.userInfo?.id as string) || ''
   },
 
   actions: {
     /** 校验token信息是否变更 */
     async verify() {
-      // try {
-      //   const response = await userService.verify()
-      //   if (response) {
-      //     const data = response
-      //     return data
-      //   }
-      // } catch (e) {
-      //   return e
-      // }
       if (this.token) {
         const res = await userService.verify()
       }
@@ -38,15 +29,6 @@ const useUserStore = defineStore('user', {
 
     // 登录
     async login(params: any) {
-      // try {
-      //   const response = await userService.login(params)
-      //   if (response) {
-      //     const data = response
-      //     return data
-      //   }
-      // } catch (e) {
-      //   return e
-      // }
       return await userService.login<LoginResponseData>(params)
     },
 

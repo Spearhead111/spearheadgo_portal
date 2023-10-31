@@ -15,9 +15,6 @@ export class ResultData<T = any> {
   result_code?: string
   message?: string
   data?: T
-  // valid() {
-  //   return this.result_code === 'success'
-  // }
 }
 
 // axios 基础配置
@@ -64,9 +61,8 @@ class Request {
         const { data, config } = response
         if (data?.data?.token) {
           const token = data?.data?.token
-          localStorage.setItem('accessToken', token)
-          // 解析一下token并存储用户的信息
-          decodeToken(token)
+          // 解析token并存储用户toke和信息到localStorage
+          useUserStore().saveUserInfo(token)
         }
         return data
       },

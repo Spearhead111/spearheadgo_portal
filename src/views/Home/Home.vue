@@ -208,8 +208,8 @@ const getArticleList = async (type = 'search') => {
         desc: item.article_description,
         tags: [],
         view: item.article_view,
-        comments: item.article_comments,
-        like: item.article_like,
+        comments: item.comments,
+        like: item.likes,
         auth: item.author_nickname,
         authId: item.auth_id
       })

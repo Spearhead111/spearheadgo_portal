@@ -20,6 +20,12 @@ class articleService {
     const url = baseURL + `/article/${params.articleId}/delete-article`
     return MyRequest.get<T>(url, params)
   }
+
+  /** 校验上传权限 */
+  public uploadArticleImgPermission<T>(params: any) {
+    const url = baseURL + `/auth/cos/article-sign`
+    return MyRequest.get<T>(url, params)
+  }
 }
 
 export default new articleService()

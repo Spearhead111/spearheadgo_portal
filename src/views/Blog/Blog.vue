@@ -202,7 +202,7 @@ onMounted(async () => {
         updateTime: new Date(data.update_time).getTime(),
         view: data.view,
         comments: data.comments,
-        like: data.like,
+        like: data.likes,
         auth: data.author,
         authId: data.authorId
       } as BlogInfoDetail

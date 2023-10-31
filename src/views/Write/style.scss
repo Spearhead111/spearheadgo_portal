@@ -39,6 +39,10 @@
   }
 }
 
+.mavon-editor.fullScreen {
+  z-index: 1001 !important;
+}
+
 .tag-label {
   font-size: 14px;
 }

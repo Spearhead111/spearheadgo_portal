@@ -22,6 +22,12 @@ const useArticleStore = defineStore('article', {
       const params = { articleId: id }
       const res = await articleService.deleteArticle(params)
       return res
+    },
+
+    /** 获取上传权限 */
+    async uploadArticleImgPermission(params: any) {
+      const res = await articleService.uploadArticleImgPermission(params)
+      return res
     }
   }
 })

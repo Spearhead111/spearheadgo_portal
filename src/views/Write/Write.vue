@@ -119,7 +119,15 @@
           </v-dialog>
         </div>
         <!-- MavonEditor富文本编辑器 -->
-        <mavon-editor class="mb-8 mavon-editor" v-model="blogContent" :ishljs="true" />
+        <mavon-editor
+          ref="mavonEditorRef"
+          :class="['mb-8', 'mavon-editor', fullScreen ? 'fullScreen' : '']"
+          v-model="blogContent"
+          :ishljs="true"
+          @imgAdd="imgAdd"
+          @imgDel="imgDel"
+          @fullScreen="fullScreen = !fullScreen"
+        />
       </v-form>
       <div class="flex align-center justify-center">
         <v-btn prepend-icon="mdi-upload" color="deep-purple-accent-4" @click="debounceSubmitBlog">
@@ -148,11 +156,16 @@ import { onMounted } from 'vue'
 import { BLOG_VISIBLE_TYPE } from '@/constants/common'
 import { ElMessage } from 'element-plus'
 import { fileToURL } from '@/utils/common'
+import useArticleStore from '@/stores/modules/article'
+import useUserStore from '@/stores/modules/user'
 
+const { getUserId } = useUserStore()
+const articleStore = useArticleStore()
 const route = useRoute()
 const isCreate = computed(() => route.query.type === 'create')
 const articleId = computed(() => route.query.articleId)
 const form = ref()
+const mavonEditorRef = ref()
 const blogTitle = ref('') // 文章标题
 const blogSubtitle = ref('') // 文章副标题
 const blogDesc = ref('') // 文章描述
@@ -160,6 +173,7 @@ const blogContent = ref<any>() // 文章内容
 const blogBanner = ref<any[]>([]) // 上传文件的banner图片
 const blogBannerUrl = ref('') // 编辑文章时返回的banner url
 const blogTags = ref<string[]>([]) // 文章标签
+const fullScreen = ref(false) // 编辑器是否全屏
 const blogInfo = computed(() => {
   const info = {
     title: blogTitle.value.trim(),
@@ -305,6 +319,47 @@ const previewBlog = async () => {
 
 /** 防抖预览文章 */
 const debouncePreviewBlog = debounce(previewBlog, 300)
+
+/** 添加图片 */
+const imgAdd = async (pos: string, file: File) => {
+  if (file.size > 1024 * 1024 * 1) {
+    return ElMessage.error('图片大小不能超过1M')
+  }
+  const fileNameArr = file.name.split('.')
+
+  // 拼接一下图片的名字
+  const params = {
+    key: new Date().getTime() + '_' + getUserId + '.' + fileNameArr[fileNameArr.length - 1],
+    size: file.size
+  }
+  const res = await articleStore.uploadArticleImgPermission(params)
+  if (res && res.result_code === 'success') {
+    const data: { imgUrl: string; uploadUrl: string } = res.data as any
+    if (!data.imgUrl || !data.uploadUrl) {
+      return ElMessage.error('上传图片失败')
+    }
+    const signedUrl = data.uploadUrl as string
+    // 创建一个 FormData 对象，用于包含文件
+    const formData = new FormData()
+    formData.append('file', file)
+    // 创建一个 HTTP PUT 请求，将文件上传到预签名 URL
+    const response = await fetch(signedUrl, {
+      method: 'PUT',
+      body: file,
+      headers: {
+        'Content-Type': file.type // 设置文件的 Content-Type
+      }
+    })
+    if (response.status === 200) {
+      mavonEditorRef.value.$img2Url(pos, data.imgUrl)
+    }
+  } else {
+  }
+}
+
+const imgDel = async (pos: string, file: File) => {
+  console.log(pos, file)
+}
 
 /** 发布/更新文章 */
 const submitBlog = async () => {
