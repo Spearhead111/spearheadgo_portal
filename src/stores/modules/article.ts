@@ -28,6 +28,12 @@ const useArticleStore = defineStore('article', {
     async uploadArticleImgPermission(params: any) {
       const res = await articleService.uploadArticleImgPermission(params)
       return res
+    },
+
+    /** 获取文章标签 */
+    async getArticleTagList() {
+      const res = await articleService.getArticleTagList()
+      return res
     }
   }
 })

@@ -66,7 +66,7 @@
         <v-img
           class="mb-4"
           height="200"
-          v-if="blogBanner.length || blogBannerUrl"
+          v-if="blogBanner.length || oldBlogInfo?.banner"
           :src="bannerImg"
         ></v-img>
         <v-select
@@ -147,7 +147,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import './style.scss'
 import { debounce, throttle } from 'lodash'
@@ -158,6 +158,8 @@ import { ElMessage } from 'element-plus'
 import { fileToURL } from '@/utils/common'
 import useArticleStore from '@/stores/modules/article'
 import useUserStore from '@/stores/modules/user'
+import { type Tag, type TagSelect } from '../Home/Home.vue'
+import { readonly } from 'vue'
 
 const { getUserId } = useUserStore()
 const articleStore = useArticleStore()
@@ -171,22 +173,46 @@ const blogSubtitle = ref('') // 文章副标题
 const blogDesc = ref('') // 文章描述
 const blogContent = ref<any>() // 文章内容
 const blogBanner = ref<any[]>([]) // 上传文件的banner图片
-const blogBannerUrl = ref('') // 编辑文章时返回的banner url
 const blogTags = ref<string[]>([]) // 文章标签
 const fullScreen = ref(false) // 编辑器是否全屏
-const blogInfo = computed(() => {
+
+export interface BlogInfo {
+  author: {
+    id: string
+    nickname: string
+    username: string
+  }
+  id: number
+  title: string
+  subtitle: string
+  content: string
+  banner: string
+  desc: string
+  tags: Tag[]
+  commentCount: number
+  isActivated: number
+  likeCount: number
+  updateTime: number
+  createTime: number
+}
+
+const oldBlogInfo = ref<BlogInfo>() // 修改文章时，文章的原来的数据
+// 计算一下当前的文章信息
+const blogInfo = computed<BlogInfo>(() => {
   const info = {
+    ...(oldBlogInfo.value as BlogInfo),
     title: blogTitle.value.trim(),
     subtitle: blogSubtitle.value.trim(),
     content: blogContent.value,
-    banner: blogBanner.value[0] || blogBannerUrl.value,
+    banner: blogBanner.value[0] || oldBlogInfo.value?.banner,
     desc: blogDesc.value.trim(),
     tags: tagList.value.filter((tag) => blogTags.value.includes(tag.code))
   }
   return info
 })
+
 const loading = ref(false) // 页面是否loading
-const tagList = ref<any[]>([]) // 文章类型标签
+const tagList = ref<Tag[]>([]) // 文章类型标签
 const publishLoading = ref(false) // 发布文章loading
 const previewBlogDialogVisible = ref(false) // 预览文章dialog显示
 const rules = ref<any>({
@@ -216,6 +242,11 @@ const rules = ref<any>({
   ]
 })
 
+watch(blogBanner, (newVal, oldVal) => {
+  if (newVal.length) {
+  }
+})
+
 /** 分情况决定banner预览图片 */
 const bannerImg = computed(() => {
   if (isCreate.value) {
@@ -225,7 +256,7 @@ const bannerImg = computed(() => {
       // 如果在编辑状态下选择了一张新的banner图片
       return fileToURL(blogBanner.value[0])
     } else {
-      return blogBannerUrl.value
+      return oldBlogInfo.value?.banner
     }
   }
 })
@@ -233,70 +264,47 @@ const bannerImg = computed(() => {
 onMounted(async () => {
   loading.value = true
   // 获取taglist
-  await getTaglist()
+  await getArticleTagList()
   if (isCreate.value) {
     // 新建文章
   } else {
-    console.log(articleId.value)
     // 编辑文章
     await getBlogDetail()
   }
   loading.value = false
 })
 
-/** 获取文章可选标签类型 */
-const getTaglist = async () => {
-  for (let i = 0; i < 10; i++) {
-    tagList.value.push({
-      label: 'label' + i,
-      code: 'code' + i,
-      icon: 'mdi-github',
-      iconColor: 'white',
-      color: '#' + Math.floor(Math.random() * 16777215).toString(16),
-      selected: false
-    })
+/** 获取文章标签 */
+const getArticleTagList = async () => {
+  const res = await articleStore.getArticleTagList()
+  if (res && res.result_code === 'success') {
+    const { list, total } = res.data as { list: Tag[]; total: number }
+    if (!list.length) {
+      return
+    }
+    tagList.value = list
   }
 }
 
 /** 编辑文章时，获取文章的详情 */
 const getBlogDetail = async () => {
-  const res = {
-    title: '接口返回标题',
-    subtitle: '接口返回副标题',
-    desc: '接口返回描述',
-    content:
-      '**阿松大**\n阿松大\n## 萨达\n++萨达++\n> 阿松大\n```js\nconst a = 23\n```\nad\nad\nad\nad\nad\nad\nad\nad\nad\nad\nad\nad\nad\nad\n',
-    bannerUrl: 'https://spearhead-cdn-1314941949.cos.ap-chengdu.myqcloud.com//53.jpg',
-    tags: [
-      {
-        label: 'label' + 1,
-        code: 'code' + 1,
-        icon: 'mdi-magnify',
-        iconColor: 'white',
-        color: '#' + Math.floor(Math.random() * 16777215).toString(16)
-      },
-      {
-        label: 'label' + 2,
-        code: 'code' + 2,
-        icon: 'mdi-label',
-        iconColor: 'white',
-        color: '#' + Math.floor(Math.random() * 16777215).toString(16)
-      },
-      {
-        label: 'label' + 3,
-        code: 'code' + 3,
-        icon: 'mdi-label',
-        iconColor: 'white',
-        color: '#' + Math.floor(Math.random() * 16777215).toString(16)
-      }
-    ]
+  const res = await articleStore.getArticleDetail(Number(articleId.value))
+  if (res && res.result_code === 'success') {
+    const data = res.data as any
+    // 冻结一下原始文章数据
+    oldBlogInfo.value = Object.freeze({
+      ...data,
+      tags: data.categories,
+      createTime: new Date(data.createTime).getTime(),
+      updateTime: new Date(data.updateTime).getTime()
+    })
+    blogTitle.value = data.title
+    blogSubtitle.value = data.subtitle
+    blogDesc.value = data.desc
+    blogContent.value = data.content
+    blogTags.value = data.categories.map((tag: Tag) => tag.code)
+  } else {
   }
-  blogTitle.value = res.title
-  blogSubtitle.value = res.subtitle
-  blogDesc.value = res.desc
-  blogContent.value = res.content
-  blogBannerUrl.value = res.bannerUrl
-  blogTags.value = res.tags.map((tag) => tag.code)
 }
 
 /** 预览文章 */
@@ -367,19 +375,10 @@ const submitBlog = async () => {
   if (!valid) {
     return
   }
-  const params = {
-    blogTitle: blogTitle.value,
-    blogSubtitle: blogSubtitle.value,
-    blogContent: blogContent.value,
-    blogBanner: blogBanner.value,
-    blogTags: blogTags.value
-  }
+  console.log(blogInfo.value)
   publishLoading.value = true
-  setTimeout(() => {
-    console.log(params, '发布文章！！！')
-    publishLoading.value = false
-    ElMessage.success(`${isCreate.value ? '发布' : '更新'}成功`)
-  }, 1000)
+  // TODO 发请求 更新/发布文章
+  publishLoading.value = false
 }
 
 /** 防抖发布文章 */

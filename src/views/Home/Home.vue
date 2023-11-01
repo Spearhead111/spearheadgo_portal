@@ -110,7 +110,11 @@
           <!-- <v-divider :thickness="2" class="border-opacity-50 ma-5" style="width: 100%"></v-divider> -->
           <!-- 博客文章 -->
           <div class="blogs-content-wrapper">
-            <div v-for="articleProfile in articleProfileData" v-animate="'animate__zoomIn'">
+            <div
+              v-for="articleProfile in articleProfileData"
+              :key="articleProfile.articleId"
+              v-animate="'animate__zoomIn'"
+            >
               <BlogProfile
                 :articleProfile="articleProfile"
                 :highlightKey="highlightKey"
@@ -139,6 +143,19 @@ const MY_GITHUB_URL = 'https://github.com/Spearhead111'
 const WECHAT_ACCOUNT = 'Spearhead_2024'
 const QQ_ACCOUNT = '1744734603'
 
+export interface Tag {
+  code: string
+  color: string
+  icon: string
+  iconColor: string
+  id: number
+  label: string
+}
+
+export interface TagSelect extends Tag {
+  selected: boolean
+}
+
 export interface ArticleProfile {
   articleId: string
   title: string
@@ -147,7 +164,7 @@ export interface ArticleProfile {
   createTime: number
   updateTime: number
   desc: string
-  tags: []
+  tags: Tag[]
   view: number
   comments: number
   like: number
@@ -155,9 +172,9 @@ export interface ArticleProfile {
   authId: string
 }
 
-const tagList = ref<any[]>([]) // 文章类型tag列表
+const tagList = ref<TagSelect[]>([]) // 文章类型tag列表
 const searchKey = ref('') // 搜索关键字
-const tagListSelected = ref<any[]>([]) // 选中的文章类型tag列表
+const tagListSelected = ref<TagSelect[]>([]) // 选中的文章类型tag列表
 const searchArticleLoading = ref(false) // 搜索文章loading
 const articleProfileData = ref<ArticleProfile[]>([])
 const highlightKey = ref('') // 高亮关键字，用于高亮搜索的关键字
@@ -167,19 +184,26 @@ const pageNo = ref(1)
 const pageSize = ref(6)
 
 onMounted(async () => {
-  for (let i = 0; i < 100; i++) {
-    tagList.value.push({
-      label: 'label' + i,
-      code: 'code' + i,
-      color: '#' + Math.floor(Math.random() * 16777215).toString(16),
-      icon: 'mdi-magnify',
-      iconColor: 'white',
-      selected: false
-    })
-  }
-
+  await getArticleTagList()
   await getArticleList()
 })
+
+/** 获取文章标签 */
+const getArticleTagList = async () => {
+  const res = await articleStore.getArticleTagList()
+  if (res && res.result_code === 'success') {
+    const { list, total } = res.data as any
+    if (!list.length) {
+      return
+    }
+    tagList.value = (list as Tag[]).map((tag) => {
+      return {
+        ...tag,
+        selected: false
+      }
+    })
+  }
+}
 
 /**
  * 获取文章列表
@@ -188,6 +212,7 @@ onMounted(async () => {
 const getArticleList = async (type = 'search') => {
   const params = {
     search: searchKey.value.trim(),
+    tagIdList: tagListSelected.value.map((tag) => tag.id),
     pageNo: pageNo.value,
     pageSize: pageSize.value
   }
@@ -206,7 +231,7 @@ const getArticleList = async (type = 'search') => {
         createTime: new Date(item.article_create_time).getTime(),
         updateTime: new Date(item.article_update_time).getTime(),
         desc: item.article_description,
-        tags: [],
+        tags: item.categories,
         view: item.article_view,
         comments: item.comments,
         like: item.likes,
@@ -234,15 +259,11 @@ const copy = (content: string) => {
 }
 
 /** 点击文章类型tag */
-const clickTag = (tag: any) => {
+const clickTag = (tag: TagSelect) => {
   tag.selected = !tag.selected
   if (tag.selected) {
     const newTag = {
-      label: tag.label,
-      code: tag.code,
-      color: tag.color,
-      icon: tag.icon,
-      iconColor: tag.iconColor,
+      ...tag,
       selected: true
     }
     tagListSelected.value.push(newTag)

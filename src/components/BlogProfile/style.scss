@@ -1,6 +1,7 @@
 .blog-profile-wrapper {
   position: relative;
   animation: zoomIn 0.5s ease;
+  height: 405px;
   @keyframes zoomIn {
     0% {
       scale: 0;
@@ -77,5 +78,11 @@
         margin-right: 5px;
       }
     }
+  }
+
+  .action-wrapper {
+    position: absolute;
+    width: 100%;
+    bottom: 0px;
   }
 }

@@ -26,6 +26,12 @@ class articleService {
     const url = baseURL + `/auth/cos/article-sign`
     return MyRequest.get<T>(url, params)
   }
+
+  /** 获取文章标签 */
+  public getArticleTagList<T>() {
+    const url = baseURL + '/article/get-article-categories'
+    return MyRequest.get<T>(url)
+  }
 }
 
 export default new articleService()

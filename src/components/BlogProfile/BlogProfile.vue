@@ -66,7 +66,7 @@
       />
       发布于{{ formatDate(articleProfile.createTime) }}
     </v-card-subtitle>
-    <v-card-text height="200" class="pt-1">
+    <v-card-text height="200" class="pt-1 pb-2">
       <div
         class="blog-profile-text"
         v-html="highLightWord(articleProfile.desc, highlightKey)"
@@ -84,7 +84,7 @@
         ><span class="tag-label">{{ tag.label }}</span>
       </v-chip>
     </div>
-    <v-card-actions style="justify-content: space-between">
+    <v-card-actions class="action-wrapper" style="justify-content: space-between">
       <div class="blog-profile-icon-wrapper">
         <div>
           <endocrine
@@ -139,14 +139,7 @@ import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { USER_ROLE_MAP } from '@/constants'
 import useArticleStore from '@/stores/modules/article'
-
-interface Tag {
-  label: string
-  color: string
-  icon: string
-  iconColor: string
-  code: string
-}
+import { type Tag } from '@/views/Home/Home.vue'
 
 interface ArticleProfile {
   articleId: string
@@ -188,6 +181,7 @@ const edit = () => {
 
 /** 删除文章 */
 const deleteArticle = async () => {
+  console.log('articleProfile.articleId', articleProfile.articleId)
   const res = await articleStore.deleteArticle(Number(articleProfile.articleId))
   if (res && res.result_code === 'success') {
     ElMessage.success('删除成功')
