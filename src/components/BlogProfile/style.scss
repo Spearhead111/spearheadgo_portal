@@ -30,6 +30,7 @@
   }
 
   .profile-img {
+    cursor: pointer;
     &::before {
       position: absolute;
       width: 100%;
@@ -58,6 +59,9 @@
     display: flex;
     justify-content: flex-start;
     margin: 0 10px;
+    position: absolute;
+    bottom: 55px;
+    left: 5px;
     .v-chip {
       margin-right: 5px;
       cursor: pointer;

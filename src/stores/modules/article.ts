@@ -34,6 +34,18 @@ const useArticleStore = defineStore('article', {
     async getArticleTagList() {
       const res = await articleService.getArticleTagList()
       return res
+    },
+
+    /** 创建新文章 */
+    async createArticle(params: any) {
+      const res = await articleService.createArticle(params)
+      return res
+    },
+
+    /** 更新新文章 */
+    async updateArticle(params: any) {
+      const res = await articleService.updateArticle(params)
+      return res
     }
   }
 })

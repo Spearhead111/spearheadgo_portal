@@ -59,11 +59,11 @@
       </div>
     </div>
     <v-container class="blog-content-wrapper">
-      <div>
+      <!-- <div>
         <star-one theme="filled" size="24" fill="#fcd53f" :strokeWidth="2" />
         <star-one theme="filled" size="24" fill="#fcd53f" :strokeWidth="2" />
         <star-one theme="filled" size="24" fill="#fcd53f" :strokeWidth="2" />
-      </div>
+      </div> -->
       <h2 class="blog-subtitle">
         {{ blogInfoDetail.subtitle }}
       </h2>

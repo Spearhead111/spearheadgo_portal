@@ -32,6 +32,26 @@ class articleService {
     const url = baseURL + '/article/get-article-categories'
     return MyRequest.get<T>(url)
   }
+
+  /** 发布文章 */
+  public createArticle<T>(params: any) {
+    const url = baseURL + '/article/create-article'
+    return MyRequest.post<T>(url, params, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+  }
+
+  /** 更新文章 */
+  public updateArticle<T>(params: any) {
+    const url = baseURL + `/article/${params.articleId}/update-article`
+    return MyRequest.post<T>(url, params.body, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+  }
 }
 
 export default new articleService()

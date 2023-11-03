@@ -120,14 +120,14 @@ class Request {
     return this.service.get(url, { params, ...config })
   }
 
-  post<T>(url: string, params?: object, config?: object): Promise<ResultData<T>> {
-    return this.service.post(url, params, config)
+  post<T>(url: string, data?: object, config?: object): Promise<ResultData<T>> {
+    return this.service.post(url, data, config)
   }
-  put<T>(url: string, params?: object): Promise<ResultData<T>> {
-    return this.service.put(url, params)
+  put<T>(url: string, data?: object): Promise<ResultData<T>> {
+    return this.service.put(url, data)
   }
-  delete<T>(url: string, params?: object): Promise<ResultData<T>> {
-    return this.service.delete(url, { params })
+  delete<T>(url: string, data?: object): Promise<ResultData<T>> {
+    return this.service.delete(url, { data })
   }
 }
 

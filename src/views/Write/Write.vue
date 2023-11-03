@@ -147,7 +147,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import './style.scss'
 import { debounce, throttle } from 'lodash'
@@ -160,6 +160,7 @@ import useArticleStore from '@/stores/modules/article'
 import useUserStore from '@/stores/modules/user'
 import { type Tag, type TagSelect } from '../Home/Home.vue'
 import { readonly } from 'vue'
+import router from '@/router'
 
 const { getUserId } = useUserStore()
 const articleStore = useArticleStore()
@@ -186,7 +187,7 @@ export interface BlogInfo {
   title: string
   subtitle: string
   content: string
-  banner: string
+  banner: string | File
   desc: string
   tags: Tag[]
   commentCount: number
@@ -314,13 +315,6 @@ const previewBlog = async () => {
   //   ElMessage.error('请填写完整文章信息')
   //   return
   // }
-  // const params = {
-  //   blogTitle: blogTitle.value,
-  //   blogSubtitle: blogSubtitle.value,
-  //   blogContent: blogContent.value,
-  //   blogBanner: blogBanner.value,
-  //   blogTags: blogTags.value
-  // }
   // console.log(params, '预览文章！！！')
   previewBlogDialogVisible.value = true
 }
@@ -375,10 +369,51 @@ const submitBlog = async () => {
   if (!valid) {
     return
   }
-  console.log(blogInfo.value)
   publishLoading.value = true
-  // TODO 发请求 更新/发布文章
+
+  const formData = new FormData()
+  formData.append('title', blogInfo.value.title)
+  formData.append('subtitle', blogInfo.value.subtitle)
+  formData.append('content', blogInfo.value.content)
+  // 判断有没有选择封面图片文件，新建文件必须要选择，更新可以不选择(就是不更改，还是之前的imgUrl)
+  if (typeof blogInfo.value.banner !== 'string') {
+    const fileType = (blogInfo.value.banner as File).name.split('.').pop() as string
+    formData.append('banner', new Blob([blogInfo.value.banner as File]))
+    formData.append('fileType', fileType)
+  } else {
+    formData.append('banner', blogInfo.value.banner)
+  }
+  formData.append('tags', JSON.stringify(blogInfo.value.tags))
+  formData.append('desc', blogInfo.value.desc)
+  if (isCreate.value) {
+    // 发布新文章
+    const res = await articleStore.createArticle(formData)
+    if (res && res.result_code === 'success') {
+      ElMessage.success('发布文章成功')
+      // 更新文章成功跳转到文章详情页面
+      nextTick(() => routeToArticleDetail(String((res.data as any).articleId)))
+    } else {
+    }
+  } else {
+    // 更新文章
+    const res = await articleStore.updateArticle({ articleId: articleId.value, body:formData })
+    if (res && res.result_code === 'success') {
+      ElMessage.success('更新文章成功')
+      // 更新文章成功跳转到文章详情页面
+      nextTick(() => routeToArticleDetail(String(articleId.value)))
+    } else {
+    }
+    console.log(formData.get('banner'))
+  }
   publishLoading.value = false
+}
+
+/**
+ * 跳转到文章详情的路由
+ * @param articleId 文章ID
+ */
+const routeToArticleDetail = (articleId: string | number) => {
+  router.push({ name: 'ArticleDetail', query: { articleId } })
 }
 
 /** 防抖发布文章 */

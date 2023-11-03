@@ -47,7 +47,13 @@
         </template>
       </v-tooltip>
     </div>
-    <v-img class="align-end text-white profile-img" height="200" :src="articleProfile.banner" cover>
+    <v-img
+      class="align-end text-white profile-img"
+      height="200"
+      :src="articleProfile.banner"
+      cover
+      @click="showMore"
+    >
       <v-card-title
         v-html="highLightWord(articleProfile.title, highlightKey)"
         style="position: relative; z-index: 10"

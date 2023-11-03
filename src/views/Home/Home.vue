@@ -210,12 +210,14 @@ const getArticleTagList = async () => {
  * @param type 判断是搜索还是查询更多文章
  */
 const getArticleList = async (type = 'search') => {
+  searchArticleLoading.value = true
   const params = {
     search: searchKey.value.trim(),
-    tagIdList: tagListSelected.value.map((tag) => tag.id),
+    tagIdListStr: tagListSelected.value.map((tag) => tag.id).join(','),
     pageNo: pageNo.value,
     pageSize: pageSize.value
   }
+  console.log(params)
   highlightKey.value = params.search
   const res = await articleStore.getArticleList(params)
   if (res && res.result_code === 'success') {
@@ -241,6 +243,7 @@ const getArticleList = async (type = 'search') => {
     })
   } else {
   }
+  searchArticleLoading.value = false
 }
 
 /** 删除完文章更新一下文章列表 */
@@ -305,11 +308,9 @@ const searchArticle = async () => {
   if (!valid) {
     return
   }
-  searchArticleLoading.value = true
   pageNo.value = 1
   pageSize.value = 6
   await getArticleList()
-  searchArticleLoading.value = false
 }
 
 /** 防抖搜索文章 */
