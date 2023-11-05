@@ -10,9 +10,40 @@
       <li
         v-for="(menuItem, index) in HEAD_MENU"
         v-auth="menuItem.auth"
-        @click="routerJump(menuItem.path)"
+        :class="{
+          'submenu-item': true,
+          'submenu-selected': selectedSubMenu.split('-').includes(menuItem.submenuName)
+        }"
       >
-        <span>{{ menuItem.des }}</span>
+        <v-menu open-on-hover open-delay="150" close-delay="0">
+          <template v-slot:activator="{ props }">
+            <v-btn variant="text" v-bind="props" @click="routerJump(menuItem)">
+              <span class="submeun-text" style="font-size: 16px; font-weight: bold">{{
+                menuItem.des
+              }}</span>
+            </v-btn>
+          </template>
+
+          <v-list v-if="menuItem.children.length" style="padding: 0">
+            <v-list-item
+              v-for="(subSubmenu, idx) in menuItem.children"
+              :key="idx"
+              style="padding: 0"
+            >
+              <v-btn variant="text" @click="routerJump(subSubmenu)">
+                <span
+                  :class="{
+                    'submenu-selected': selectedSubMenu === subSubmenu.submenuName
+                  }"
+                  >{{ subSubmenu.des }}</span
+                >
+              </v-btn>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+        <!-- <v-btn variant="text" @click="routerJump(menuItem)">
+          <span style="font-size: 16px; font-weight: bold">{{ menuItem.des }}</span>
+        </v-btn> -->
       </li>
       <!-- 用户头像菜单 -->
       <v-menu rounded>
@@ -65,7 +96,7 @@ import { storeToRefs } from 'pinia'
 const userStore = useUserStore()
 
 // useStore才是响应式的，如果直接从useStore中拿userInfo会丢失响应式，用storeToRefs来将userStore解构后的state也是响应式
-const { userInfo } = storeToRefs(userStore)
+const { userInfo, selectedSubMenu } = storeToRefs(userStore)
 const router = useRouter()
 const showHeader = ref(true) // 是否显示头部
 const lastScrollPosition = ref(window.scrollY) // 最后一次的滚动位置
@@ -74,6 +105,7 @@ onMounted(() => {
   window.addEventListener('scroll', scrollEvent)
 })
 
+/** 判断header是否显示 */
 const scrollEvent = () => {
   const currentScrollPosition = window.scrollY
   // 用最后一次的滚动位置和当前的滚动位置进行比较
@@ -87,12 +119,17 @@ const scrollEvent = () => {
 
 /**
  * @description :
- * @param {string} path // 路由跳转路径
+ * @param {any} item // 子菜单的配置信息
  * @return {*}
  */
-const routerJump = (path: string): void => {
-  if (!path) return
-  router.push(path)
+const routerJump = (item: any): void => {
+  console.log(item)
+  if (!item.path) return
+  selectedSubMenu.value = item.submenuName
+  console.log(selectedSubMenu.value)
+  router.push(item.path)
+  // 将当前的菜单选择存储到sessionStorage中
+  sessionStorage.setItem('selectedSubMenu', selectedSubMenu.value)
 }
 
 const toLogin = () => {

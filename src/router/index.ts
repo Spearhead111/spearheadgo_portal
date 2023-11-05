@@ -1,4 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import AdminUsersVue from '@/views/Admin/Admin-Users/AdminUsers.vue'
+import AdminArticlesVue from '@/views/Admin/Admin-Articles/AdminArticles.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -28,6 +30,22 @@ const router = createRouter({
       path: '/login',
       name: 'Login',
       component: () => import('@/views/Login/Login.vue')
+    },
+    {
+      path: '/admin',
+      name: 'Admin',
+      children: [
+        {
+          path: 'users',
+          name: 'AdminUsers',
+          component: AdminUsersVue
+        },
+        {
+          path: 'articles',
+          name: 'AdminArticles',
+          component: AdminArticlesVue
+        }
+      ]
     }
   ],
   // 跳转路由后滚动条置顶

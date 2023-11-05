@@ -109,6 +109,13 @@
               left: 50%;
               top: 50%;
               transform: translate(-50%, -50%);
+              overflow: hidden;
+              img {
+                transition: all 0.5s ease;
+                &:hover {
+                  scale: 1.2;
+                }
+              }
             }
           }
           h2 {

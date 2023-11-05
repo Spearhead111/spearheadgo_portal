@@ -11,7 +11,8 @@ interface LoginResponseData {
 const useUserStore = defineStore('user', {
   state: () => ({
     token: localStorage.getItem('accessToken') || '',
-    userInfo: JSON.parse(localStorage.getItem('userInfo') || '{}')
+    userInfo: JSON.parse(localStorage.getItem('userInfo') || '{}'),
+    selectedSubMenu: sessionStorage.getItem('selectedSubMenu') || ''
   }),
 
   getters: {
@@ -41,16 +42,12 @@ const useUserStore = defineStore('user', {
 
     // 注册
     async register(params: any) {
-      // try {
-      // const response = await userService.register(params)
-      // if (response) {
-      //   const data = response
-      //   return data
-      // }
-      // } catch (e) {
-      //   return e
-      // }
       return await userService.register(params)
+    },
+
+    /** 获取用户 */
+    async getAllUserList(params: any) {
+      return await userService.getAllUserList(params)
     },
 
     // 注销

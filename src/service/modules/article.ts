@@ -21,6 +21,12 @@ class articleService {
     return MyRequest.get<T>(url, params)
   }
 
+  /** 删除文章 */
+  public recoverArticle<T>(params: any) {
+    const url = baseURL + `/article/${params.articleId}/recover-article`
+    return MyRequest.get<T>(url, params)
+  }
+
   /** 校验上传权限 */
   public uploadArticleImgPermission<T>(params: any) {
     const url = baseURL + `/auth/cos/article-sign`
@@ -51,6 +57,24 @@ class articleService {
         'Content-Type': 'multipart/form-data'
       }
     })
+  }
+
+  /** 获取文章列表, 管理页面调用 */
+  public getAdminArticleList<T>(params: any) {
+    const url = baseURL + '/article/admin-article-list'
+    return MyRequest.get<T>(url, params)
+  }
+
+  /** 新建文章标签 */
+  public createArticleTag<T>(params: any) {
+    const url = baseURL + '/article/create-category'
+    return MyRequest.post<T>(url, params)
+  }
+
+  /** 更新文章标签 */
+  public updateArticleTag<T>(params: any) {
+    const url = baseURL + '/article/update-category'
+    return MyRequest.post<T>(url, params)
   }
 }
 

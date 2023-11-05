@@ -4,7 +4,7 @@ import { defineStore } from 'pinia'
 const useArticleStore = defineStore('article', {
   state: () => ({}),
   actions: {
-    /** 获取文章列表 */
+    /** 获取文章列表，页面展示用 */
     async getArticleList(params: any) {
       const res = await articleService.getArticleList(params)
       return res
@@ -21,6 +21,13 @@ const useArticleStore = defineStore('article', {
     async deleteArticle(id: number) {
       const params = { articleId: id }
       const res = await articleService.deleteArticle(params)
+      return res
+    },
+
+    /** 恢复文章 */
+    async recoverArticle(id: number) {
+      const params = { articleId: id }
+      const res = await articleService.recoverArticle(params)
       return res
     },
 
@@ -45,6 +52,24 @@ const useArticleStore = defineStore('article', {
     /** 更新新文章 */
     async updateArticle(params: any) {
       const res = await articleService.updateArticle(params)
+      return res
+    },
+
+    /** 获取文章列表，管理页面用 */
+    async getAdminArticleList(params: any) {
+      const res = await articleService.getAdminArticleList(params)
+      return res
+    },
+
+    /** 新建文章标签 */
+    async createArticleTag(params: any) {
+      const res = await articleService.createArticleTag(params)
+      return res
+    },
+
+    /** 更新文章标签 */
+    async updateArticleTag(params: any) {
+      const res = await articleService.updateArticleTag(params)
       return res
     }
   }

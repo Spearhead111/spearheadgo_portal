@@ -367,7 +367,7 @@ const imgDel = async (pos: string, file: File) => {
 const submitBlog = async () => {
   const { valid } = await form.value.validate()
   if (!valid) {
-    return
+    return ElMessage.error('请填写完整信息')
   }
   publishLoading.value = true
 
@@ -396,7 +396,7 @@ const submitBlog = async () => {
     }
   } else {
     // 更新文章
-    const res = await articleStore.updateArticle({ articleId: articleId.value, body:formData })
+    const res = await articleStore.updateArticle({ articleId: articleId.value, body: formData })
     if (res && res.result_code === 'success') {
       ElMessage.success('更新文章成功')
       // 更新文章成功跳转到文章详情页面

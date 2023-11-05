@@ -84,6 +84,7 @@
   box-shadow: none !important;
   border: 0;
   background-color: rgb(var(--v-theme-background)) !important;
+  color: var(--v-theme-on-primary) !important ; // 定义颜色随主题变化
   .v-show-content {
     padding: 0 !important;
     background-color: rgb(var(--v-theme-background)) !important;

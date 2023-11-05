@@ -40,18 +40,19 @@
 
 // 自定义一下elmessage的全局样式
 .el-message {
+  z-index: 99999 !important;
   color: #ffffff !important;
-  background-color: var(--el-message-text-color);
-  border: 2px solid var(--el-message-text-color);
+  background-color: var(--el-message-text-color) !important;
+  border: 2px solid var(--el-message-text-color) !important;
   .el-icon,
   .el-message__content {
     color: #ffffff !important;
   }
   .el-icon {
-    font-size: 18px;
+    font-size: 18px !important;
   }
   > p {
-    font-weight: bold;
-    font-size: 16px;
+    font-weight: bold !important;
+    font-size: 16px !important;
   }
 }

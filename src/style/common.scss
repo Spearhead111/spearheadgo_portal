@@ -27,3 +27,24 @@ $baseFontFamily:
 #app {
   background-color: rgb(var(--v-theme-background));
 }
+
+// 动画
+/* shakeUp向上抖动 start */
+@keyframes shakeUp {
+  $translateY: 5px; // 定义距离变量在 @keyframes 内部
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-$translateY); // 使用传递的距离参数
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@mixin applyShakeUpAnimation($duration: 0.3s, $iteration: linear) {
+  animation: shakeUp $duration $iteration;
+}
+
+/* shakeUp向上抖动 end */

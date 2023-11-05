@@ -20,6 +20,12 @@ class userService {
     const url = baseURL + '/auth/verify'
     return MyRequest.get<T>(url)
   }
+
+  /** 获取所有用户列表 */
+  public getAllUserList<T>(params: any) {
+    const url = baseURL + '/user/get-user-list'
+    return MyRequest.get<T>(url, params)
+  }
 }
 
 export default new userService()

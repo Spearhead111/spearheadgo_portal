@@ -23,22 +23,18 @@
     display: flex;
     align-items: center;
     height: 100%;
-    li {
+    .submenu-item {
       display: flex;
       align-items: center;
       position: relative;
-      margin-right: 30px;
-      cursor: pointer;
-      span {
-        font-size: 18px;
-        // font-weight: bold;
-        font-family: FZKaTong-M19S;
-        color: $white;
-        transition: $transitionAll;
-      }
-      ::before {
+      font-family: FZKaTong-M19S;
+      color: #eff2f4;
+      transition: $transitionAll;
+      > ::before {
         content: '';
         position: absolute;
+        left: 50%;
+        transform: translate(-50%, 0);
         bottom: -5px;
         width: 0;
         height: 5px;
@@ -47,17 +43,24 @@
         transition: $transitionAll;
       }
       &:hover {
-        span {
-          color: $orange;
-        }
+        color: $orange;
         ::before {
-          width: 100%;
+          width: 80%;
+        }
+
+        .submeun-text {
+          @include applyShakeUpAnimation(0.3s, linear); // 自定持续时间和重复次数
         }
       }
     }
+
     .user-avatar-menu {
       margin-right: 30px;
       cursor: pointer;
+    }
+
+    .submenu-selected {
+      color: $orange;
     }
   }
 }
@@ -68,4 +71,7 @@
   &:hover {
     background-color: var(--header-bg-color);
   }
+}
+.submenu-selected {
+  color: $orange;
 }

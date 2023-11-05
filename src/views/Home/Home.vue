@@ -65,7 +65,7 @@
           <v-card class="tag-tabs mt-4">
             <v-tabs bg-color="deep-yellow-darken-4" show-arrows multiple center-active>
               <v-chip
-                class="ma-2 tag-tab-item"
+                class="ma-2 tag-tab-item rounded-lg"
                 :color="tagItem.color"
                 @click="clickTag(tagItem)"
                 :variant="tagItem.selected ? 'elevated' : 'outlined'"

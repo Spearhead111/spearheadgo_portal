@@ -146,6 +146,8 @@ import { ElMessage } from 'element-plus'
 import { USER_ROLE_MAP } from '@/constants'
 import useArticleStore from '@/stores/modules/article'
 import { type Tag } from '@/views/Home/Home.vue'
+import { storeToRefs } from 'pinia'
+import useUserStore from '@/stores/modules/user'
 
 interface ArticleProfile {
   articleId: string
@@ -170,6 +172,7 @@ const { articleProfile, highlightKey } = defineProps<{
 
 const emit = defineEmits(['refresh'])
 
+const { selectedSubMenu } = storeToRefs(useUserStore())
 const router = useRouter()
 const articleStore = useArticleStore()
 const deleteDialog = ref(false) // 删除文章的二次确认dialog
@@ -183,11 +186,13 @@ const edit = () => {
       articleId: articleProfile.articleId
     }
   })
+  // 编辑文章暂时不属于header menu的某一项，所以清除menu的选中状态
+  selectedSubMenu.value = ''
+  sessionStorage.removeItem('selectedSubMenu')
 }
 
 /** 删除文章 */
 const deleteArticle = async () => {
-  console.log('articleProfile.articleId', articleProfile.articleId)
   const res = await articleStore.deleteArticle(Number(articleProfile.articleId))
   if (res && res.result_code === 'success') {
     ElMessage.success('删除成功')
@@ -205,5 +210,8 @@ const showMore = () => {
       articleId: articleProfile.articleId
     }
   })
+  // 查看文章暂时不属于header menu的某一项，所以清除menu的选中状态
+  selectedSubMenu.value = ''
+  sessionStorage.removeItem('selectedSubMenu')
 }
 </script>
