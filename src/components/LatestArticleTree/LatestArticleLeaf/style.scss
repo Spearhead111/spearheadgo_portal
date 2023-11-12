@@ -1,0 +1,26 @@
+.latest-article-leaf-wrapper {
+  width: calc(50% - 1px);
+  height: 130px;
+  box-sizing: content-box;
+  .top-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .bot-content {
+    display: flex;
+    flex-direction: column;
+    > .v-chip {
+      cursor: pointer;
+    }
+    .article-title {
+      text-align: center;
+      padding: 0 5px;
+      width: 110px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+}

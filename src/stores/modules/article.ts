@@ -71,6 +71,36 @@ const useArticleStore = defineStore('article', {
     async updateArticleTag(params: any) {
       const res = await articleService.updateArticleTag(params)
       return res
+    },
+
+    /** 删除文章标签 */
+    async deleteArticleTag(params: any) {
+      const res = await articleService.deleteArticleTag(params)
+      return res
+    },
+
+    /** 获取最新发布的文章 */
+    async getLatestArticle(params: any) {
+      const res = await articleService.getLatestArticle(params)
+      return res
+    },
+
+    /** 获取文章评论 */
+    async getArticleComment(params: any) {
+      const res = await articleService.getArticleComment(params)
+      return res
+    },
+
+    /** 发表文章评论 */
+    async sendArticleComment(params: any) {
+      const res = await articleService.sendArticleComment(params)
+      return res
+    },
+
+    /** 发表文章评论的回复 */
+    async sendArticleCommentReply(params: any) {
+      const res = await articleService.sendArticleCommentReply(params)
+      return res
     }
   }
 })

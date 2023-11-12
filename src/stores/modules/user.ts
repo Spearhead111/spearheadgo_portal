@@ -16,7 +16,7 @@ const useUserStore = defineStore('user', {
   }),
 
   getters: {
-    getRole: (state) => state.userInfo?.role || USER_ROLE_MAP.GUEST,
+    getRole: (state): string => state.userInfo?.role || USER_ROLE_MAP.GUEST,
     getUserId: (state) => (state.userInfo?.id as string) || ''
   },
 
@@ -56,6 +56,11 @@ const useUserStore = defineStore('user', {
       this.userInfo = {}
       localStorage.removeItem('accessToken')
       localStorage.removeItem('userInfo')
+    },
+
+    /** 更改用户状态 */
+    async changeUserStatus(params: any) {
+      return await userService.changeUserStatus(params)
     }
   }
 })

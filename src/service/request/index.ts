@@ -12,8 +12,8 @@ import { decodeToken } from '@/utils'
 
 // request interface，包含 data
 export class ResultData<T = any> {
-  result_code?: string
-  message?: string
+  result_code: string
+  message: string
   data?: T
 }
 

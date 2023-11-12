@@ -48,10 +48,11 @@
     margin-top: 20px;
     display: flex;
   }
-  .article-table {
-    .el-table__header .cell {
-      font-weight: bold;
-    }
+}
+
+.article-table {
+  .el-table__header .cell {
+    font-weight: bold;
   }
 }
 
@@ -67,6 +68,9 @@
       > .v-chip {
         cursor: pointer;
         animation: tagItem 3s linear infinite;
+        &:hover {
+          animation-play-state: paused;
+        }
         @keyframes tagItem {
           0% {
             transform: translateX(0);

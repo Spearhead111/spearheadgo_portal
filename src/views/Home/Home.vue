@@ -51,6 +51,7 @@
               </v-snackbar>
             </div>
           </v-sheet>
+          <LatestArticleTree class="mt-15 width-100"></LatestArticleTree>
         </v-container>
         <!-- 右边栏 -->
         <v-container class="right-column pt-5">
@@ -122,6 +123,10 @@
               />
             </div>
           </div>
+          <div class="more-btn" @click="findMoreArticles" v-if="articleProfileTotal">
+            <div class="mask"></div>
+            <span>{{ hasNext ? 'find more' : '暂时没有了' }}</span>
+          </div>
         </v-container>
       </v-container>
     </div>
@@ -137,6 +142,9 @@ import { HOME_PAGE_BANNER, BANNER_WAVE1, BANNER_WAVE2, weChatImg, QQImg } from '
 import { debounce, throttle } from 'lodash'
 import { onMounted } from 'vue'
 import useArticleStore from '@/stores/modules/article'
+import { errorCodeMap } from '@/utils'
+import { ElMessage } from 'element-plus'
+import LatestArticleTree from '@/components/LatestArticleTree/LatestArticleTree.vue'
 
 const articleStore = useArticleStore()
 const MY_GITHUB_URL = 'https://github.com/Spearhead111'
@@ -177,11 +185,13 @@ const searchKey = ref('') // 搜索关键字
 const tagListSelected = ref<TagSelect[]>([]) // 选中的文章类型tag列表
 const searchArticleLoading = ref(false) // 搜索文章loading
 const articleProfileData = ref<ArticleProfile[]>([])
+const articleProfileTotal = ref(0) // 文章总数
 const highlightKey = ref('') // 高亮关键字，用于高亮搜索的关键字
 const form = ref()
 const searchKeyRules = [(v: string | any[]) => v.length <= 15 || '最多支持搜索15个字符']
 const pageNo = ref(1)
 const pageSize = ref(6)
+const hasNext = ref(true) // 获取文章接口是否被截断(后面是否还有文章)
 
 onMounted(async () => {
   await getArticleTagList()
@@ -202,6 +212,8 @@ const getArticleTagList = async () => {
         selected: false
       }
     })
+  } else {
+    ElMessage(errorCodeMap(res.result_code, res.message))
   }
 }
 
@@ -217,12 +229,13 @@ const getArticleList = async (type = 'search') => {
     pageNo: pageNo.value,
     pageSize: pageSize.value
   }
-  console.log(params)
   highlightKey.value = params.search
   const res = await articleStore.getArticleList(params)
   if (res && res.result_code === 'success') {
-    const { list, total } = res.data as any
+    const { list, total, has_next } = res.data as any
     // 判断是搜索还是查询更多
+    hasNext.value = has_next
+    articleProfileTotal.value = total
     type === 'search' && (articleProfileData.value = [])
     ;(list as any[]).forEach((item: any) => {
       articleProfileData.value.push({
@@ -242,6 +255,7 @@ const getArticleList = async (type = 'search') => {
       })
     })
   } else {
+    ElMessage(errorCodeMap(res.result_code, res.message))
   }
   searchArticleLoading.value = false
 }
@@ -311,6 +325,17 @@ const searchArticle = async () => {
   pageNo.value = 1
   pageSize.value = 6
   await getArticleList()
+}
+
+/** 更多文章 */
+const findMoreArticles = () => {
+  // 判断还有没有更多文章
+  if (!hasNext.value) {
+    return
+  }
+  pageNo.value += 1
+  // 获取更多文章
+  getArticleList('more')
 }
 
 /** 防抖搜索文章 */

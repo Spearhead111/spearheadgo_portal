@@ -1,0 +1,350 @@
+<template>
+  <v-card elevation="8">
+    <v-card-item>
+      <v-card-title class="text-center">
+        <v-icon icon="mdi-comment-text-multiple-outline"></v-icon> Comments
+      </v-card-title>
+      <v-card-subtitle> 欢迎交流 </v-card-subtitle>
+      <v-form ref="formRef" class="mb-4" style="text-align: end">
+        <v-textarea
+          v-model="content"
+          :rules="rules.content"
+          variant="outlined"
+          rows="2"
+          density="compact"
+          counter="255"
+          placeholder="一起交流一下吧..."
+        ></v-textarea>
+        <v-btn color="deep-purple-accent-4" @click="sendComment('comment')">评论</v-btn>
+      </v-form>
+      <div class="comment-list-box">
+        <div class="comment-list-item" v-for="(comment, index) in articleComments">
+          <div class="flex py-4">
+            <v-avatar size="32">
+              <v-img cover :src="comment.commentByAvatar"></v-img>
+            </v-avatar>
+            <div class="primary-comment-wrapper">
+              <div class="comment-header">
+                <div class="flex flex-row flex-1-1 justify-space-between mr-2">
+                  <div class="commenter-info">
+                    <span class="name">{{ comment.commentBy }}</span>
+                    <span v-if="articleAuthorId === comment.commentById" class="commenter-role"
+                      >作者</span
+                    >
+                    <span>{{ formatTime(comment.createTime, 'YYYY.MM.DD') }}</span>
+                  </div>
+                  <div class="comment-actions">
+                    <!-- 更多操作按钮 -->
+                    <v-menu
+                      attach="comment-actions"
+                      :offset-x="-100"
+                      open-on-hover
+                      open-delay="0"
+                      close-delay="0"
+                    >
+                      <template v-slot:activator="{ props }">
+                        <v-icon
+                          v-if="hasAuth(comment.commentById)"
+                          v-bind="props"
+                          icon="mdi-dots-horizontal"
+                          style="cursor: pointer"
+                        ></v-icon>
+                      </template>
+
+                      <v-list style="padding: 0">
+                        <v-list-item style="padding: 0">
+                          <v-btn variant="text" v-if="hasAuth(comment.commentById)"> 删除 </v-btn>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
+                    <!-- 回复按钮 -->
+                    <div style="cursor: pointer" @click="showReplyContent(comment.id)">
+                      <v-icon
+                        size="20"
+                        class="like-icon ma-0 mr-1"
+                        icon="mdi-comment-outline"
+                      ></v-icon
+                      >{{ replyContentShowMap.get(String(comment.id)) ? '收起' : '回复' }}
+                    </div>
+                  </div>
+                </div>
+                <span>
+                  <span v-if="comment.commentLikes">{{ comment.commentLikes }}</span>
+                  <v-icon class="like-icon" icon="mdi-thumb-up-outline" />
+                </span>
+              </div>
+              <div class="comment-content">{{ comment.content }}</div>
+              <v-form
+                v-if="replyContentShowMap.get(String(comment.id))"
+                ref="replyFormRef"
+                class="pb-3"
+                style="text-align: end"
+              >
+                <v-textarea
+                  v-model="replyContent"
+                  :rules="rules.content"
+                  variant="outlined"
+                  rows="2"
+                  density="compact"
+                  counter="255"
+                  :placeholder="`回复： ${comment.commentBy}`"
+                ></v-textarea>
+                <v-btn
+                  color="deep-orange-accent-4"
+                  rounded
+                  size="small"
+                  @click="sendComment('reply', comment.id, comment.id, true)"
+                  >评论</v-btn
+                >
+              </v-form>
+            </div>
+          </div>
+          <ul class="comment-reply-wrapper">
+            <template v-for="(replyComment, idx) in comment.replyComment">
+              <li class="comment-reply-item" v-if="comment.showAll || idx === 1">
+                <v-avatar size="24">
+                  <v-img cover :src="replyComment.commentByAvatar"></v-img>
+                </v-avatar>
+                <div class="primary-comment-wrapper secondly-comment-wrapper">
+                  <div class="comment-header">
+                    <div class="flex flex-row flex-1-1 justify-space-between mr-2">
+                      <div class="commenter-info">
+                        <span class="name">{{ replyComment.commentBy }}</span>
+                        <span
+                          v-if="articleAuthorId === replyComment.commentById"
+                          class="commenter-role"
+                          >{{ replyComment.commentBy }}</span
+                        >
+                        <span>回复</span>
+                        <span class="name">{{ replyComment.replyTo }}</span>
+                        <span>{{ formatTime(replyComment.createTime, 'YYYY.MM.DD') }}</span>
+                      </div>
+                      <div class="comment-actions">
+                        <!-- 更多操作按钮 -->
+                        <v-menu
+                          attach="comment-actions"
+                          :offset-x="-100"
+                          open-on-hover
+                          open-delay="0"
+                          close-delay="0"
+                        >
+                          <template v-slot:activator="{ props }">
+                            <v-icon
+                              v-if="hasAuth(replyComment.commentById)"
+                              v-bind="props"
+                              icon="mdi-dots-horizontal"
+                              style="cursor: pointer"
+                            ></v-icon>
+                          </template>
+
+                          <v-list style="padding: 0">
+                            <v-list-item style="padding: 0">
+                              <v-btn variant="text" v-if="hasAuth(replyComment.commentById)">
+                                删除
+                              </v-btn>
+                            </v-list-item>
+                          </v-list>
+                        </v-menu>
+                        <!-- 回复按钮 -->
+                        <div style="cursor: pointer" @click="showReplyContent(replyComment.id)">
+                          <v-icon
+                            size="20"
+                            class="like-icon ma-0 mr-1"
+                            icon="mdi-comment-outline"
+                          ></v-icon
+                          >{{ replyContentShowMap.get(String(replyComment.id)) ? '收起' : '回复' }}
+                        </div>
+                      </div>
+                    </div>
+                    <span>
+                      <span v-if="replyComment.commentLikes">{{ replyComment.commentLikes }}</span>
+                      <v-icon class="like-icon" icon="mdi-thumb-up-outline"></v-icon>
+                    </span>
+                  </div>
+                  <div class="comment-content">{{ replyComment.content }}</div>
+                  <v-form
+                    v-if="replyContentShowMap.get(String(replyComment.id))"
+                    ref="replyFormRef"
+                    class="pb-3"
+                    style="text-align: end"
+                  >
+                    <v-textarea
+                      v-model="replyContent"
+                      :rules="rules.content"
+                      variant="outlined"
+                      rows="2"
+                      density="compact"
+                      counter="255"
+                      :placeholder="`回复： ${'adas'}`"
+                    ></v-textarea>
+                    <v-btn
+                      color="deep-orange-accent-4"
+                      rounded
+                      size="small"
+                      @click="sendComment('reply', comment.id, replyComment.id, false)"
+                      >评论</v-btn
+                    >
+                  </v-form>
+                </div>
+              </li>
+            </template>
+            <v-chip
+              class="ml-6"
+              size="small"
+              v-if="!comment.showAll && comment.replyComment.length > 1"
+              @click="comment.showAll = true"
+            >
+              查看全部 {{ comment.replyComment.length }} 条评论
+              <v-icon end icon="mdi-chevron-down"></v-icon>
+            </v-chip>
+          </ul>
+        </div>
+      </div>
+    </v-card-item>
+  </v-card>
+</template>
+
+<script lang="ts" setup>
+import { ref, onMounted } from 'vue'
+import './style.scss'
+import { storeToRefs } from 'pinia'
+import useUserStore from '@/stores/modules/user'
+import { ElMessage } from 'element-plus'
+import { errorCodeMap, formatTime } from '@/utils'
+import useArticleStore from '@/stores/modules/article'
+import { USER_ROLE_MAP } from '@/constants'
+
+export interface ReplyComment {
+  id: number
+  content: string
+  commentBy: string
+  commentById: string
+  createTime: number
+  commentByAvatar: string
+  commentLikes: number
+  replyTo: string
+}
+
+export interface ArticleComments {
+  id: number // 文章评论
+  content: string // 评论内容
+  commentBy: string // 评论者
+  commentById: string // 评论者id
+  createTime: number // 评论时间
+  commentByAvatar: string // 评论人头像
+  commentLikes: number // 评论点赞数
+  replyComment: ReplyComment[] // 评论的回复
+  showAll: boolean
+}
+
+const props = withDefaults(
+  defineProps<{
+    articleId: string
+    articleAuthorId: string
+    articleComments: ArticleComments[]
+    articleCommentsCount: number
+  }>(),
+  {}
+)
+const emit = defineEmits(['refreshComment'])
+const articleStore = useArticleStore()
+const { getUserId, getRole } = storeToRefs(useUserStore())
+const content = ref('') // 评论内容
+const replyContent = ref('') // 回复评论内容
+const formRef = ref() // 评论的内容form
+const replyFormRef = ref() // 回复评论的内容form
+const replyContentShowMap = ref<Map<string, boolean>>(new Map<string, boolean>()) // 用于存储评论回复框是否展开
+const rules = ref<any>({
+  content: [
+    (v: string) => {
+      if (v && v.length > 255) {
+        return '评论内容不能超过255个字符'
+      }
+    }
+  ]
+})
+
+onMounted(() => {})
+
+/**
+ * 发送评论
+ * @param type 评论类型 评论文章/回复评论
+ * @param belongCommentId 属于哪个评论底下
+ * @param replyToCommentId 回复的评论
+ * @param isReplyToTop 回复的是不是一级评论
+ */
+const sendComment = async (
+  type: string,
+  belongCommentId?: string | number,
+  replyToCommentId?: string | number,
+  isReplyToTop?: boolean
+) => {
+  const comment = type === 'comment' ? content.value.trim() : replyContent.value.trim()
+  if (!comment) {
+    // 判断评论是否是空
+    return
+  } else if (!getUserId.value) {
+    // 判断是否登录，评论功能需要登录才能使用
+    return ElMessage.warning('请先登录')
+  } else if (comment.length > 255) {
+    return
+  }
+
+  let res: any
+  if (type === 'comment') {
+    // 直接评论文章
+    const params = {
+      content: comment,
+      articleId: props.articleId
+    }
+    res = await articleStore.sendArticleComment(params)
+  } else {
+    // 对文章的评论进行评论
+    const params = {
+      content: comment,
+      articleId: props.articleId,
+      belongCommentId: belongCommentId,
+      replyToCommentId: replyToCommentId,
+      isReplyToTop: isReplyToTop ? 1 : 0
+    }
+    res = await articleStore.sendArticleCommentReply(params)
+  }
+
+  if (res && res.result_code === 'success') {
+    ElMessage.success('评论成功')
+    // 评论成功，重置表单
+    content.value = ''
+    replyContent.value = ''
+    replyContentShowMap.value = new Map<string, boolean>()
+    // 刷新评论
+    emit('refreshComment')
+  } else {
+    errorCodeMap(res.result_code, res.message || '评论失败')
+  }
+}
+
+/** 展开和关闭当前的评论回复框 */
+const showReplyContent = (id: string | number) => {
+  id = String(id)
+  replyContent.value = ''
+  if (replyContentShowMap.value.has(id)) {
+    // 如果有记录，说明之前是展开的(之前就是操作的这一个)。现在将其关闭
+    const val = replyContentShowMap.value.get(id)
+    replyContentShowMap.value.set(id, !val)
+  } else {
+    // 如果没记录，说明之前操作的是别的评论，将map重置然后记录一个打开的
+    replyContentShowMap.value = new Map<string, boolean>()
+    replyContentShowMap.value.set(id, true)
+  }
+}
+
+/** 当前用户是否有权限删除评论 */
+const hasAuth = (commentById: string) => {
+  // 只有ROOT用户或者文章作者或者评论者本人能删除评论
+  return (
+    getRole.value === USER_ROLE_MAP.ROOT ||
+    getUserId.value === props.articleAuthorId ||
+    getUserId.value === commentById
+  )
+}
+</script>

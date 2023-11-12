@@ -34,7 +34,12 @@
             >
               <!-- 选中的tag(chip)在select框中的插槽设置 -->
               <template v-slot:chip="{ props, item, index }">
-                <v-chip v-if="index < 2" v-bind="props" :color="item.raw.color" variant="elevated"
+                <v-chip
+                  v-if="index < 2"
+                  v-bind="props"
+                  :color="item.raw.color"
+                  variant="elevated"
+                  elevation="0"
                   ><v-icon start :color="item.raw.iconColor" :icon="item.raw.icon"></v-icon
                   ><span class="tag-label">{{ item.raw.label }}</span></v-chip
                 >
@@ -47,7 +52,13 @@
               <!-- 选中的tag(chip)在select下拉框中的插槽设置 -->
               <template v-slot:item="{ props, item }">
                 <v-list-item v-bind="props">
-                  <v-chip :color="item.raw.color" variant="elevated">
+                  <v-chip
+                    class="rounded-lg"
+                    elevation="0"
+                    size="small"
+                    :color="item.raw.color"
+                    variant="elevated"
+                  >
                     <v-icon start :color="item.raw.iconColor" :icon="item.raw.icon"> </v-icon>
                     <span class="tag-label">{{ item.raw.label }}</span>
                   </v-chip>
@@ -73,7 +84,13 @@
               variant="underlined"
             >
               <template v-slot:chip="{ props, item, index }">
-                <v-chip v-if="index < 2" v-bind="props" :text="item.raw.nickname"></v-chip>
+                <v-chip
+                  v-if="index < 2"
+                  elevation="0"
+                  v-bind="props"
+                  :text="item.raw.nickname"
+                ></v-chip>
+
                 <!-- 超过两个省略 -->
                 <span v-if="index === 2" class="text-grey text-caption align-self-center">
                   (+{{ blogAuthor.length - 2 }} 其他)
@@ -134,6 +151,7 @@
             v-for="tag in scope.row.tags"
             :color="tag.color"
             variant="elevated"
+            elevation="0"
             size="small"
             label
           >
@@ -148,6 +166,7 @@
             <v-chip
               size="small"
               :color="scope.row.isActivated === 1 ? 'teal-lighten-1' : 'brown-lighten-2'"
+              elevation="0"
               variant="elevated"
             >
               {{ scope.row.isActivated === 1 ? '上线中' : '被删除' }}
@@ -305,7 +324,7 @@ import { onMounted, ref } from 'vue'
 import { type Tag } from '@/views/Home/Home.vue'
 import useArticleStore from '@/stores/modules/article'
 import useUserStore from '@/stores/modules/user'
-import { formatDate } from '@/utils'
+import { formatDate, errorCodeMap } from '@/utils'
 import router from '@/router'
 import { Tips } from '@icon-park/vue-next'
 import { ElMessage } from 'element-plus'
@@ -324,7 +343,7 @@ interface ArticleData {
   isActivated: number
 }
 
-interface UserInfo {
+export interface UserInfo {
   id: string
   username: string
   nickname: string
@@ -367,13 +386,14 @@ const getUserList = async () => {
     pageNo: 1,
     pageSize: 100000,
     search: '',
-    isActivated: -1, // -1 查询所有用户
+    status: -1, // -1 查询所有用户
     role: ''
   }
   const res = await userStore.getAllUserList(params)
   if (res && res.result_code === 'success') {
     userList.value = (res.data as any).list
   } else {
+    ElMessage(errorCodeMap(res.result_code, res.message))
   }
 }
 
@@ -393,6 +413,8 @@ const getArticlesData = async () => {
     const { list, total } = res.data as { list: ArticleData[]; total: number }
     articleDataList.value = list
     articleDataTotal.value = total
+  } else {
+    ElMessage(errorCodeMap(res.result_code, res.message))
   }
   loading.value = false
 }
@@ -403,6 +425,8 @@ const getArticleTagList = async () => {
   if (res && res.result_code === 'success') {
     const { list, total } = res.data as { list: Tag[]; total: number }
     tagList.value = list
+  } else {
+    ElMessage(errorCodeMap(res.result_code, res.message))
   }
 }
 
@@ -472,6 +496,7 @@ const recoverItem = async () => {
     pageNo.value = 1
     await getArticlesData()
   } else {
+    ElMessage(errorCodeMap(res.result_code, res.message))
   }
 }
 
@@ -491,6 +516,7 @@ const deleteItem = async () => {
     pageNo.value = 1
     await getArticlesData()
   } else {
+    ElMessage(errorCodeMap(res.result_code, res.message))
   }
 }
 </script>

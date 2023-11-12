@@ -19,6 +19,10 @@ $baseFontFamily:
   @return $fontFamily, $baseFontFamily;
 }
 
+body {
+  // font-family: ff('CustomFont'), sans-serif;
+}
+
 :root {
   --hover-bg-color: #eeeeee; // theme
   --header-bg-color: rgb(80, 80, 80); // theme

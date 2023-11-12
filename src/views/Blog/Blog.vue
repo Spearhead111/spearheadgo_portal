@@ -84,6 +84,7 @@
       <!-- ishljs:是否显示高亮 default-open="preview":只做预览展示 :editable="false":是否可编辑 -->
       <!-- subfield: true表示双栏，false表示单栏  :toolbarsFlag="false":是否显示编辑栏 -->
       <mavon-editor
+        style="z-index: 1"
         class="mavon-editor-show"
         v-model="blogInfoDetail.content"
         :ishljs="false"
@@ -92,6 +93,14 @@
         :subfield="false"
         :toolbarsFlag="false"
         :boxShadow="false"
+      />
+      <ArticleComments
+        v-if="type === BLOG_VISIBLE_TYPE.DETAIL"
+        :articleId="blogInfoDetail.articleId"
+        :article-author-id="(blogInfoDetail as BlogInfoDetail).authId"
+        :article-comments="(blogInfoDetail as BlogInfoDetail).commentsList"
+        :article-comments-count="(blogInfoDetail as BlogInfoDetail).commentsCount"
+        @refreshComment="getArticleComment"
       />
     </v-container>
   </div>
@@ -102,8 +111,9 @@ import './style.scss'
 import { ref, nextTick, onMounted, watch, computed } from 'vue'
 import { BLOG_VISIBLE_TYPE } from '@/constants/common'
 import { ElMessage } from 'element-plus'
-import { highlightCode } from '@/utils'
+import { errorCodeMap, highlightCode } from '@/utils'
 import { debounce, throttle } from 'lodash'
+//@ts-ignore
 import { addCodeBtn } from '@/utils/mavon.js'
 import {
   StarOne,
@@ -122,9 +132,12 @@ import { type Tag } from '../Home/Home.vue'
 import useUserStore from '@/stores/modules/user'
 import { type Store, type PiniaCustomStateProperties, storeToRefs } from 'pinia'
 import { type BlogInfo } from '../Write/Write.vue'
+import ArticleComments from './Article-Comments/ArticleComments.vue'
 
 interface BlogInfoDetail extends ArticleProfile {
   content: string
+  commentsCount: number
+  commentsList: any[]
 }
 
 interface Props {
@@ -144,6 +157,8 @@ const route = useRoute()
 const articleStore = useArticleStore()
 const userStore = useUserStore()
 const { userInfo } = storeToRefs(userStore)
+const commentPageNo = ref(1)
+const commentPageSize = ref(10)
 
 const articleId = computed(() => route.query.articleId)
 const blogInfoDetail = ref<BlogInfoDetail | any>({
@@ -167,31 +182,8 @@ const loading = ref(false)
 onMounted(async () => {
   loading.value = true
   if (props.type === BLOG_VISIBLE_TYPE.DETAIL) {
-    // 查看详情 接口获取数据
-    const res = await articleStore.getArticleDetail(Number(articleId.value))
-    if (res && res.result_code === 'success') {
-      const data = res.data as any
-      console.log(data)
-      // 这里接口的定义很混乱，但是暂时不想改前后端了😂 以后心情好了调整一下
-      blogInfoDetail.value = {
-        title: data.title,
-        subtitle: data.subtitle,
-        content: data.content,
-        banner: data.banner,
-        desc: data.desc,
-        tags: data.categories,
-        articleId: data.id,
-        createTime: new Date(data.createTime).getTime(),
-        updateTime: new Date(data.updateTime).getTime(),
-        view: data.view,
-        comments: data.commentCount,
-        like: data.likeCount,
-        auth: data.author.nickname,
-        authId: data.author.id
-      } as BlogInfoDetail
-    } else {
-    }
-    // blogInfoDetail.value = { ...res, banner: res.bannerUrl }
+    await getArticleDetail()
+    await getArticleComment()
   } else if (props.type === BLOG_VISIBLE_TYPE.PREVIEW) {
     blogInfoDetail.value = { ...props.blogInfo }
     // 判断传入的banner是string还是File，如果是file需要转换成url
@@ -207,4 +199,49 @@ onMounted(async () => {
     addCodeBtn()
   })
 })
+
+/** 获取文章详情 */
+const getArticleDetail = async () => {
+  // 查看详情 接口获取数据
+  const res = await articleStore.getArticleDetail(Number(articleId.value))
+  if (res && res.result_code === 'success') {
+    const data = res.data as any
+    // 这里接口的定义很混乱，但是暂时不想改前后端了😂 以后心情好了调整一下
+    blogInfoDetail.value = {
+      title: data.title,
+      subtitle: data.subtitle,
+      content: data.content,
+      banner: data.banner,
+      desc: data.desc,
+      tags: data.categories,
+      articleId: data.id,
+      createTime: new Date(data.createTime).getTime(),
+      updateTime: new Date(data.updateTime).getTime(),
+      view: data.view,
+      comments: data.commentCount,
+      like: data.likeCount,
+      auth: data.author.nickname,
+      authId: data.author.id
+    } as BlogInfoDetail
+  } else {
+    return ElMessage(errorCodeMap(res.result_code, res.message))
+  }
+}
+
+/** 获取文章评论 */
+const getArticleComment = async () => {
+  const params = {
+    articleId: articleId.value,
+    pageNo: commentPageNo.value,
+    pageSize: commentPageSize.value
+  }
+  const res = await articleStore.getArticleComment(params)
+  if (res && res.result_code === 'success') {
+    const data = res.data as any
+    blogInfoDetail.value.commentsCount = data.total
+    blogInfoDetail.value.commentsList = data.list
+  } else {
+    return ElMessage(errorCodeMap(res.result_code, res.message))
+  }
+}
 </script>

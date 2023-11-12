@@ -37,19 +37,25 @@
         <div class="tag-item-content" v-for="tag in searchTagList">
           <v-chip
             :color="tag.color"
+            size="small"
             label
             variant="elevated"
-            :style="{ animationDelay: `${Math.random()}s` }"
+            :style="{ animationDelay: `${Math.random() * 2}s` }"
             @click="openEditTagDialog('edit', tag)"
           >
             <v-icon start :color="tag.iconColor" :icon="tag.icon" />
             <span class="tag-label">{{ tag.label }}</span>
+            <v-icon
+              end
+              icon="mdi-close-circle"
+              @click.capture.stop="openDeleteTagDialog(tag.id)"
+            ></v-icon>
           </v-chip>
         </div>
       </div>
     </v-card>
   </v-container>
-  <v-dialog v-if="addTagDialog" v-model="addTagDialog" width="auto">
+  <v-dialog v-if="addTagDialog" v-model="addTagDialog" width="auto" persistent>
     <v-card width="400">
       <v-card-title> {{ `${opType === 'add' ? '新建' : '编辑'}标签` }} </v-card-title>
       <v-card-text>
@@ -175,6 +181,18 @@
       </v-card-actions>
     </v-card>
   </v-dialog>
+  <v-dialog v-if="deleteTagDialog" v-model="deleteTagDialog" width="auto" persistent>
+    <v-card>
+      <v-card-text>
+        <tips theme="filled" size="18" fill="#fcd53f" :strokeWidth="2" />
+        确认删除此标签吗？删除后无法恢复！
+      </v-card-text>
+      <v-card-actions class="justify-end">
+        <v-btn color="primary" @click="cancelDelete">取消</v-btn>
+        <v-btn color="deep-purple-accent-4" @click="deleteTag"> 确定 </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script lang="ts" setup>
@@ -183,12 +201,16 @@ import useArticleStore from '@/stores/modules/article'
 import { type Tag } from '@/views/Home/Home.vue'
 import { ElMessage } from 'element-plus'
 import { SWATCHES } from '@/constants'
+import { Tips } from '@icon-park/vue-next'
+import { errorCodeMap } from '@/utils'
 
 const articleStore = useArticleStore()
 const tagList = ref<Tag[]>([]) // 文章类型标签
 const tagTotal = ref(0) // 标签的个数
 const search = ref('') // 标签名/code搜索
 const addTagDialog = ref(false) // 新建标签的dialog
+const deleteTagDialog = ref(false) // 删除标签的dialog
+const curDeleteTagId = ref(-1) // 当前要删除的标签id
 const opType = ref('add') // 新建 还是 编辑 标签信息
 const formRef = ref()
 const form = ref({
@@ -238,6 +260,8 @@ const getArticleTagList = async () => {
     const { list, total } = res.data as { list: Tag[]; total: number }
     tagList.value = list
     tagTotal.value = total
+  } else {
+    ElMessage(errorCodeMap(res.result_code, res.message))
   }
 }
 
@@ -259,12 +283,10 @@ const cancel = () => {
 /** 新建/编辑 标签 */
 const addTag = async () => {
   const { valid } = await formRef.value.validate()
-  console.log(valid)
   if (!valid) {
     return ElMessage.error('请完善填选项')
   }
   const params = { ...form.value }
-  console.log(params)
   if (opType.value === 'add') {
     const res = await articleStore.createArticleTag(params)
     if (res && res.result_code === 'success') {
@@ -272,6 +294,7 @@ const addTag = async () => {
       ElMessage.success('新建成功')
       getArticleTagList()
     } else {
+      ElMessage(errorCodeMap(res.result_code, res.message))
     }
   } else {
     const res = await articleStore.updateArticleTag(params)
@@ -280,6 +303,7 @@ const addTag = async () => {
       ElMessage.success('更新成功')
       getArticleTagList()
     } else {
+      ElMessage(errorCodeMap(res.result_code, res.message))
     }
   }
 }
@@ -311,5 +335,31 @@ const cancelTagIconColor = () => {
 const cancelTagColor = () => {
   form.value.color = preTagColor.value
   tagColorPickerShow.value = false
+}
+
+/** 打开删除tag的确认弹窗 */
+const openDeleteTagDialog = async (id: number) => {
+  deleteTagDialog.value = true
+  curDeleteTagId.value = id
+}
+
+/** 取消删除tag，清除当前的tagcode */
+const cancelDelete = () => {
+  deleteTagDialog.value = false
+  curDeleteTagId.value = -1
+}
+
+/** 删除标签 */
+const deleteTag = async () => {
+  const params = {
+    tagCode: curDeleteTagId.value
+  }
+  const res = await articleStore.deleteArticleTag(params)
+  if (res && res.result_code === 'success') {
+    getArticleTagList()
+  } else {
+    ElMessage(errorCodeMap(res.result_code, res.message))
+  }
+  cancelDelete()
 }
 </script>

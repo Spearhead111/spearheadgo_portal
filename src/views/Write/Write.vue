@@ -67,7 +67,7 @@
           class="mb-4"
           height="200"
           v-if="blogBanner.length || oldBlogInfo?.banner"
-          :src="bannerImg"
+          :src="bannerImg as any"
         ></v-img>
         <v-select
           class="pb-5"
@@ -90,6 +90,23 @@
               ><v-icon start :color="item.raw.iconColor" :icon="item.raw.icon"></v-icon
               ><span class="tag-label">{{ item.raw.label }}</span></v-chip
             >
+          </template>
+
+          <!-- 选中的tag(chip)在select下拉框中的插槽设置 -->
+          <template v-slot:item="{ props, item }">
+            <v-list-item v-bind="props">
+              <div class="flex justify-space-between">
+                <v-chip class="rounded-lg" size="small" :color="item.raw.color" variant="elevated">
+                  <v-icon start :color="item.raw.iconColor" :icon="item.raw.icon"> </v-icon>
+                  <span class="tag-label">{{ item.raw.label }}</span>
+                </v-chip>
+                <v-icon
+                  v-if="blogTags.includes(item.raw.code)"
+                  color="info"
+                  icon="mdi-check-circle"
+                ></v-icon>
+              </div>
+            </v-list-item>
           </template>
         </v-select>
         <div class="flex align-center justify-space-between mb-2">
@@ -161,6 +178,7 @@ import useUserStore from '@/stores/modules/user'
 import { type Tag, type TagSelect } from '../Home/Home.vue'
 import { readonly } from 'vue'
 import router from '@/router'
+import { errorCodeMap } from '@/utils'
 
 const { getUserId } = useUserStore()
 const articleStore = useArticleStore()
@@ -284,6 +302,8 @@ const getArticleTagList = async () => {
       return
     }
     tagList.value = list
+  } else {
+    ElMessage(errorCodeMap(res.result_code, res.message))
   }
 }
 
@@ -305,6 +325,7 @@ const getBlogDetail = async () => {
     blogContent.value = data.content
     blogTags.value = data.categories.map((tag: Tag) => tag.code)
   } else {
+    ElMessage(errorCodeMap(res.result_code, res.message))
   }
 }
 
@@ -315,7 +336,6 @@ const previewBlog = async () => {
   //   ElMessage.error('请填写完整文章信息')
   //   return
   // }
-  // console.log(params, '预览文章！！！')
   previewBlogDialogVisible.value = true
 }
 
@@ -356,18 +376,17 @@ const imgAdd = async (pos: string, file: File) => {
       mavonEditorRef.value.$img2Url(pos, data.imgUrl)
     }
   } else {
+    ElMessage(errorCodeMap(res.result_code, res.message))
   }
 }
 
-const imgDel = async (pos: string, file: File) => {
-  console.log(pos, file)
-}
+const imgDel = async (pos: string, file: File) => {}
 
 /** 发布/更新文章 */
 const submitBlog = async () => {
   const { valid } = await form.value.validate()
   if (!valid) {
-    return ElMessage.error('请填写完整信息')
+    return ElMessage.error('请检查填写信息')
   }
   publishLoading.value = true
 
@@ -393,6 +412,7 @@ const submitBlog = async () => {
       // 更新文章成功跳转到文章详情页面
       nextTick(() => routeToArticleDetail(String((res.data as any).articleId)))
     } else {
+      ElMessage(errorCodeMap(res.result_code, res.message))
     }
   } else {
     // 更新文章
@@ -402,8 +422,8 @@ const submitBlog = async () => {
       // 更新文章成功跳转到文章详情页面
       nextTick(() => routeToArticleDetail(String(articleId.value)))
     } else {
+      ElMessage(errorCodeMap(res.result_code, res.message))
     }
-    console.log(formData.get('banner'))
   }
   publishLoading.value = false
 }

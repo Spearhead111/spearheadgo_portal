@@ -14,6 +14,54 @@ export const USER_ROLE_MAP = {
   GUEST: 'guest'
 }
 
+/** 用户角色list */
+export const USER_ROLE_MAP_LIST = [
+  { label: '超级管理员', value: USER_ROLE_MAP.ROOT },
+  { label: '管理员', value: USER_ROLE_MAP.ADMIN },
+  { label: '写作者', value: USER_ROLE_MAP.AUTHOR },
+  { label: '用户', value: USER_ROLE_MAP.VISITOR }
+]
+
+/** 用户状态list */
+export const USER_STATUS_LIST = [
+  { label: '正常', value: 1 },
+  { label: '禁用', value: 0 }
+]
+
+/** 用户角色对应的icon */
+export const USER_ROLE_ICON_MAP = {
+  [USER_ROLE_MAP.ROOT]: {
+    chipColor: '#c23911',
+    icon: 'mdi-crown-outline',
+    iconColor: '#ffff00',
+    desc: '超级管理员'
+  },
+  [USER_ROLE_MAP.ADMIN]: {
+    chipColor: '#77942a',
+    icon: 'mdi-account-cog',
+    iconColor: '#5b0dea',
+    desc: '管理员'
+  },
+  [USER_ROLE_MAP.AUTHOR]: {
+    chipColor: '#c5edff',
+    icon: 'mdi-account-edit',
+    iconColor: '#6284ff',
+    desc: '写作者'
+  },
+  [USER_ROLE_MAP.VISITOR]: {
+    chipColor: '#8b8b8b',
+    icon: 'mdi-account',
+    iconColor: '#ffffff',
+    desc: '用户'
+  },
+  [USER_ROLE_MAP.GUEST]: {
+    chipColor: '',
+    icon: '',
+    iconColor: '',
+    desc: '路人'
+  }
+}
+
 /** 角色权限等级 */
 export const ROLE_AUTH_MAP = {
   [USER_ROLE_MAP.ROOT]: 10,

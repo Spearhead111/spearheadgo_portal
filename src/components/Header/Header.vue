@@ -4,7 +4,8 @@
     v-if="showHeader"
   >
     <div class="logo-name">
-      <h2>SPEARHEAD</h2>
+      <div class="front">SPEARHEAD</div>
+      <div class="bottom">一起学习共同进步</div>
     </div>
     <ul class="header-menu">
       <li
@@ -50,7 +51,8 @@
         <template v-slot:activator="{ props }">
           <v-btn class="user-avatar-menu" size="small" icon v-bind="props">
             <v-avatar color="brown">
-              <span class="text-h5">{{
+              <v-img v-if="userInfo.avatar" cover :src="userInfo?.avatar"></v-img>
+              <span v-else class="text-h5">{{
                 userInfo?.nickname ? userInfo?.nickname[0].toUpperCase() : 'Hi'
               }}</span>
             </v-avatar>
@@ -60,7 +62,8 @@
           <v-card-text>
             <div class="mx-auto text-center">
               <v-avatar color="brown">
-                <span class="text-h5">{{
+                <v-img v-if="userInfo.avatar" cover :src="userInfo?.avatar"></v-img>
+                <span v-else class="text-h5">{{
                   userInfo?.nickname ? userInfo?.nickname[0].toUpperCase() : 'Hi'
                 }}</span>
               </v-avatar>
@@ -123,10 +126,8 @@ const scrollEvent = () => {
  * @return {*}
  */
 const routerJump = (item: any): void => {
-  console.log(item)
   if (!item.path) return
   selectedSubMenu.value = item.submenuName
-  console.log(selectedSubMenu.value)
   router.push(item.path)
   // 将当前的菜单选择存储到sessionStorage中
   sessionStorage.setItem('selectedSubMenu', selectedSubMenu.value)

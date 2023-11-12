@@ -159,9 +159,10 @@ import { Validator } from '@/utils/validator'
 import useUserStore from '@/stores/modules/user'
 import './style.scss'
 import { useRoute, useRouter } from 'vue-router'
+import { errorCodeMap } from '@/utils'
 
 const userStore = useUserStore()
-const route = useRouter()
+const router = useRouter()
 
 let switchCtn: Element
 let switchC2: Element
@@ -269,6 +270,7 @@ async function register(params: RegisterParams, formEl: FormInstance | undefined
     ElMessage.success('注册成功，快去登录吧！')
     changeForm()
   } else {
+    ElMessage(errorCodeMap(res.result_code, res.message))
   }
 }
 
@@ -278,8 +280,9 @@ async function login(params: LoginParams) {
   if (res && res.result_code === 'success') {
     ElMessage.success('登录成功！')
     res.data?.token && userStore.saveUserInfo(res.data.token)
-    route.push('/')
+    router.push('/')
   } else {
+    ElMessage(errorCodeMap(res.result_code, res.message))
   }
 }
 

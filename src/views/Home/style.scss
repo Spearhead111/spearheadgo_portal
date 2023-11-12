@@ -12,7 +12,7 @@
       object-fit: cover; /* 保持原始宽高比，裁剪多余部分 */
       object-position: center; /* 将图片放在img元素的中心 */
       z-index: 0;
-      animation: imgIn 1s linear;
+      animation: imgIn 1s ease;
     }
     @keyframes imgIn {
       0% {
@@ -179,6 +179,7 @@
           flex-wrap: wrap; /* 允许项目自动换行到下一行 */
           width: 100%;
           min-height: 1px;
+          margin-bottom: 20px;
           > div {
             margin: 10px;
             width: calc(100% / 2 - 20px);
@@ -203,6 +204,56 @@
 
         .v-chip .v-chip__content span {
           font-weight: 600;
+        }
+
+        .more-btn {
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 150px;
+          height: 50px;
+          background-color: var(--hover-bg-color);
+          border-radius: 20px;
+          overflow: hidden;
+          cursor: pointer;
+          transition: all 0.5s;
+          &:hover {
+            scale: 1.05;
+          }
+          &::before,
+          &::after {
+            position: absolute;
+            content: '';
+            width: 500px;
+            height: 500px;
+            background-image: conic-gradient(transparent, transparent, transparent, #8758ff);
+            animation: rotate 3s linear infinite;
+          }
+          &::after {
+            background-image: conic-gradient(transparent, transparent, transparent, #5cb8e4);
+            animation-delay: -1.5s;
+          }
+          @keyframes rotate {
+            0% {
+            }
+            100% {
+              transform: rotate(360deg);
+            }
+          }
+          .mask {
+            position: absolute;
+            inset: 2px;
+            border-radius: 20px;
+            opacity: 1;
+            background-color: var(--hover-bg-color);
+            z-index: 1;
+          }
+          > span {
+            z-index: 2;
+            font-weight: bold;
+            font-size: 18px;
+          }
         }
       }
     }

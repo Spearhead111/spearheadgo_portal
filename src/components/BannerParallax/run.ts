@@ -72,7 +72,6 @@ export default () => {
     for (let i = 0; i < layers.length; i++) {
       const layer = layers[i]
       const item = allImagesData[i]
-      console.log('item', item)
       let m = new DOMMatrix(item.transform)
       let move = moveX * item.a // 移动X translateX
       let s = item.f ? item.f * moveX + 1 : 1 // 放大比例 Scale

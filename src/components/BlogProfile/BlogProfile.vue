@@ -55,6 +55,7 @@
       @click="showMore"
     >
       <v-card-title
+        class="font-bold"
         v-html="highLightWord(articleProfile.title, highlightKey)"
         style="position: relative; z-index: 10"
       ></v-card-title>
@@ -62,15 +63,21 @@
     <v-card-subtitle class="pt-2">
       {{ articleProfile.subtitle }}
     </v-card-subtitle>
-    <v-card-subtitle class="pt-1" style="display: flex; align-items: center">
-      <calendar-dot
-        class="mr-1"
-        theme="multi-color"
-        size="17.5"
-        :fill="['#333', '#4a90e2', '#ffffff', '#ffffff']"
-        :strokeWidth="2"
-      />
-      发布于{{ formatDate(articleProfile.createTime) }}
+    <v-card-subtitle class="pt-1 flex align-center justify-space-between">
+      <div>
+        <calendar-dot
+          class="mr-1"
+          theme="multi-color"
+          size="17.5"
+          :fill="['#333', '#4a90e2', '#ffffff', '#ffffff']"
+          :strokeWidth="2"
+        />
+        发布于 {{ formatDate(articleProfile.createTime) }}
+      </div>
+      <div>
+        <pencil theme="outline" size="17.5" fill="#ee6700" />
+        <span class="font-bold">{{ articleProfile.auth }}</span>
+      </div>
     </v-card-subtitle>
     <v-card-text height="200" class="pt-1 pb-2">
       <div
@@ -137,7 +144,7 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { Tips, Like, Comments, Endocrine, CalendarDot, Edit } from '@icon-park/vue-next'
+import { Tips, Like, Comments, Endocrine, CalendarDot, Edit, Pencil } from '@icon-park/vue-next'
 import { formatDate, highLightWord } from '@/utils'
 import { debounce, throttle } from 'lodash'
 import './style.scss'
@@ -148,6 +155,7 @@ import useArticleStore from '@/stores/modules/article'
 import { type Tag } from '@/views/Home/Home.vue'
 import { storeToRefs } from 'pinia'
 import useUserStore from '@/stores/modules/user'
+import { errorCodeMap } from '@/utils/errorCodeMap'
 
 interface ArticleProfile {
   articleId: string
@@ -198,6 +206,7 @@ const deleteArticle = async () => {
     ElMessage.success('删除成功')
     emit('refresh')
   } else {
+    ElMessage(errorCodeMap(res.result_code, res.message))
   }
   deleteDialog.value = false
 }

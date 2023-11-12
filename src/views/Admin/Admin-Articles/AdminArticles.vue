@@ -1,13 +1,13 @@
 <template>
   <div class="admin-articles-wrapper">
     <div class="width-100 admin-header-banner">
-      <img src="" alt="" />
+      <v-img cover src="https://file.spearheadgo.com/img/banner/admin-banner1.jpg" alt="" />
     </div>
     <v-container class="admin-articles-content">
       <!-- 文章管理项tab -->
       <v-tabs v-model="curTab" bg-color="transparent" color="deep-purple-accent-4" show-arrows grow>
         <v-tab v-for="tabItem in ADMIN_ARTICLE_TAB" :key="tabItem.value" :value="tabItem.value">
-          {{ tabItem.name }}
+          <span class="font-weight-bold" style="font-size: 18px">{{ tabItem.name }}</span>
         </v-tab>
       </v-tabs>
 
