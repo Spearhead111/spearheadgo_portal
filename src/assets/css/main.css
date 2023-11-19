@@ -1,6 +1,9 @@
 @import './base.css';
 
 #app {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   position: relative;
   margin: 0;
   padding: 0;

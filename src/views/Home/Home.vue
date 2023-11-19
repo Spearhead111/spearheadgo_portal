@@ -152,31 +152,51 @@ const WECHAT_ACCOUNT = 'Spearhead_2024'
 const QQ_ACCOUNT = '1744734603'
 
 export interface Tag {
+  /** 标签code */
   code: string
+  /** 标签颜色 */
   color: string
+  /** 标签图标 */
   icon: string
+  /** 标签图标颜色 */
   iconColor: string
+  /** 标签id */
   id: number
+  /** 标签名称 */
   label: string
 }
 
 export interface TagSelect extends Tag {
+  /** 标签是否被选中 */
   selected: boolean
 }
 
 export interface ArticleProfile {
-  articleId: string
+  /** 文章id */
+  articleId: number
+  /** 文章标题 */
   title: string
+  /** 文章次标题 */
   subtitle: string
+  /** 文章封面图片 */
   banner: string
+  /** 文章创建时间 */
   createTime: number
+  /** 文章更新时间 */
   updateTime: number
+  /** 文章描述 */
   desc: string
+  /** 文章标签 */
   tags: Tag[]
+  /** 文章浏览量 */
   view: number
+  /** 文章“总”评论数，包含文章评论和评论的回复 */
   comments: number
+  /** 文章点赞量 */
   like: number
+  /** 文章作者昵称 */
   auth: string
+  /** 文章作者id */
   authId: string
 }
 

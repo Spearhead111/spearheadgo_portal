@@ -9,7 +9,7 @@ const light: ThemeDefinition = {
   dark: false,
   colors: {
     background: '#FFFFFF', // 整体的背景颜色
-    primary: '#2c3e50',
+    primary: '#252933',
     surface: '#FFFFFF' // vuetify组件的背景颜色
   }
 }
@@ -18,7 +18,7 @@ const dark: ThemeDefinition = {
   dark: true,
   colors: {
     background: '#272727',
-    primary: '#FFFFFF',
+    primary: '#b4b4b4',
     surface: '#272727'
   }
 }

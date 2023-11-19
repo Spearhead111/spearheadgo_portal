@@ -31,6 +31,11 @@ class userService {
     const url = baseURL + `/user/${params.id}/change-user-status`
     return MyRequest.get<T>(url, params)
   }
+
+  public changeUserInfo<T>(params: any) {
+    const url = baseURL + `/user/${params.id}/update-user`
+    return MyRequest.post<T>(url, params)
+  }
 }
 
 export default new userService()

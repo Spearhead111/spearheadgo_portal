@@ -101,7 +101,7 @@ export const HEAD_MENU = {
     des: '管理',
     needAuth: true,
     submenuName: 'admin',
-    auth: USER_ROLE_MAP.ROOT,
+    auth: USER_ROLE_MAP.ADMIN,
     children: [
       {
         des: '用户管理',

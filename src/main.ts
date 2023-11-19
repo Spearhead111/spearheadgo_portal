@@ -25,7 +25,6 @@ app.use(router)
 app.use(vuetify)
 app.use(ElementPlus)
 app.use(mavonEditor)
-app.use(mavonEditor)
 
 // auth权限指令的判断依赖用户角色，先初始化
 useUserStore()

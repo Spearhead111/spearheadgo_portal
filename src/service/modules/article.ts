@@ -106,6 +106,30 @@ class articleService {
     const url = baseURL + `/article/${params.articleId}/reply-comment-article`
     return MyRequest.post<T>(url, params)
   }
+
+  /** 删除文章评论 */
+  public deleteArticleComment<T>(params: any) {
+    const url = baseURL + `/article/${params.articleId}/delete-article-comment`
+    return MyRequest.post<T>(url, params)
+  }
+
+  /** 点赞文章评论 */
+  public likeArticleComment<T>(params: any) {
+    const url = baseURL + `/article/digging-comments`
+    return MyRequest.post<T>(url, params)
+  }
+
+  /** 获取文章关联的用户信息 */
+  public getArticleUserInfo<T>(params: any) {
+    const url = baseURL + `/article/${params.articleId}/get-article-user-info`
+    return MyRequest.get<T>(url, params)
+  }
+
+  /** 点赞文章 */
+  public likeArticle<T>(params: any) {
+    const url = baseURL + `/article/${params.articleId}/digging-article`
+    return MyRequest.get<T>(url, params)
+  }
 }
 
 export default new articleService()

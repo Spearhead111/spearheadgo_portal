@@ -63,30 +63,16 @@
   font-weight: normal;
 }
 
-/* @font-face {
-    font-family: 'CustomFont';
-    src: url('../ZhuZiAWan-2.ttc');
-} */
-
 body {
-  min-height: 100vh;
-  color: var(--color-text);
-  background: var(--color-background);
+  /* min-height: 100vh; */
+  color: rgb(var(--v-theme-primary));
+  /* background: var(--color-background); */
   transition:
     color 0.5s,
     background-color 0.5s;
   line-height: 1.6;
-  font-family:
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    Oxygen,
-    Ubuntu,
-    Cantarell,
-    'Fira Sans',
-    'Droid Sans',
-    'Helvetica Neue',
-    sans-serif;
+  /* font-family: 'SimHei', 'Microsoft YaHei', sans-serif, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif; */
   font-size: 14px;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -115,5 +101,5 @@ body {
   background-color: #40aef7;
 }
 ::-webkit-scrollbar-track {
-  background-color: rgba(73, 177, 245, 0.1);
+  /* background-color: rgba(73, 177, 245, 0.1); */
 }

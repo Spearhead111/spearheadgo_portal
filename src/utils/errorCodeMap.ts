@@ -1,5 +1,6 @@
 /** 接口错误码映射 */
 export const errorCodeMap = (resultCode: string, message: string, additionalMessage?: string) => {
+  resultCode = resultCode || ''
   let m = '' // 额外信息，展示在映射信息之前
   if (additionalMessage) {
     m = additionalMessage

@@ -1,7 +1,7 @@
 <template>
-  <Header />
+  <Header></Header>
   <PageSetting />
-  <RouterView id="router-view" :key="key" />
+  <RouterView id="router-view" :key="routerKey" />
   <!-- 回到顶部 -->
   <v-icon
     class="go-top"
@@ -11,11 +11,11 @@
     size="large"
     @click="goBackTop"
   ></v-icon>
-  <!-- <Footer /> -->
+  <Footer class="align-self-end"></Footer>
 </template>
 
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterView, useRouter } from 'vue-router'
 import Header from '@/components/Header/Header.vue'
 import Footer from '@/components/Footer/Footer.vue'
 import PageSetting from '@/components/PageSetting/PageSetting.vue'
@@ -24,11 +24,12 @@ import { useRoute } from 'vue-router'
 import useUserStore from './stores/modules/user'
 
 const route = useRoute()
+const router = useRouter()
 const userStore = useUserStore()
 const showGoTop = ref(false)
 
-const key = computed(() => {
-  return route.path + Math.random()
+const routerKey = computed(() => {
+  return route.path + JSON.stringify(route.query)
 })
 
 onMounted(async () => {
@@ -70,7 +71,7 @@ const goBackTop = () => {
   position: fixed;
   right: 30px;
   bottom: 78px;
-  z-index: 9999;
+  z-index: 1001;
   cursor: pointer;
   width: 35px;
   height: 35px;

@@ -12,8 +12,8 @@ import { decodeToken } from '@/utils'
 
 // request interface，包含 data
 export class ResultData<T = any> {
-  result_code: string
-  message: string
+  result_code!: string
+  message!: string
   data?: T
 }
 
@@ -42,9 +42,9 @@ class Request {
           ...config,
           headers: {
             Authorization: 'Bearer ' + token,
-            'user-id': useUserStore().getUserId
+            'user-id': useUserStore().getUserId || ''
           }
-        }
+        } 
       },
       (error: AxiosError) => {
         // 请求报错
@@ -108,10 +108,10 @@ class Request {
         this.reLogin(message)
         break
       case 500:
-        ElMessage.error('请求异常，请联系管理员')
+        ElMessage.error(message || '请求异常，请联系管理员')
         break
       default:
-        ElMessage.error('请求失败')
+        ElMessage.error(message || '请求失败')
         break
     }
   }

@@ -138,7 +138,7 @@
         <!-- MavonEditor富文本编辑器 -->
         <mavon-editor
           ref="mavonEditorRef"
-          :class="['mb-8', 'mavon-editor', fullScreen ? 'fullScreen' : '']"
+          :class="['mavon-editor', fullScreen ? 'fullScreen' : '']"
           v-model="blogContent"
           :ishljs="true"
           @imgAdd="imgAdd"
@@ -146,7 +146,7 @@
           @fullScreen="fullScreen = !fullScreen"
         />
       </v-form>
-      <div class="flex align-center justify-center">
+      <div class="flex align-center justify-center mt-8">
         <v-btn prepend-icon="mdi-upload" color="deep-purple-accent-4" @click="debounceSubmitBlog">
           {{ `${isCreate ? '发布' : '更新'}文章` }}
         </v-btn>

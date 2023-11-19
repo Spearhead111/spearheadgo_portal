@@ -1,7 +1,7 @@
 <template>
   <div class="admin-users-wrapper">
     <div class="width-100 admin-header-banner">
-      <img src="" alt="" />
+      <img src="https://file.spearheadgo.com/img/banner/admin-user-banner.jpg" alt="" />
     </div>
     <v-container class="admin-users-content">
       <v-form ref="formRef">
@@ -21,61 +21,12 @@
             </v-col>
 
             <v-col cols="3">
-              <v-select
-                label="用户角色"
+              <UserRoleSelect
                 v-model="form.role"
-                :items="USER_ROLE_MAP_LIST"
-                density="compact"
-                prepend-inner-icon="mdi-tag-multiple"
-                item-title="label"
-                item-value="value"
-                multiple
+                :multiple="true"
+                :collapse-tags="true"
                 clearable
-                color="blue-grey-lighten-2"
-                variant="underlined"
-              >
-                <!-- 选中的tag(chip)在select框中的插槽设置 -->
-                <template v-slot:chip="{ props, item, index }">
-                  <v-chip
-                    v-if="index < 2"
-                    elevation="0"
-                    v-bind="props"
-                    :color="USER_ROLE_ICON_MAP[item.raw.value].chipColor"
-                    variant="elevated"
-                    ><v-icon
-                      start
-                      :color="USER_ROLE_ICON_MAP[item.raw.value].iconColor"
-                      :icon="USER_ROLE_ICON_MAP[item.raw.value].icon"
-                    ></v-icon
-                    ><span class="tag-label">{{ item.raw.label }}</span></v-chip
-                  >
-                  <!-- 超过两个省略 -->
-                  <span v-if="index === 2" class="text-grey text-caption align-self-center">
-                    (+{{ form.role.length - 2 }} 其他)
-                  </span>
-                </template>
-
-                <!-- 选中的tag(chip)在select下拉框中的插槽设置 -->
-                <template v-slot:item="{ props, item }">
-                  <v-list-item v-bind="props">
-                    <v-chip
-                      class="rounded-lg"
-                      size="small"
-                      elevation="0"
-                      :color="USER_ROLE_ICON_MAP[item.raw.value].chipColor"
-                      variant="elevated"
-                    >
-                      <v-icon
-                        start
-                        :color="USER_ROLE_ICON_MAP[item.raw.value].iconColor"
-                        :icon="USER_ROLE_ICON_MAP[item.raw.value].icon"
-                      >
-                      </v-icon>
-                      <span class="tag-label">{{ item.raw.label }}</span>
-                    </v-chip>
-                  </v-list-item>
-                </template>
-              </v-select>
+              ></UserRoleSelect>
             </v-col>
 
             <v-col cols="3">
@@ -222,6 +173,20 @@
         <el-table-column prop="" label="操作" width="100" fixed="right">
           <template #default="scope">
             <div class="flex align-center">
+              <v-tooltip text="编辑">
+                <template v-slot:activator="{ props }">
+                  <v-icon
+                    v-auth="USER_ROLE_MAP.ADMIN"
+                    v-bind="props"
+                    size="small"
+                    color="light-blue-darken-2"
+                    class="me-2"
+                    @click="openChangeUserInfoDialog(scope.row)"
+                    icon="mdi-pencil"
+                  />
+                </template>
+              </v-tooltip>
+
               <v-tooltip :text="scope.row.isActivated === 1 ? '下线' : '上线'">
                 <template v-slot:activator="{ props }">
                   <v-icon
@@ -261,8 +226,32 @@
         <v-card-subtitle> 此操作会影响用户登录和使用 </v-card-subtitle>
         <v-card-actions>
           <div class="flex width-100 justify-end">
-            <v-btn size="small" variant="tonal" class="flex-1-1" @click="">取消</v-btn>
+            <v-btn size="small" variant="text" class="flex-1-1" @click="cancelChangeUserStatus">取消</v-btn>
             <v-btn class="flex-1-1" size="small" variant="tonal" @click="changeUserStatus"
+              >确认</v-btn
+            >
+          </div>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-if="changeUserInfoDialog" v-model="changeUserInfoDialog" width="auto">
+      <v-card :width="400">
+        <v-card-text class="font-weight-bold">
+          <tips theme="filled" size="18" fill="#fcd53f" :strokeWidth="2" />
+           更改用户信息 
+        </v-card-text>
+        <v-card-item>
+          <v-form class="py-3">
+            <UserRoleSelect
+              v-model="(curHandelUser as UserInfo).role"
+            ></UserRoleSelect>
+          </v-form>
+        </v-card-item>
+
+        <v-card-actions>
+          <div class="flex width-100 justify-end">
+            <v-btn size="small" variant="text" @click="cancelChangeUserInfo">取消</v-btn>
+            <v-btn size="small" variant="tonal" @click="changeUserInfo"
               >确认</v-btn
             >
           </div>
@@ -283,17 +272,19 @@ import {
 } from '@/constants'
 import { ElMessage } from 'element-plus'
 import useUserStore from '@/stores/modules/user'
-import { formatDate, errorCodeMap } from '@/utils'
+import { formatDate, errorCodeMap, checkAuthLT, checkAuthLE } from '@/utils'
 import { type UserInfo } from '../Admin-Articles/ArticlesList.vue'
 import useClipboard from 'vue-clipboard3'
 import { storeToRefs } from 'pinia'
 import { Tips } from '@icon-park/vue-next'
+import UserRoleSelect from '@/components/UserRoleSelect/UserRoleSelect.vue'
 
 const { toClipboard } = useClipboard()
 const userStore = useUserStore()
 const { getRole } = storeToRefs(userStore)
 
 const formRef = ref()
+/** 搜索用户的表单数据 */
 const form = ref<{
   search: string
   role: string[]
@@ -308,8 +299,12 @@ const pageNo = ref(1)
 const pageSize = ref(10)
 const userList = ref<UserInfo[]>([])
 const userTotal = ref(0)
+/** 更改用户状态弹窗visible */
 const changeUserStatusDialog = ref(false)
+/** 当前在操作的用户对象 */
 const curHandelUser = ref<UserInfo | null>(null)
+/** 更改用户信息弹窗visible */
+const changeUserInfoDialog = ref(false)
 
 onMounted(async () => {
   await getUserList()
@@ -358,11 +353,9 @@ const handleSizeChange = (val: number) => {
 
 /** 打开更改用户状态二次确认弹窗 */
 const openChangeUserStatusDialog = async (user: UserInfo) => {
-  if (
-    getRole.value !== USER_ROLE_MAP.ROOT &&
-    (user.role === USER_ROLE_MAP.ADMIN || user.role === USER_ROLE_MAP.ROOT)
-  ) {
-    return ElMessage.warning('当前权限无法修改管理员信息')
+  // 操作用户必须是管理员及以上权限，且操作用户权限需大于操作的对象的权限
+  if(!checkAuthLE(getRole.value, USER_ROLE_MAP.ADMIN) || !checkAuthLT(getRole.value, user.role)) {
+    return ElMessage.warning('无权操作')
   }
   changeUserStatusDialog.value = true
   curHandelUser.value = { ...user }
@@ -386,7 +379,36 @@ const changeUserStatus = async () => {
     ElMessage.success('修改成功')
     getUserList()
   } else {
-    errorCodeMap(res.result_code, res.message)
+    ElMessage(errorCodeMap(res.result_code, res.message || '操作失败'))
+  }
+}
+
+/** 打开编辑用户信息弹窗 */
+const openChangeUserInfoDialog = (user: UserInfo) => {
+  // 操作用户必须是管理员及以上权限，且操作用户权限需大于操作的对象的权限
+  if (!checkAuthLE(getRole.value, USER_ROLE_MAP.ADMIN) || !checkAuthLT(getRole.value, user.role)) {
+    return ElMessage.warning('无权操作')
+  }
+  changeUserInfoDialog.value = true
+  curHandelUser.value = { ...user }
+}
+
+/** 取消更改用户信息 */
+const cancelChangeUserInfo = () => {
+  changeUserInfoDialog.value = false
+  curHandelUser.value = null
+}
+
+/** 更改用户信息 */
+const changeUserInfo = async () => {
+  const params = { ...curHandelUser.value }
+  const res = await userStore.changeUserInfo(params)
+  if (res && res.result_code === 'success') {
+    cancelChangeUserInfo()
+    ElMessage.success('修改成功')
+    getUserList()
+  } else {
+    ElMessage(errorCodeMap(res.result_code, res.message || '操作失败'))
   }
 }
 </script>

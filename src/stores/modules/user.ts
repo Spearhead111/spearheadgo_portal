@@ -61,6 +61,11 @@ const useUserStore = defineStore('user', {
     /** 更改用户状态 */
     async changeUserStatus(params: any) {
       return await userService.changeUserStatus(params)
+    },
+
+    /** 更改用户信息 */
+    async changeUserInfo(params: any) {
+      return await userService.changeUserInfo(params)
     }
   }
 })

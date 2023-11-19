@@ -101,6 +101,30 @@ const useArticleStore = defineStore('article', {
     async sendArticleCommentReply(params: any) {
       const res = await articleService.sendArticleCommentReply(params)
       return res
+    },
+
+    /** 删除文章评论 */
+    async deleteArticleComment(params: any) {
+      const res = await articleService.deleteArticleComment(params)
+      return res
+    },
+
+    /** 点赞评论 */
+    async likeArticleComment(params: any) {
+      const res = await articleService.likeArticleComment(params)
+      return res
+    },
+
+    /** 获取文章关联的用户信息 */
+    async getArticleUserInfo(params: any) {
+      const res = await articleService.getArticleUserInfo(params)
+      return res
+    },
+
+    /** 点赞文章 */
+    async likeArticle(params: any) {
+      const res = await articleService.likeArticle(params)
+      return res
     }
   }
 })

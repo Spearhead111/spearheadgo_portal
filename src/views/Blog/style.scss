@@ -60,9 +60,11 @@
 .blog-content-wrapper {
   position: relative;
   padding: 40px 0px;
-  width: 60%;
+  width: 70%;
+  margin-left: 10%;
   display: flex;
   flex-direction: column;
+  // overflow: visible;
   animation: fromBottomIn 0.7s linear;
   @keyframes fromBottomIn {
     0% {
@@ -74,12 +76,10 @@
       opacity: 1;
     }
   }
-
-  .blog-subtitle {
-  }
 }
 
 .mavon-editor-show {
+  z-index: 1 !important;
   width: 100%;
   box-shadow: none !important;
   border: 0;
@@ -88,6 +88,62 @@
   .v-show-content {
     padding: 0 !important;
     background-color: rgb(var(--v-theme-background)) !important;
+  }
+  // 能让导航栏超出可见
+  .v-note-panel {
+    overflow: visible !important;
+  }
+  .v-note-navigation-wrapper_fixed {
+    position: fixed !important;
+    top: 0 !important;
+    width: 16% !important;
+    top: 60px !important;
+    right: 2% !important;
+  }
+  // 导航栏
+  .v-note-navigation-wrapper {
+    position: absolute !important;
+    width: 16vw !important;
+    top: 0px !important;
+    right: -18vw !important;
+    min-height: 300px !important;
+    max-height: 400px !important;
+    overflow-y: auto !important;
+    transition: none !important;
+    border-radius: 5px;
+    background-color: var(--hover-bg-color) !important;
+    border: none !important;
+    .v-note-navigation-title {
+      font-weight: bold !important;
+      font-family: 'SimHei', 'Microsoft YaHei', sans-serif !important;
+    }
+    // 隐藏关闭导航目录按钮
+    .v-note-navigation-close {
+      display: none !important;
+    }
+    .v-note-navigation-content {
+      > h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        color: rgb(var(--v-theme-primary)) !important;
+        line-height: 1.5 !important;
+        > a {
+          font-family: 'SimHei', 'Microsoft YaHei', sans-serif !important;
+          text-decoration: none !important; // 去除a标签下划线
+          outline: none !important; // 去掉a标签默认轮廓
+          &:hover {
+            background: none !important;
+          }
+        }
+        &:hover {
+          color: #4e97e0 !important;
+          text-decoration: none !important; // 去除a标签下划线
+        }
+      }
+    }
   }
   pre.code {
     color: $codeColor !important;
@@ -100,6 +156,7 @@
 
 .mavon-editor,
 .mavon-editor-show {
+  // overflow: visible;
   pre {
     padding: 0px !important;
     overflow: hidden !important;
@@ -143,9 +200,6 @@ pre.code {
   overflow: hidden;
   padding-left: 50px !important;
 
-  code {
-    // line-height: 30px !important;
-  }
   ol.pre-numbering {
     position: absolute;
     top: 0;

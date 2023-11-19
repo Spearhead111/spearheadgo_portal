@@ -1,7 +1,11 @@
 <template>
-  <v-card elevation="8">
+  <v-card elevation="8" rounded="0" style="color: rgb(var(--v-theme-primary))">
     <v-card-item>
       <v-card-title class="text-center">
+        <div v-if="isRightDrawer" class="flex justify-space-between">
+          <span>{{ `评论 (${allArticleCommentsCount})` }}</span>
+          <v-icon icon="mdi-window-close" @click="closeDrawer"></v-icon>
+        </div>
         <v-icon icon="mdi-comment-text-multiple-outline"></v-icon> Comments
       </v-card-title>
       <v-card-subtitle> 欢迎交流 </v-card-subtitle>
@@ -15,7 +19,7 @@
           counter="255"
           placeholder="一起交流一下吧..."
         ></v-textarea>
-        <v-btn color="deep-purple-accent-4" @click="sendComment('comment')">评论</v-btn>
+        <v-btn color="deep-orange-accent-4" rounded @click="sendComment('comment')">评论</v-btn>
       </v-form>
       <div class="comment-list-box">
         <div class="comment-list-item" v-for="(comment, index) in articleComments">
@@ -53,24 +57,36 @@
 
                       <v-list style="padding: 0">
                         <v-list-item style="padding: 0">
-                          <v-btn variant="text" v-if="hasAuth(comment.commentById)"> 删除 </v-btn>
+                          <v-btn
+                            variant="text"
+                            v-if="hasAuth(comment.commentById)"
+                            @click="deleteComment(comment.id, 'article')"
+                          >
+                            删除
+                          </v-btn>
                         </v-list-item>
                       </v-list>
                     </v-menu>
                     <!-- 回复按钮 -->
                     <div style="cursor: pointer" @click="showReplyContent(comment.id)">
-                      <v-icon
-                        size="20"
-                        class="like-icon ma-0 mr-1"
-                        icon="mdi-comment-outline"
-                      ></v-icon
+                      <v-icon size="20" class="ma-0 mr-1" icon="mdi-comment-outline"></v-icon
                       >{{ replyContentShowMap.get(String(comment.id)) ? '收起' : '回复' }}
                     </div>
                   </div>
                 </div>
+                <!-- 点赞 -->
                 <span>
-                  <span v-if="comment.commentLikes">{{ comment.commentLikes }}</span>
-                  <v-icon class="like-icon" icon="mdi-thumb-up-outline" />
+                  <span
+                    v-if="comment.commentLikes"
+                    :style="{ color: comment.isLiked ? '#EF5350' : '#fff' }"
+                    >{{ comment.commentLikes }}</span
+                  >
+                  <v-icon
+                    class="like-icon"
+                    :color="comment.isLiked ? 'red-lighten-1' : 'grey-darken-4'"
+                    :icon="comment.isLiked ? 'mdi-thumb-up' : 'mdi-thumb-up-outline'"
+                    @click="likeComment(comment, 'article')"
+                  />
                 </span>
               </div>
               <div class="comment-content">{{ comment.content }}</div>
@@ -101,7 +117,7 @@
           </div>
           <ul class="comment-reply-wrapper">
             <template v-for="(replyComment, idx) in comment.replyComment">
-              <li class="comment-reply-item" v-if="comment.showAll || idx === 1">
+              <li class="comment-reply-item" v-if="comment.showAll || idx === 0">
                 <v-avatar size="24">
                   <v-img cover :src="replyComment.commentByAvatar"></v-img>
                 </v-avatar>
@@ -139,7 +155,11 @@
 
                           <v-list style="padding: 0">
                             <v-list-item style="padding: 0">
-                              <v-btn variant="text" v-if="hasAuth(replyComment.commentById)">
+                              <v-btn
+                                variant="text"
+                                v-if="hasAuth(replyComment.commentById)"
+                                @click="deleteComment(replyComment.id, 'reply')"
+                              >
                                 删除
                               </v-btn>
                             </v-list-item>
@@ -147,21 +167,27 @@
                         </v-menu>
                         <!-- 回复按钮 -->
                         <div style="cursor: pointer" @click="showReplyContent(replyComment.id)">
-                          <v-icon
-                            size="20"
-                            class="like-icon ma-0 mr-1"
-                            icon="mdi-comment-outline"
-                          ></v-icon
+                          <v-icon size="20" class="ma-0 mr-1" icon="mdi-comment-outline"></v-icon
                           >{{ replyContentShowMap.get(String(replyComment.id)) ? '收起' : '回复' }}
                         </div>
                       </div>
                     </div>
+                    <!-- 点赞 -->
                     <span>
-                      <span v-if="replyComment.commentLikes">{{ replyComment.commentLikes }}</span>
-                      <v-icon class="like-icon" icon="mdi-thumb-up-outline"></v-icon>
+                      <span
+                        v-if="replyComment.commentLikes"
+                        :style="{ color: replyComment.isLiked ? '#EF5350' : '#fff' }"
+                        >{{ replyComment.commentLikes }}</span
+                      >
+                      <v-icon
+                        class="like-icon"
+                        :color="replyComment.isLiked ? 'red-lighten-1' : 'grey-darken-4'"
+                        :icon="replyComment.isLiked ? 'mdi-thumb-up' : 'mdi-thumb-up-outline'"
+                        @click="likeComment(replyComment, 'reply')"
+                      />
                     </span>
                   </div>
-                  <div class="comment-content">{{ replyComment.content }}</div>
+                  <div class="comment-content-text">{{ replyComment.content }}</div>
                   <v-form
                     v-if="replyContentShowMap.get(String(replyComment.id))"
                     ref="replyFormRef"
@@ -175,7 +201,7 @@
                       rows="2"
                       density="compact"
                       counter="255"
-                      :placeholder="`回复： ${'adas'}`"
+                      :placeholder="`回复： ${comment.commentBy}`"
                     ></v-textarea>
                     <v-btn
                       color="deep-orange-accent-4"
@@ -189,23 +215,28 @@
               </li>
             </template>
             <v-chip
-              class="ml-6"
+              class="ml-6 mt-1"
               size="small"
               v-if="!comment.showAll && comment.replyComment.length > 1"
               @click="comment.showAll = true"
             >
-              查看全部 {{ comment.replyComment.length }} 条评论
+              查看全部 {{ comment.replyComment.length }} 条回复
               <v-icon end icon="mdi-chevron-down"></v-icon>
             </v-chip>
           </ul>
         </div>
+        <v-chip v-if="hasMoreComments" class="more-comments-btn" @click="showMoreComments"
+          >查看更多评论
+          <v-icon end icon="mdi-chevron-down"></v-icon>
+        </v-chip>
+        <v-chip v-else class="ml-6 mt-1 more-comments-btn" size="small">暂无更多评论</v-chip>
       </div>
     </v-card-item>
   </v-card>
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, inject } from 'vue'
 import './style.scss'
 import { storeToRefs } from 'pinia'
 import useUserStore from '@/stores/modules/user'
@@ -223,6 +254,7 @@ export interface ReplyComment {
   commentByAvatar: string
   commentLikes: number
   replyTo: string
+  isLiked: boolean // 当前用户是否点赞
 }
 
 export interface ArticleComments {
@@ -235,18 +267,26 @@ export interface ArticleComments {
   commentLikes: number // 评论点赞数
   replyComment: ReplyComment[] // 评论的回复
   showAll: boolean
+  isLiked: boolean // 当前用户是否点赞
 }
 
 const props = withDefaults(
   defineProps<{
-    articleId: string
-    articleAuthorId: string
-    articleComments: ArticleComments[]
-    articleCommentsCount: number
+    articleId?: number
+    articleAuthorId?: string
+    articleComments?: ArticleComments[]
+    articleCommentsCount?: number
+    hasMoreComments?: boolean
+    allArticleCommentsCount?: number
+    isRightDrawer?: boolean
   }>(),
-  {}
+  {
+    isRightDrawer: false
+  }
 )
-const emit = defineEmits(['refreshComment'])
+const emit = defineEmits(['closeDrawer'])
+/** 博客组件的provide */
+const blogProvide = inject<Record<string, any>>('blogProvide')
 const articleStore = useArticleStore()
 const { getUserId, getRole } = storeToRefs(useUserStore())
 const content = ref('') // 评论内容
@@ -317,9 +357,12 @@ const sendComment = async (
     replyContent.value = ''
     replyContentShowMap.value = new Map<string, boolean>()
     // 刷新评论
-    emit('refreshComment')
+    // 由于评论有两个位置，一个在blog下，一个在左侧article-sidebar中通过评论按钮点出
+    // 两个评论组件一个是blog的子组件，一个是孙组件 不用直接传参了，用依赖注入
+    // emit('refreshComment')
+    blogProvide?.getArticleComment()
   } else {
-    errorCodeMap(res.result_code, res.message || '评论失败')
+    ElMessage(errorCodeMap(res.result_code, res.message || '评论失败'))
   }
 }
 
@@ -338,6 +381,56 @@ const showReplyContent = (id: string | number) => {
   }
 }
 
+/** 查看更多评论 */
+const showMoreComments = () => {
+  blogProvide?.getArticleComment(true)
+}
+
+/**
+ * 删除评论
+ * @param commentId 评论的id
+ * @param type 评论的类型 article:文章评论  reply:评论的回复
+ */
+const deleteComment = async (commentId: number | string, type: 'article' | 'reply') => {
+  const params = {
+    articleId: props.articleId,
+    commentId: String(commentId),
+    type: type === 'article' ? 0 : 1
+  }
+  const res = await articleStore.deleteArticleComment(params)
+  if (res && res.result_code === 'success') {
+    ElMessage.success('删除成功')
+    blogProvide?.getArticleComment()
+  } else {
+    ElMessage(errorCodeMap(res.result_code, res.message || '删除失败'))
+  }
+}
+
+/**
+ * 点赞评论
+ * @param commentId 评论的id
+ * @param type 评论的类型 article:文章评论  reply:评论的回复
+ */
+const likeComment = async (comment: ReplyComment | ArticleComments, type: 'article' | 'reply') => {
+  const params = {
+    articleId: props.articleId,
+    commentId: comment.id,
+    type: type === 'article' ? 0 : 1
+  }
+  const res = await articleStore.likeArticleComment(params)
+  if (res && res.result_code === 'success') {
+    if (comment.isLiked) {
+      comment.commentLikes -= 1
+      comment.isLiked = false
+    } else {
+      comment.commentLikes += 1
+      comment.isLiked = true
+    }
+  } else {
+    ElMessage(errorCodeMap(res.result_code, res.message || '点赞失败'))
+  }
+}
+
 /** 当前用户是否有权限删除评论 */
 const hasAuth = (commentById: string) => {
   // 只有ROOT用户或者文章作者或者评论者本人能删除评论
@@ -346,5 +439,10 @@ const hasAuth = (commentById: string) => {
     getUserId.value === props.articleAuthorId ||
     getUserId.value === commentById
   )
+}
+
+/** 关闭评论drawer */
+const closeDrawer = () => {
+  emit('closeDrawer')
 }
 </script>

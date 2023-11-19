@@ -158,7 +158,7 @@ import useUserStore from '@/stores/modules/user'
 import { errorCodeMap } from '@/utils/errorCodeMap'
 
 interface ArticleProfile {
-  articleId: string
+  articleId: number
   title: string
   subtitle: string
   banner: string

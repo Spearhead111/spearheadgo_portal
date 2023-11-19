@@ -24,7 +24,7 @@
   background-color: rgba($color: var(--v-theme-background), $alpha: 1);
   z-index: 1001 !important;
   .v-overlay__content {
-    overflow: auto;
+    // overflow: auto;
     max-height: none;
     max-width: none;
     height: 100%;
@@ -34,6 +34,7 @@
 
 .mavon-editor {
   z-index: 999 !important;
+  height: 70vh;
   code {
     border-radius: 5px;
   }

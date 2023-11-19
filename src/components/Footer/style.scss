@@ -1,24 +1,13 @@
 .footer-wrapper {
-  position: absolute;
-  bottom: 0;
+  height: 60px;
   width: 100%;
-  // min-height: 20%;
-  min-width: 700px;
-  background-color: $color-background;
-  .footer-svg {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    background-color: $color-background;
-    z-index: 1;
-  }
-  .footer-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    position: absolute;
+  background-color: #7986cb !important;
 
-    bottom: 0;
-    z-index: 2;
+  .beian-link {
+    text-decoration: none; // 去除a标签下划线
+    outline: none; // 去掉a标签默认轮廓
+    &:hover {
+      background: none;
+    }
   }
 }

@@ -1,6 +1,6 @@
 .comment-list-box {
-  .comment-list-item {
-  }
+  display: flex;
+  flex-direction: column;
 
   .comment-list-item .primary-comment-wrapper {
     display: flex;
@@ -50,9 +50,10 @@
       .like-icon {
         margin: 0 10px;
         align-self: flex-end;
+        cursor: pointer;
       }
     }
-    .comment-content {
+    .comment-content-text {
       font-size: 14px;
       line-height: 22px;
       word-break: break-word;
@@ -71,7 +72,19 @@
     .comment-reply-item {
       display: flex;
       flex-direction: row;
+    }
+    .comment-reply-item {
       padding-bottom: 16px;
     }
+    .comment-reply-item:last-of-type {
+      padding-bottom: 0 !important;
+    }
+  }
+
+  .more-comments-btn {
+    width: 140px;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
   }
 }
