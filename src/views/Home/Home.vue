@@ -12,7 +12,7 @@
           <v-sheet :elevation="8" :height="400" :width="300" rounded="lg" class="profile">
             <div class="avatar-content">
               <StarSky :width="300" :height="150" />
-              <v-avatar class="my-avatar" :image="HOME_PAGE_BANNER" size="100" @click=""></v-avatar>
+              <v-avatar class="my-avatar" :image="LOGO_PIC" size="100" @click=""></v-avatar>
             </div>
             <h2>SPEARHEAD</h2>
             <div class="contact-type-wrapper">
@@ -138,7 +138,14 @@ import './style.scss'
 import { ref } from 'vue'
 import StarSky from '@/components/StarSky/StarSky.vue'
 import BlogProfile from '@/components/BlogProfile/BlogProfile.vue'
-import { HOME_PAGE_BANNER, BANNER_WAVE1, BANNER_WAVE2, weChatImg, QQImg } from '@/constants'
+import {
+  LOGO_PIC,
+  HOME_PAGE_BANNER,
+  BANNER_WAVE1,
+  BANNER_WAVE2,
+  weChatImg,
+  QQImg
+} from '@/constants'
 import { debounce, throttle } from 'lodash'
 import { onMounted } from 'vue'
 import useArticleStore from '@/stores/modules/article'

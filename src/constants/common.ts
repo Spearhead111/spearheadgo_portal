@@ -1,3 +1,6 @@
+import { CDN_URL } from './cdnUrl'
+
+const imgUrl = CDN_URL + 'img/icon/'
 /** 文章组件的查看方式 */
 export const BLOG_VISIBLE_TYPE = {
   PREVIEW: 'preview', // 预览
@@ -79,6 +82,7 @@ export const HEAD_MENU = {
     path: '/',
     submenuName: 'home',
     auth: USER_ROLE_MAP.GUEST, // 权限要求
+    iconUrl: imgUrl + 'house.png',
     children: []
   },
   goal: {
@@ -87,6 +91,7 @@ export const HEAD_MENU = {
     path: '/goal',
     submenuName: 'goal',
     auth: USER_ROLE_MAP.ROOT,
+    iconUrl: imgUrl + 'target.png',
     children: []
   },
   write: {
@@ -95,6 +100,7 @@ export const HEAD_MENU = {
     path: '/write?type=create',
     submenuName: 'write',
     auth: USER_ROLE_MAP.AUTHOR,
+    iconUrl: imgUrl + 'pencil.png',
     children: []
   },
   admin: {
@@ -102,6 +108,7 @@ export const HEAD_MENU = {
     needAuth: true,
     submenuName: 'admin',
     auth: USER_ROLE_MAP.ADMIN,
+    iconUrl: imgUrl + 'support.png',
     children: [
       {
         des: '用户管理',

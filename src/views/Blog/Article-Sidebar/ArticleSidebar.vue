@@ -92,6 +92,7 @@ const likeArticle = () => {
   overflow: auto;
   right: 0;
   .article-comments {
+    overflow-y: auto;
     height: 100%;
   }
   &::-webkit-scrollbar {

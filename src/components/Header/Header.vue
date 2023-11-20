@@ -19,7 +19,8 @@
         <v-menu open-on-hover open-delay="150" close-delay="0">
           <template v-slot:activator="{ props }">
             <v-btn variant="text" v-bind="props" @click="routerJump(menuItem)">
-              <span class="submeun-text" style="font-size: 16px; font-weight: bold">{{
+              <v-img :width="24" :src="menuItem.iconUrl"></v-img>
+              <span class="submeun-text pl-2" style="font-size: 16px; font-weight: bold">{{
                 menuItem.des
               }}</span>
             </v-btn>
