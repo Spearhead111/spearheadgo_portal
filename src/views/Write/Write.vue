@@ -125,6 +125,9 @@
           </v-tooltip>
           <v-dialog
             v-model="previewBlogDialogVisible"
+            :fullscreen="true"
+            :persistent="true"
+            :no-click-animation="true"
             :scrim="false"
             class="blog-preview-dialog pa-0 ma-0"
           >
@@ -374,10 +377,26 @@ const imgAdd = async (pos: string, file: File) => {
     })
     if (response.status === 200) {
       mavonEditorRef.value.$img2Url(pos, data.imgUrl)
+      convertMarkdownImageToHTML()
     }
   } else {
     ElMessage(errorCodeMap(res.result_code, res.message))
   }
+}
+
+/** 将图片转换成img的写法，这样能在后面将img替换为el-img的时候能获取到width和height */
+const convertMarkdownImageToHTML = () => {
+  // 使用正则表达式匹配图片语法
+  const regex = /!\[([^\]]+)\]\(([^)]+)\)/
+
+  // 使用replace方法替换匹配到的图片语法
+  blogContent.value = blogContent.value.replace(
+    regex,
+    function (match: any, altText: string, imageUrl: string) {
+      // 生成img元素的HTML代码
+      return `<p><img alt="${altText}" src="${imageUrl}" width="100%" height="100%"></p>`
+    }
+  )
 }
 
 const imgDel = async (pos: string, file: File) => {}

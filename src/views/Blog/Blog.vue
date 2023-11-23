@@ -1,5 +1,5 @@
 <template>
-  <div v-loading="loading" style="overflow: auto">
+  <div ref="blogEleRef" v-loading="loading" style="overflow: auto">
     <v-btn
       v-if="props.type === BLOG_VISIBLE_TYPE.PREVIEW"
       @click="emit('update:previewVisible', false)"
@@ -91,7 +91,7 @@
       <!-- ishljs:是否显示高亮 default-open="preview":只做预览展示 :editable="false":是否可编辑 -->
       <!-- subfield: true表示双栏，false表示单栏  :toolbarsFlag="false":是否显示编辑栏 -->
       <mavon-editor
-        class="mavon-editor-show"
+        class="mavon-editor-show mb-12"
         ref="mavonEditorRef"
         v-model="blogInfoDetail.content"
         :ishljs="false"
@@ -116,7 +116,18 @@
 
 <script lang="ts" setup>
 import './style.scss'
-import { ref, nextTick, onMounted, onUnmounted, watch, computed, provide, createApp, h } from 'vue'
+import {
+  ref,
+  nextTick,
+  onMounted,
+  onUnmounted,
+  watch,
+  computed,
+  provide,
+  createApp,
+  h,
+  getCurrentInstance
+} from 'vue'
 import { BLOG_VISIBLE_TYPE } from '@/constants/common'
 import { ElButton, ElImage, ElMessage } from 'element-plus'
 import { errorCodeMap, highlightCode } from '@/utils'
@@ -169,6 +180,7 @@ const userStore = useUserStore()
 const { userInfo, getUserId } = storeToRefs(userStore)
 const commentPageNo = ref(1)
 const commentPageSize = ref(10)
+const blogEleRef = ref<HTMLElement | null>(null)
 /** 导航目录 */
 const navigationElement = ref<HTMLElement | null>(null)
 const mavonEditorRef = ref(null)
@@ -199,9 +211,10 @@ const loading = ref(false)
 onMounted(async () => {
   loading.value = true
   if (props.type === BLOG_VISIBLE_TYPE.DETAIL) {
-    getArticleDetail()
-    getArticleComment()
-    getArticleUserInfo()
+    await Promise.all([getArticleDetail(), getArticleComment(), getArticleUserInfo()])
+
+    // getArticleComment()
+    // getArticleUserInfo()
   } else if (props.type === BLOG_VISIBLE_TYPE.PREVIEW) {
     blogInfoDetail.value = { ...props.blogInfo }
     // 判断传入的banner是string还是File，如果是file需要转换成url
@@ -215,7 +228,10 @@ onMounted(async () => {
 })
 
 onUnmounted(() => {
-  window.removeEventListener('scroll', navigationScroll)
+  ;(props.type === BLOG_VISIBLE_TYPE.DETAIL ? window : blogEleRef.value)?.removeEventListener(
+    'scroll',
+    navigationScroll
+  )
 })
 
 /** 文章内容渲染完毕后：高亮代码，导航目录添加href跳转 */
@@ -229,9 +245,14 @@ const initAfterBlogDone = async () => {
   // 导航目录添加href跳转, 这里因为nexttick后不在目录渲染完毕的时机，所以延迟500ms执行
   setTimeout(() => {
     addNavigationUrl()
-    navigationElement.value = document.querySelector('.v-note-navigation-wrapper')
+    navigationElement.value = (
+      props.type === BLOG_VISIBLE_TYPE.DETAIL ? document : blogEleRef.value
+    )?.querySelector('.v-note-navigation-wrapper') as HTMLElement
     // 添加滚动事件，确保导航目录的位置
-    window.addEventListener('scroll', navigationScroll)
+    ;(props.type === BLOG_VISIBLE_TYPE.DETAIL ? window : blogEleRef.value)?.addEventListener(
+      'scroll',
+      navigationScroll
+    )
   }, 500)
 }
 
@@ -333,11 +354,13 @@ const navigationScroll = () => {
     return
   }
   // 页面滚动值
-  const scrollTop = document.documentElement.scrollTop
+  const scrollTop = (
+    props.type === BLOG_VISIBLE_TYPE.DETAIL ? document.documentElement : blogEleRef.value
+  )?.scrollTop as number
   if (scrollTop > window.innerHeight) {
     navigationElement.value.setAttribute(
       'style',
-      'position: fixed !important; top: 0 !important; width: 16% !important; top: 80px !important; right: 2% !important;'
+      'position: fixed !important; top: 0 !important; width: 16% !important; top: 80px !important; right: 2% !important; z-index:1503 !important;'
     )
   } else if (scrollTop < window.innerHeight * 0.4) {
     navigationElement.value.removeAttribute('style')
@@ -368,9 +391,17 @@ const addNavigationUrl = () => {
 
 /** 跳转到锚点 */
 const scrollToAnchor = (anchor: string) => {
-  const targetElement = document.getElementById(anchor)
+  // 这里也有预览和详情之分，预览比较特殊，预览是渲染在弹窗内的，得用根节点blogEleRef来进行处理
+  const targetElement = BLOG_VISIBLE_TYPE.DETAIL
+    ? document.getElementById(anchor)
+    : (blogEleRef.value?.querySelector(getEleId(anchor)) as HTMLElement)
   if (targetElement) {
-    window.scrollTo({ top: targetElement.offsetTop + 400, behavior: 'smooth' })
+    // 判断是预览还是详情，因为预览状态的blog是在write页面中以一个弹窗出现的，不能使用window来实现滚动
+    // 两种状态下的滚动距离也不一样
+    ;(props.type === BLOG_VISIBLE_TYPE.DETAIL ? window : blogEleRef.value)?.scrollTo({
+      top: targetElement.offsetTop + (props.type === BLOG_VISIBLE_TYPE.DETAIL ? 400 : 200),
+      behavior: 'smooth'
+    })
   }
   // 借助animate.css实现动画效果来高亮跳转的锚点
   targetElement?.parentElement?.setAttribute('class', 'animate__animated animate__flash')
@@ -380,19 +411,27 @@ const scrollToAnchor = (anchor: string) => {
   }, 1000)
 }
 
+/** 这里的次级标题a锚点的id可能带有两个'_'，这被css选择器看作是无效的，需要做一下转义 */
+const getEleId = (id: string) => {
+  return id.replace('__', '\\__')
+}
+
 /** 给文章中的图片添加点击事件 */
 const addImgClickFunc = () => {
   const imgs = document.querySelectorAll('.v-show-content img') as NodeListOf<HTMLImageElement>
   imgs.forEach((img: HTMLImageElement) => {
     const parentEle = img.parentElement as HTMLElement
     // 创建一个 elementImg 并挂载到 parentEle 上，这个 mount(parentEle) 会替换 parentEle 上的所有元素
+    const width = img.getAttribute('width')
+    const height = img.getAttribute('height')
     const elImg = createApp({
       render() {
         return h(ElImage, {
           src: img.src,
           alt: img.alt,
           zIndex: 9000,
-          fit: 'cover',
+          // fit: 'cover',
+          style: { width, height },
           previewSrcList: [img.src],
           onClose: () => {
             // 按下esc关闭时恢复html的overflow样式
