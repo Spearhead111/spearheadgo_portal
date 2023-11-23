@@ -63,7 +63,7 @@
     <v-card-subtitle class="pt-2">
       {{ articleProfile.subtitle }}
     </v-card-subtitle>
-    <v-card-subtitle class="pt-1 flex align-center justify-space-between">
+    <v-card-subtitle class="pt-1 flex align-center justify-space-between" style="display: flex">
       <div>
         <calendar-dot
           class="mr-1"

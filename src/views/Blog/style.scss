@@ -146,7 +146,7 @@
     }
   }
   pre.code {
-    color: $codeColor !important;
+    // color: $codeColor !important;
     background-color: #1d1f21 !important;
     code {
       color: $codeColor !important;
@@ -216,6 +216,7 @@ pre.code {
         counter-increment: sectioncounter;
         display: inline-block;
         width: 40px;
+        color: #d2d2d2;
         text-align: center;
         border-right: solid 1px rgba($color: $codeColor, $alpha: 0.8);
       }
@@ -261,3 +262,96 @@ pre.code {
     height: 3px;
   }
 }
+
+// atom-one-dark.css 样式被覆盖了，在这里都加上
+pre code.hljs {
+  display: block !important;
+  overflow-x: auto !important;
+  // padding: 1em !important;
+}
+code.hljs {
+  padding: 3px 5px;
+}
+/*
+
+Atom One Dark by Daniel Gamage
+Original One Dark Syntax theme from https://github.com/atom/one-dark-syntax
+
+base:    #282c34
+mono-1:  #abb2bf
+mono-2:  #818896
+mono-3:  #5c6370
+hue-1:   #56b6c2
+hue-2:   #61aeee
+hue-3:   #c678dd
+hue-4:   #98c379
+hue-5:   #e06c75
+hue-5-2: #be5046
+hue-6:   #d19a66
+hue-6-2: #e6c07b
+
+*/
+.hljs {
+  color: #abb2bf !important;
+  background: #282c34 !important;
+}
+.hljs-comment,
+.hljs-quote {
+  color: #5c6370 !important;
+  font-style: italic !important;
+}
+.hljs-doctag,
+.hljs-keyword,
+.hljs-formula {
+  color: #c678dd !important;
+}
+.hljs-section,
+.hljs-name,
+.hljs-selector-tag,
+.hljs-deletion,
+.hljs-subst {
+  color: #e06c75 !important;
+}
+.hljs-literal {
+  color: #56b6c2 !important;
+}
+.hljs-string,
+.hljs-regexp,
+.hljs-addition,
+.hljs-attribute,
+.hljs-meta .hljs-string {
+  color: #98c379 !important;
+}
+.hljs-attr,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-type,
+.hljs-selector-class,
+.hljs-selector-attr,
+.hljs-selector-pseudo,
+.hljs-number {
+  color: #d19a66 !important;
+}
+.hljs-symbol,
+.hljs-bullet,
+.hljs-link,
+.hljs-meta,
+.hljs-selector-id,
+.hljs-title {
+  color: #61aeee !important;
+}
+.hljs-built_in,
+.hljs-title.class_,
+.hljs-class .hljs-title {
+  color: #e6c07b !important;
+}
+.hljs-emphasis {
+  font-style: italic !important;
+}
+.hljs-strong {
+  font-weight: bold !important;
+}
+.hljs-link {
+  text-decoration: underline !important;
+}
+// atom-one-dark.css end

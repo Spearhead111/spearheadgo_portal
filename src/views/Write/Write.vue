@@ -147,6 +147,7 @@
           @imgAdd="imgAdd"
           @imgDel="imgDel"
           @fullScreen="fullScreen = !fullScreen"
+          @save="saveBlogContent"
         />
       </v-form>
       <div class="flex align-center justify-center mt-8">
@@ -289,6 +290,17 @@ onMounted(async () => {
   await getArticleTagList()
   if (isCreate.value) {
     // 新建文章
+    // 检查当前用户有没有保存过草稿
+    const draftJson = localStorage.getItem('savedBlog')
+    if (draftJson) {
+      const savedBlogDraft = JSON.parse(localStorage.getItem('savedBlog') as string)
+      blogTitle.value = savedBlogDraft.title
+      blogSubtitle.value = savedBlogDraft.subtitle
+      blogContent.value = savedBlogDraft.content
+      // blogTags.value = savedBlogDraft.tags
+      blogDesc.value = savedBlogDraft.desc
+      ElMessage.info('检测到有上次未发布的保存草稿，已为你恢复')
+    }
   } else {
     // 编辑文章
     await getBlogDetail()
@@ -428,6 +440,8 @@ const submitBlog = async () => {
     const res = await articleStore.createArticle(formData)
     if (res && res.result_code === 'success') {
       ElMessage.success('发布文章成功')
+      // 发布成功清除保存的草稿
+      localStorage.removeItem('savedBlog')
       // 更新文章成功跳转到文章详情页面
       nextTick(() => routeToArticleDetail(String((res.data as any).articleId)))
     } else {
@@ -438,6 +452,8 @@ const submitBlog = async () => {
     const res = await articleStore.updateArticle({ articleId: articleId.value, body: formData })
     if (res && res.result_code === 'success') {
       ElMessage.success('更新文章成功')
+      // 发布成功清除保存的草稿
+      localStorage.removeItem('savedBlog')
       // 更新文章成功跳转到文章详情页面
       nextTick(() => routeToArticleDetail(String(articleId.value)))
     } else {
@@ -457,4 +473,18 @@ const routeToArticleDetail = (articleId: string | number) => {
 
 /** 防抖发布文章 */
 const debounceSubmitBlog = debounce(submitBlog, 300)
+
+/** 保存文章内容 */
+const saveBlogContent = () => {
+  // 不保存文章标签，草稿内的文章标签可能会变化
+  const savedBlog = {
+    title: blogInfo.value.title,
+    subtitle: blogInfo.value.subtitle,
+    content: blogInfo.value.content,
+    // tags: blogInfo.value.tags,
+    desc: blogInfo.value.desc
+  }
+  localStorage.setItem('savedBlog', JSON.stringify(savedBlog))
+  ElMessage.success('保存草稿成功，意外退出再进入可恢复草稿')
+}
 </script>

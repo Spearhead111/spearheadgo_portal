@@ -16,6 +16,7 @@ import { animateDirective, authDirective } from '@/directive'
 import hljs from 'highlight.js'
 // 使用样式，有多种样式可选
 import 'highlight.js/styles/mac.css'
+import 'highlight.js/styles/atom-one-dark.css'
 import useUserStore from './stores/modules/user'
 
 const app = createApp(App)
