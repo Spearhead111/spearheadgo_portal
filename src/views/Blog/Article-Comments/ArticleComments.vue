@@ -129,7 +129,7 @@
                         <span
                           v-if="articleAuthorId === replyComment.commentById"
                           class="commenter-role"
-                          >{{ replyComment.commentBy }}</span
+                          >{{ '作者' }}</span
                         >
                         <span>回复</span>
                         <span class="name">{{ replyComment.replyTo }}</span>
