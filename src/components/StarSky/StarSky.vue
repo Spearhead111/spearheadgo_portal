@@ -78,12 +78,12 @@ const generate = () => {
   }
 }
 // 将星星放置到随机位置
-const placeStar = (star) => {
+const placeStar = (star: { x: number; y: number }) => {
   star.x = Math.random() * width.value
   star.y = Math.random() * height.value
 }
 // 回收星星并重新放置到新的位置
-const recycleStar = (star) => {
+const recycleStar = (star: any) => {
   // 初始化方向为 'z'
   let direction = 'z'
   // 获取速度的绝对值
@@ -223,12 +223,12 @@ const movePointer = (x: number, y: number) => {
   pointerY.value = y
 }
 // 当鼠标在canvas上移动时的事件处理函数
-const onMouseMove = (event) => {
+const onMouseMove = (event: any) => {
   touchInput.value = false
   movePointer(event.clientX, event.clientY)
 }
 // 当触摸屏在canvas上移动时的事件处理函数
-const onTouchMove = (event) => {
+const onTouchMove = (event: any) => {
   touchInput.value = true
   movePointer(event.touches[0].clientX, event.touches[0].clientY)
   event.preventDefault()

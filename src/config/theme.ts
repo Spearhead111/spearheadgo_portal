@@ -10,6 +10,6 @@ const lightTheme = {
 export const toggleThemeGlobal = (isDark: boolean) => {
   const theme = isDark ? darkTheme : lightTheme
   for (let key in theme) {
-    document.documentElement.style.setProperty(key, theme[key])
+    document.documentElement.style.setProperty(key, theme[key as keyof typeof theme])
   }
 }

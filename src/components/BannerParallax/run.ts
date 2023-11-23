@@ -1,16 +1,20 @@
 import { barnerImagesData1, barnerImagesData2 } from './data'
 
 export default () => {
-  const body = document.getElementById('appp')
-  const lerp = (start, end, amt) => (1 - amt) * start + amt * end // 计算线性插值
+  const body = document.getElementById('appp') as HTMLElement
+
+  const lerp = (start: number, end: number, amt: number) => (1 - amt) * start + amt * end // 计算线性插值
   const barnersData = [barnerImagesData1, barnerImagesData2]
   let allImagesData = barnerImagesData1
 
   let compensate = 0 // 视窗补偿值
-  let layers = [] // DOM集合
+  let layers: string | any[] | NodeListOf<Element> = [] // DOM集合
 
-  document.getElementById('selectBox').addEventListener('click', (e) => {
-    const setData = barnersData[+e.target.id - 1]
+  document.getElementById('selectBox')?.addEventListener('click', (e) => {
+    if (!e) {
+      return
+    }
+    const setData = barnersData[+(e.target as any)?.id - 1]
     if (!setData) return
     allImagesData = setData
     body.innerHTML = ''
@@ -27,7 +31,9 @@ export default () => {
         const item = allImagesData[i]
         const layer = document.createElement('div')
         layer.classList.add('layer')
+        // @ts-ignore
         layer.style = 'transform:' + new DOMMatrix(item.transform)
+        // @ts-ignore
         item.opacity && (layer.style.opacity = item.opacity[0])
         const img = document.createElement('img')
         img.src = item.url
@@ -52,13 +58,14 @@ export default () => {
   const duration = 300 // 动画持续时间（毫秒）
   function mouseMove() {
     // 滑动操作
+    // @ts-ignore
     animate()
   }
   function leave() {
     startTime = 0
     requestAnimationFrame(homing) // 开始动画
   }
-  function homing(timestamp) {
+  function homing(timestamp: number) {
     !startTime && (startTime = timestamp)
     const elapsed = timestamp - startTime
     const progress = Math.min(elapsed / duration, 1)
@@ -66,7 +73,7 @@ export default () => {
     progress < 1 && requestAnimationFrame(homing) // 继续下一帧
   }
   // 动画执行
-  function animate(progress) {
+  function animate(progress: number | undefined) {
     if (layers.length <= 0) return
     const isHoming = typeof progress === 'number'
     for (let i = 0; i < layers.length; i++) {
