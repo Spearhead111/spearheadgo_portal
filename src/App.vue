@@ -1,85 +1,75 @@
-<script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
-
-  <RouterView />
+  <Header></Header>
+  <PageSetting />
+  <RouterView id="router-view" :key="routerKey" />
+  <!-- 回到顶部 -->
+  <v-icon
+    class="go-top"
+    v-if="showGoTop"
+    icon="mdi-arrow-collapse-up"
+    color="rgb(146 107 231)"
+    size="large"
+    @click="goBackTop"
+  ></v-icon>
+  <Footer class="align-self-end"></Footer>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
+<script setup lang="ts">
+import { RouterView, useRouter } from 'vue-router'
+import Header from '@/components/Header/Header.vue'
+import Footer from '@/components/Footer/Footer.vue'
+import PageSetting from '@/components/PageSetting/PageSetting.vue'
+import { computed, onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
+import useUserStore from './stores/modules/user'
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
+const route = useRoute()
+const router = useRouter()
+const userStore = useUserStore()
+const showGoTop = ref(false)
 
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
+const routerKey = computed(() => {
+  return route.path + JSON.stringify(route.query)
+})
 
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
+onMounted(async () => {
+  window.addEventListener('scroll', showGoTopIcon)
+  // 校验一下用户当前信息有没有变更，如果变更需要重新登录
+  await userStore.verify()
+})
 
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
+/** 是否展示回到顶部的按钮icon */
+const showGoTopIcon = () => {
+  if (
+    document.documentElement.scrollTop > (window.innerHeight * 3) / 4 ||
+    document.body.scrollTop > (window.innerHeight * 3) / 4
+  ) {
+    showGoTop.value = true
+  } else {
+    showGoTop.value = false
   }
+}
 
-  .logo {
-    margin: 0 2rem 0 0;
-  }
+/** 回到顶部 */
+const goBackTop = () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+</script>
 
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
+<style lang="scss" scoped>
+#router-view {
+}
+.go-top {
+  position: fixed;
+  right: 30px;
+  bottom: 78px;
+  z-index: 1001;
+  cursor: pointer;
+  width: 35px;
+  height: 35px;
+  transition: $transitionAll;
+  &:hover {
+    bottom: 85px;
   }
 }
 </style>

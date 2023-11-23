@@ -1,0 +1,101 @@
+.header-wrapper {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  width: 100%;
+  transition: $transitionAll;
+  z-index: 1000;
+  &:hover {
+    background-color: rgba($color: rgb(80, 79, 79), $alpha: 0.5);
+  }
+  .logo-name {
+    position: relative;
+    margin-left: 30px;
+    width: 150px;
+    height: 30px;
+    cursor: default;
+    transform-style: preserve-3d;
+    transition: all 0.4s;
+    &:hover {
+      transform: rotateX(90deg);
+    }
+    > div {
+      position: absolute;
+      height: 100%;
+      width: 100%;
+      text-align: center;
+      font-size: 20px;
+      color: $white;
+      font-weight: bold;
+      cursor: pointer;
+      font-family: Comic Sans MS;
+    }
+    .front {
+      transform: translateZ(15px);
+      z-index: 1;
+    }
+    .bottom {
+      font-weight: normal;
+      color: pink;
+      font-size: 18px;
+      transform: translateY(15px) rotateX(-90deg);
+    }
+  }
+  .header-menu {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    .submenu-item {
+      display: flex;
+      align-items: center;
+      position: relative;
+      font-family: FZKaTong-M19S;
+      color: #eff2f4;
+      transition: $transitionAll;
+      > ::before {
+        content: '';
+        position: absolute;
+        left: 50%;
+        transform: translate(-50%, 0);
+        bottom: -5px;
+        width: 0;
+        height: 5px;
+        background-color: $orange;
+        border-radius: 4px;
+        transition: $transitionAll;
+      }
+      &:hover {
+        color: $orange;
+        ::before {
+          width: 80%;
+        }
+
+        .submeun-text {
+          @include applyShakeUpAnimation(0.3s, linear); // 自定持续时间和重复次数
+        }
+      }
+    }
+
+    .user-avatar-menu {
+      margin-right: 30px;
+      cursor: pointer;
+    }
+
+    .submenu-selected {
+      color: $orange;
+    }
+  }
+}
+.header-wrapper-additional {
+  // color:;
+  box-shadow: 0px 0px 10px 10px rgba(0, 0, 0, 0.1);
+  background-color: var(--header-bg-color);
+  &:hover {
+    background-color: var(--header-bg-color);
+  }
+}
+.submenu-selected {
+  color: $orange;
+}

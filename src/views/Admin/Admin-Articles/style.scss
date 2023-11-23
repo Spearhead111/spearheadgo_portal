@@ -1,0 +1,94 @@
+/** 管理页面通用的头部图片样式，admin下的所有组件都有这个样式 */
+.admin-header-banner {
+  position: relative;
+  height: 20vh;
+  z-index: 0;
+  animation: imgIn 0.7s linear;
+  @keyframes imgIn {
+    0% {
+      bottom: 60px;
+    }
+    100% {
+      bottom: 0;
+    }
+  }
+  &::before {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.15);
+    content: '';
+  }
+}
+
+.admin-articles-wrapper {
+  .admin-articles-content {
+    position: relative;
+    padding: 40px 0px;
+    width: 90%;
+    max-width: none;
+    display: flex;
+    flex-direction: column;
+    animation: fromBottomIn 0.7s linear;
+    @keyframes fromBottomIn {
+      0% {
+        bottom: -40px;
+        opacity: 0;
+      }
+      100% {
+        bottom: 0;
+        opacity: 1;
+      }
+    }
+  }
+}
+
+.article-list-wrapper {
+  .search-form {
+    margin-top: 20px;
+    display: flex;
+  }
+}
+
+.article-table {
+  .el-table__header .cell {
+    font-weight: bold;
+  }
+}
+
+.categories-list-wrapper {
+  .tag-list-content {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    .tag-item-content {
+      margin-right: 10px;
+      margin-bottom: 10px;
+      padding: 0 30px;
+      > .v-chip {
+        cursor: pointer;
+        animation: tagItem 3s linear infinite;
+        &:hover {
+          animation-play-state: paused;
+        }
+        @keyframes tagItem {
+          0% {
+            transform: translateX(0);
+          }
+          25% {
+            transform: translateX(-30px);
+          }
+          50% {
+            transform: translateX(0px);
+          }
+          70% {
+            transform: translateX(30px);
+          }
+          100% {
+            transform: translateX(0);
+          }
+        }
+      }
+    }
+  }
+}

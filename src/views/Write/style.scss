@@ -1,0 +1,49 @@
+.write-banner-iframe {
+  position: relative;
+  animation: imgIn 1s linear;
+}
+@keyframes imgIn {
+  0% {
+    bottom: 80px;
+    opacity: 0;
+  }
+  100% {
+    bottom: 0;
+    opacity: 1;
+  }
+}
+
+.write-blog-wrapper {
+  .blog-preview-content {
+    height: 100vh;
+    width: 100vw;
+  }
+}
+
+.blog-preview-dialog {
+  background-color: rgba($color: var(--v-theme-background), $alpha: 1);
+  z-index: 1001 !important;
+  .v-overlay__content {
+    // overflow: auto;
+    // max-height: none;
+    // max-width: none;
+    // height: 100%;
+    // width: 100%;
+  }
+}
+
+.mavon-editor {
+  z-index: 999 !important;
+  height: 70vh;
+  code {
+    border-radius: 5px;
+  }
+}
+
+.mavon-editor.fullScreen {
+  z-index: 1001 !important;
+}
+
+.tag-label {
+  font-size: 14px;
+}

@@ -1,0 +1,44 @@
+.setting-icon-wapper {
+  position: fixed;
+  right: 30px;
+  bottom: 30px;
+  z-index: 1000;
+  cursor: pointer;
+  width: 35px;
+  height: 35px;
+
+  .setting-icon-top-left {
+    position: absolute;
+    left: 0;
+    top: 0;
+    animation: rotate1 3s linear infinite;
+  }
+  .setting-icon-bottom-right {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    animation: rotate2 4s linear infinite;
+  }
+
+  @keyframes rotate1 {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes rotate2 {
+    from {
+      transform: rotate(360deg);
+    }
+    to {
+      transform: rotate(0deg);
+    }
+  }
+}
+.page-setting-list {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}

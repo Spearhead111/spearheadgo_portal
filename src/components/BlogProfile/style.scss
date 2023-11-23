@@ -1,0 +1,92 @@
+.blog-profile-wrapper {
+  position: relative;
+  animation: zoomIn 0.5s ease;
+  height: 405px;
+  @keyframes zoomIn {
+    0% {
+      scale: 0;
+    }
+    100% {
+      scale: 1;
+    }
+  }
+
+  .profile-btn-wrapper {
+    display: flex;
+    opacity: 0;
+    flex-direction: column;
+    z-index: 1;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    > button {
+      margin-bottom: 10px;
+    }
+  }
+  &:hover {
+    .profile-btn-wrapper {
+      opacity: 1;
+    }
+  }
+
+  .profile-img {
+    cursor: pointer;
+    &::before {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.15);
+      content: '';
+    }
+    > img {
+      cursor: pointer;
+      transition: all 0.5s ease;
+    }
+    &:hover > img {
+      scale: 1.2;
+    }
+  }
+
+  .blog-profile-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* 设置最多显示4行 */
+    -webkit-box-orient: vertical;
+  }
+
+  .blog-profile-tag-wrapper {
+    display: flex;
+    justify-content: flex-start;
+    margin: 0 10px;
+    position: absolute;
+    bottom: 55px;
+    left: 5px;
+    .v-chip {
+      margin-right: 5px;
+      cursor: pointer;
+      > .v-chip__content span {
+        font-weight: 300;
+      }
+    }
+  }
+  .blog-profile-icon-wrapper {
+    display: flex;
+    align-items: center;
+
+    > div {
+      display: flex;
+      align-items: center;
+      margin-right: 10px;
+      > span:not(:last-child) {
+        margin-right: 5px;
+      }
+    }
+  }
+
+  .action-wrapper {
+    position: absolute;
+    width: 100%;
+    bottom: 0px;
+  }
+}

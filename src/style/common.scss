@@ -1,0 +1,54 @@
+// @import '@/assets/css/main.css';
+@import './base.scss';
+@import url('https://spearhead-cdn-1314941949.cos.ap-chengdu.myqcloud.com/iconfont/iconfont.css');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css');
+
+$white: #ffffff;
+$orange: #ffa500;
+$transitionAll: all 0.3s;
+$codeColor: #f1f1f1;
+
+$baseFontFamily:
+  system-ui,
+  -apple-system,
+  Helvetica,
+  Arial,
+  sans-serif;
+// 设定重置函数拼接到原始变量之前，若无需拼接则直接继承
+@function ff($fontFamily) {
+  @return $fontFamily, $baseFontFamily;
+}
+
+body {
+  // font-family: ff('CustomFont'), sans-serif;
+}
+
+:root {
+  --hover-bg-color: #eeeeee; // theme
+  --header-bg-color: rgb(80, 80, 80); // theme
+}
+
+#app {
+  background-color: rgb(var(--v-theme-background));
+}
+
+// 动画
+/* shakeUp向上抖动 start */
+@keyframes shakeUp {
+  $translateY: 5px; // 定义距离变量在 @keyframes 内部
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-$translateY); // 使用传递的距离参数
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@mixin applyShakeUpAnimation($duration: 0.3s, $iteration: linear) {
+  animation: shakeUp $duration $iteration;
+}
+
+/* shakeUp向上抖动 end */
