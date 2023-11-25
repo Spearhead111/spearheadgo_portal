@@ -131,8 +131,10 @@
                           class="commenter-role"
                           >{{ '作者' }}</span
                         >
-                        <span>回复</span>
-                        <span class="name">{{ replyComment.replyTo }}</span>
+                        <template v-if="!replyComment.isReplyToTop">
+                          <span>回复</span>
+                          <span class="name">{{ replyComment.replyTo }}</span>
+                        </template>
                         <span>{{ formatTime(replyComment.createTime, 'YYYY.MM.DD') }}</span>
                       </div>
                       <div class="comment-actions">
@@ -255,6 +257,7 @@ export interface ReplyComment {
   commentLikes: number
   replyTo: string
   isLiked: boolean // 当前用户是否点赞
+  isReplyToTop: boolean // 是否是回复的文章顶级评论
 }
 
 export interface ArticleComments {
