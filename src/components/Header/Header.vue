@@ -92,7 +92,7 @@
 import './style.scss'
 import { ref } from 'vue'
 import { HEAD_MENU } from '@/constants'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { onMounted } from 'vue'
 import useUserStore from '@/stores/modules/user'
 import { storeToRefs } from 'pinia'
@@ -102,6 +102,7 @@ const userStore = useUserStore()
 // useStore才是响应式的，如果直接从useStore中拿userInfo会丢失响应式，用storeToRefs来将userStore解构后的state也是响应式
 const { userInfo, selectedSubMenu } = storeToRefs(userStore)
 const router = useRouter()
+const route = useRoute()
 const showHeader = ref(true) // 是否显示头部
 const lastScrollPosition = ref(window.scrollY) // 最后一次的滚动位置
 
@@ -135,7 +136,13 @@ const routerJump = (item: any): void => {
 }
 
 const toLogin = () => {
-  router.push('/login')
+  localStorage.setItem('scrollTop', window.scrollY + '')
+  router.push({
+    path: 'login',
+    query: {
+      from: route.fullPath
+    }
+  })
 }
 
 const logOut = () => {

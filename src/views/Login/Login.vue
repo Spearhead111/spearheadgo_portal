@@ -4,7 +4,7 @@
     style="width: 100vw; height: 100vh"
   >
     <div class="shell">
-      <div class="container b-container" id="b-container">
+      <div class="container a-container" id="a-container">
         <el-form
           ref="signInFromRef"
           :model="signInForm"
@@ -58,7 +58,7 @@
         </el-form>
       </div>
 
-      <div class="container a-container" id="a-container">
+      <div class="container b-container" id="b-container">
         <el-form
           ref="signUpFormRef"
           :model="signUpForm"
@@ -133,7 +133,7 @@
       <div class="switch" id="switch-cnt">
         <div class="switch_circle"></div>
         <div class="switch_circle switch_circle-t"></div>
-        <div class="switch_container" id="switch-c1">
+        <div class="switch_container is-hidden" id="switch-c1">
           <h2 class="switch_title title" style="letter-spacing: 0">Welcome Back！</h2>
           <p class="switch_description description">
             已经有账号了嘛，去登入账号来进入奇妙世界吧！！！
@@ -141,7 +141,7 @@
           <button class="switch_button button switch-btn">SIGN IN</button>
         </div>
 
-        <div class="switch_container is-hidden" id="switch-c2">
+        <div class="switch_container" id="switch-c2">
           <h2 class="switch_title title" style="letter-spacing: 0">Hello Friend！</h2>
           <p class="switch_description description">注册一个新账号，让我们踏入奇妙的旅途！！！</p>
           <button class="switch_button button switch-btn">SIGN UP</button>
@@ -152,7 +152,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, nextTick } from 'vue'
 import { type FormInstance, type FormRules, ElMessage } from 'element-plus'
 import * as Base64 from 'js-base64'
 import { Validator } from '@/utils/validator'
@@ -163,6 +163,7 @@ import { errorCodeMap } from '@/utils'
 
 const userStore = useUserStore()
 const router = useRouter()
+const route = useRoute()
 
 let switchCtn: Element
 let switchC2: Element
@@ -280,7 +281,8 @@ async function login(params: LoginParams) {
   if (res && res.result_code === 'success') {
     ElMessage.success('登录成功！')
     res.data?.token && userStore.saveUserInfo(res.data.token)
-    router.push('/')
+    // 如果是从别的页面跳转到登陆页面，登陆完后跳转回
+    router.push(route.query.from ? (route.query.from as string) : '/')
   } else {
     ElMessage(errorCodeMap(res.result_code, res.message))
   }
@@ -323,6 +325,5 @@ onMounted(() => {
   bContainer = document.querySelector('#b-container') as Element
   allButtons = document.querySelectorAll('.submit') as NodeListOf<Element>
   shell()
-  changeForm()
 })
 </script>

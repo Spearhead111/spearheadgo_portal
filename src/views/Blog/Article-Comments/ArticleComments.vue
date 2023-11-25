@@ -11,6 +11,7 @@
       <v-card-subtitle> 欢迎交流 </v-card-subtitle>
       <v-form ref="formRef" class="mb-4" style="text-align: end">
         <v-textarea
+          v-if="getUserId"
           v-model="content"
           :rules="rules.content"
           variant="outlined"
@@ -19,6 +20,9 @@
           counter="255"
           placeholder="一起交流一下吧..."
         ></v-textarea>
+        <div v-else class="comment-login-tips">
+          <span>您需要先<span class="login-span" @click="jumpToLogin">登录</span>才能发布评论</span>
+        </div>
         <v-btn color="deep-orange-accent-4" rounded @click="sendComment('comment')">评论</v-btn>
       </v-form>
       <div class="comment-list-box">
@@ -97,6 +101,7 @@
                 style="text-align: end"
               >
                 <v-textarea
+                  v-if="getUserId"
                   v-model="replyContent"
                   :rules="rules.content"
                   variant="outlined"
@@ -105,6 +110,12 @@
                   counter="255"
                   :placeholder="`回复： ${comment.commentBy}`"
                 ></v-textarea>
+                <div v-else class="comment-login-tips">
+                  <span
+                    >您需要先<span class="login-span" @click="jumpToLogin">登录</span
+                    >才能发布评论</span
+                  >
+                </div>
                 <v-btn
                   color="deep-orange-accent-4"
                   rounded
@@ -197,6 +208,7 @@
                     style="text-align: end"
                   >
                     <v-textarea
+                      v-if="getUserId"
                       v-model="replyContent"
                       :rules="rules.content"
                       variant="outlined"
@@ -205,6 +217,12 @@
                       counter="255"
                       :placeholder="`回复： ${comment.commentBy}`"
                     ></v-textarea>
+                    <div v-else class="comment-login-tips">
+                      <span
+                        >您需要先<span class="login-span" @click="jumpToLogin">登录</span
+                        >才能发布评论</span
+                      >
+                    </div>
                     <v-btn
                       color="deep-orange-accent-4"
                       rounded
@@ -238,7 +256,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, inject } from 'vue'
+import { ref, onMounted, inject, nextTick } from 'vue'
 import './style.scss'
 import { storeToRefs } from 'pinia'
 import useUserStore from '@/stores/modules/user'
@@ -246,6 +264,7 @@ import { ElMessage } from 'element-plus'
 import { errorCodeMap, formatTime } from '@/utils'
 import useArticleStore from '@/stores/modules/article'
 import { USER_ROLE_MAP } from '@/constants'
+import { useRoute, useRouter } from 'vue-router'
 
 export interface ReplyComment {
   id: number
@@ -288,6 +307,8 @@ const props = withDefaults(
   }
 )
 const emit = defineEmits(['closeDrawer'])
+const route = useRoute()
+const router = useRouter()
 /** 博客组件的provide */
 const blogProvide = inject<Record<string, any>>('blogProvide')
 const articleStore = useArticleStore()
@@ -447,5 +468,16 @@ const hasAuth = (commentById: string) => {
 /** 关闭评论drawer */
 const closeDrawer = () => {
   emit('closeDrawer')
+}
+
+/** 跳转到登录页面 */
+const jumpToLogin = () => {
+  localStorage.setItem('scrollTop', window.scrollY + '')
+  router.push({
+    path: 'login',
+    query: {
+      from: route.fullPath
+    }
+  })
 }
 </script>

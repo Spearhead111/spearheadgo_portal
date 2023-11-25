@@ -6,12 +6,9 @@ import { ROLE_AUTH_MAP, USER_ROLE_MAP } from '@/constants'
 // 判断权限，用户不可见没有对应权限的模块
 export const authDirective: Directive<HTMLElement, string> = {
   beforeMount(el, binding) {
-    const { userInfo } = storeToRefs(useUserStore())
+    const { userInfo, getRole } = storeToRefs(useUserStore())
     const needAuthLevel = ROLE_AUTH_MAP[binding.value]
-    if (
-      needAuthLevel &&
-      ROLE_AUTH_MAP[userInfo.value?.role || USER_ROLE_MAP.GUEST] < needAuthLevel
-    ) {
+    if (needAuthLevel && ROLE_AUTH_MAP[getRole.value || USER_ROLE_MAP.GUEST] < needAuthLevel) {
       el.style.display = 'none'
     } else {
       el.style.display = 'block'

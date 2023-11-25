@@ -91,3 +91,20 @@
     align-self: center;
   }
 }
+
+.comment-login-tips {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  height: 64px;
+  background: #f2f3f5;
+  > span {
+    font-size: 16px;
+  }
+  .login-span {
+    cursor: pointer;
+    color: #1e80ff;
+  }
+}

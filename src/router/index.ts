@@ -54,4 +54,19 @@ const router = createRouter({
   }
 })
 
+// 全局后置守卫
+router.afterEach((to, from) => {
+  // 在登录成功后获取滚动位置并滚动页面
+  const savedScrolTop = localStorage.getItem('scrollTop')
+  if (from.path === '/login' && savedScrolTop) {
+    setTimeout(() => {
+      window.scrollTo({
+        top: parseInt(savedScrolTop, 10),
+        behavior: 'smooth'
+      })
+      localStorage.removeItem('scrollTop')
+    }, 500)
+  }
+})
+
 export default router
