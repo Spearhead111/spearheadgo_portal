@@ -17,7 +17,7 @@
           temporary
         >
           <!-- <v-list-item v-for="(menuItem, index) in HEAD_MENU"> 1 </v-list-item> -->
-          <li
+          <v-list-item
             v-for="(menuItem, index) in HEAD_MENU"
             v-auth="menuItem.auth"
             :class="{
@@ -25,9 +25,14 @@
               'submenu-selected': selectedSubMenu.split('-').includes(menuItem.submenuName)
             }"
           >
-            <v-menu open-delay="150" close-delay="0" location="right">
+            <v-menu open-delay="150" close-delay="0" location="top">
               <template v-slot:activator="{ props }">
-                <v-btn variant="text" v-bind="props" @click="routerJump(menuItem)">
+                <v-btn
+                  variant="text"
+                  v-bind="props"
+                  @click="routerJump(menuItem)"
+                  class="w-100 flex justify-start"
+                >
                   <v-img :width="24" :src="menuItem.iconUrl"></v-img>
                   <span class="submeun-text pl-2" style="font-size: 16px; font-weight: bold">{{
                     menuItem.des
@@ -55,7 +60,7 @@
             <!-- <v-btn variant="text" @click="routerJump(menuItem)">
           <span style="font-size: 16px; font-weight: bold">{{ menuItem.des }}</span>
         </v-btn> -->
-          </li>
+          </v-list-item>
           <div class="text-center">
             <v-btn
               color="deep-purple-accent-4"
