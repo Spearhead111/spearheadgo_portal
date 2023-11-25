@@ -72,7 +72,7 @@
           :fill="['#333', '#4a90e2', '#ffffff', '#ffffff']"
           :strokeWidth="2"
         />
-        发布于 {{ formatDate(articleProfile.createTime) }}
+        发布于 {{ formatTime(articleProfile.createTime, 'YYYY-MM-DD HH:MM') }}
       </div>
       <div>
         <pencil theme="outline" size="17.5" fill="#ee6700" />
@@ -145,7 +145,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { Tips, Like, Comments, Endocrine, CalendarDot, Edit, Pencil } from '@icon-park/vue-next'
-import { formatDate, highLightWord } from '@/utils'
+import { formatDate, highLightWord, formatTime } from '@/utils'
 import { debounce, throttle } from 'lodash'
 import './style.scss'
 import { useRouter } from 'vue-router'
