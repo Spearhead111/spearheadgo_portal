@@ -92,3 +92,10 @@
     }
   }
 }
+
+.banner-img {
+  object-fit: cover; /* 保持原始宽高比，裁剪多余部分 */
+  object-position: center; /* 将图片放在img元素的中心 */
+  width: 100%;
+  height: 100%;
+}

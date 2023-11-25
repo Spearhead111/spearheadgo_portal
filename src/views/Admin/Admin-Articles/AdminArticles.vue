@@ -1,7 +1,11 @@
 <template>
   <div class="admin-articles-wrapper">
     <div class="width-100 admin-header-banner">
-      <v-img cover src="https://file.spearheadgo.com/img/banner/admin-article-banner.jpg" alt="" />
+      <img
+        class="banner-img"
+        src="https://file.spearheadgo.com/img/banner/admin-article-banner.jpg"
+        alt=""
+      />
     </div>
     <v-container class="admin-articles-content">
       <!-- 文章管理项tab -->

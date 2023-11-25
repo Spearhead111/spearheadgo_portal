@@ -1,7 +1,11 @@
 <template>
   <div class="admin-users-wrapper">
     <div class="width-100 admin-header-banner">
-      <img src="https://file.spearheadgo.com/img/banner/admin-user-banner.jpg" alt="" />
+      <img
+        class="banner-img"
+        src="https://file.spearheadgo.com/img/banner/admin-user-banner.jpg"
+        alt=""
+      />
     </div>
     <v-container class="admin-users-content">
       <v-form ref="formRef">
@@ -226,7 +230,9 @@
         <v-card-subtitle> 此操作会影响用户登录和使用 </v-card-subtitle>
         <v-card-actions>
           <div class="flex width-100 justify-end">
-            <v-btn size="small" variant="text" class="flex-1-1" @click="cancelChangeUserStatus">取消</v-btn>
+            <v-btn size="small" variant="text" class="flex-1-1" @click="cancelChangeUserStatus"
+              >取消</v-btn
+            >
             <v-btn class="flex-1-1" size="small" variant="tonal" @click="changeUserStatus"
               >确认</v-btn
             >
@@ -238,22 +244,18 @@
       <v-card :width="400">
         <v-card-text class="font-weight-bold">
           <tips theme="filled" size="18" fill="#fcd53f" :strokeWidth="2" />
-           更改用户信息 
+          更改用户信息
         </v-card-text>
         <v-card-item>
           <v-form class="py-3">
-            <UserRoleSelect
-              v-model="(curHandelUser as UserInfo).role"
-            ></UserRoleSelect>
+            <UserRoleSelect v-model="(curHandelUser as UserInfo).role"></UserRoleSelect>
           </v-form>
         </v-card-item>
 
         <v-card-actions>
           <div class="flex width-100 justify-end">
             <v-btn size="small" variant="text" @click="cancelChangeUserInfo">取消</v-btn>
-            <v-btn size="small" variant="tonal" @click="changeUserInfo"
-              >确认</v-btn
-            >
+            <v-btn size="small" variant="tonal" @click="changeUserInfo">确认</v-btn>
           </div>
         </v-card-actions>
       </v-card>
@@ -354,7 +356,7 @@ const handleSizeChange = (val: number) => {
 /** 打开更改用户状态二次确认弹窗 */
 const openChangeUserStatusDialog = async (user: UserInfo) => {
   // 操作用户必须是管理员及以上权限，且操作用户权限需大于操作的对象的权限
-  if(!checkAuthLE(getRole.value, USER_ROLE_MAP.ADMIN) || !checkAuthLT(getRole.value, user.role)) {
+  if (!checkAuthLE(getRole.value, USER_ROLE_MAP.ADMIN) || !checkAuthLT(getRole.value, user.role)) {
     return ElMessage.warning('无权操作')
   }
   changeUserStatusDialog.value = true
