@@ -10,6 +10,12 @@
   &:hover {
     background-color: rgba($color: rgb(80, 79, 79), $alpha: 0.5);
   }
+  .menu-drawer-wrapper {
+    display: none;
+    .menu-drawer-content {
+      padding: 10px 0;
+    }
+  }
   .logo-name {
     position: relative;
     margin-left: 30px;
@@ -98,4 +104,16 @@
 }
 .submenu-selected {
   color: $orange;
+}
+
+@media screen and (max-width: 512px) {
+  .header-wrapper {
+    .header-menu .submenu-item {
+      display: none !important;
+    }
+
+    .menu-drawer-wrapper {
+      display: block;
+    }
+  }
 }

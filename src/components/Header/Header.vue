@@ -3,6 +3,71 @@
     :class="['header-wrapper', lastScrollPosition > 500 ? 'header-wrapper-additional' : '']"
     v-if="showHeader"
   >
+    <div class="menu-drawer-wrapper">
+      <v-layout>
+        <v-app-bar-nav-icon
+          color="#fff"
+          variant="text"
+          @click.stop="drawer = !drawer"
+        ></v-app-bar-nav-icon>
+        <v-navigation-drawer
+          class="menu-drawer-content"
+          v-model="drawer"
+          location="bottom"
+          temporary
+        >
+          <!-- <v-list-item v-for="(menuItem, index) in HEAD_MENU"> 1 </v-list-item> -->
+          <li
+            v-for="(menuItem, index) in HEAD_MENU"
+            v-auth="menuItem.auth"
+            :class="{
+              'submenu-item': true,
+              'submenu-selected': selectedSubMenu.split('-').includes(menuItem.submenuName)
+            }"
+          >
+            <v-menu open-delay="150" close-delay="0" location="right">
+              <template v-slot:activator="{ props }">
+                <v-btn variant="text" v-bind="props" @click="routerJump(menuItem)">
+                  <v-img :width="24" :src="menuItem.iconUrl"></v-img>
+                  <span class="submeun-text pl-2" style="font-size: 16px; font-weight: bold">{{
+                    menuItem.des
+                  }}</span>
+                </v-btn>
+              </template>
+
+              <v-list v-if="menuItem.children.length" style="padding: 0">
+                <v-list-item
+                  v-for="(subSubmenu, idx) in menuItem.children"
+                  :key="idx"
+                  style="padding: 0"
+                >
+                  <v-btn variant="text" @click="routerJump(subSubmenu)">
+                    <span
+                      :class="{
+                        'submenu-selected': selectedSubMenu === subSubmenu.submenuName
+                      }"
+                      >{{ subSubmenu.des }}</span
+                    >
+                  </v-btn>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+            <!-- <v-btn variant="text" @click="routerJump(menuItem)">
+          <span style="font-size: 16px; font-weight: bold">{{ menuItem.des }}</span>
+        </v-btn> -->
+          </li>
+          <div class="text-center">
+            <v-btn
+              color="deep-purple-accent-4"
+              icon="mdi-close"
+              variant="text"
+              @click="drawer = false"
+            >
+            </v-btn>
+          </div>
+        </v-navigation-drawer>
+      </v-layout>
+    </div>
     <div class="logo-name">
       <div class="front">SPEARHEAD</div>
       <div class="bottom">一起学习共同进步</div>
@@ -105,6 +170,7 @@ const router = useRouter()
 const route = useRoute()
 const showHeader = ref(true) // 是否显示头部
 const lastScrollPosition = ref(window.scrollY) // 最后一次的滚动位置
+const drawer = ref(false) // 手机端是否展示导航目录
 
 onMounted(() => {
   window.addEventListener('scroll', scrollEvent)
