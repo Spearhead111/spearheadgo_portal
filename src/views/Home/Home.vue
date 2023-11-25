@@ -6,10 +6,10 @@
       <div class="banner-wave2" :style="{ backgroundImage: `url(${BANNER_WAVE2})` }"></div>
     </div>
     <div class="home-page-content">
-      <v-container class="page-content bg-background-variant pa-0">
+      <v-container class="page-content bg-background-variant pa-0 align-sm-start flex-sm-row">
         <!-- 左边栏 -->
         <v-container class="left-column pt-5">
-          <v-sheet :elevation="8" :height="400" :width="300" rounded="lg" class="profile">
+          <v-sheet :elevation="8" rounded="lg" class="profile">
             <div class="avatar-content">
               <StarSky :width="300" :height="150" />
               <v-avatar class="my-avatar" :image="LOGO_PIC" size="100" @click=""></v-avatar>
@@ -51,14 +51,14 @@
               </v-snackbar>
             </div>
           </v-sheet>
-          <LatestArticleTree class="mt-15 width-100"></LatestArticleTree>
+          <LatestArticleTree class="mt-15 width-100 hidden-xs"></LatestArticleTree>
         </v-container>
         <!-- 右边栏 -->
         <v-container class="right-column pt-5">
           <iframe
             src="https://spearhead-cdn-1314941949.cos.ap-chengdu.myqcloud.com/writeHeadBanner/crocodile.html"
             frameborder="0"
-            class="width-100 write-banner-iframe"
+            class="width-100 write-banner-iframe hidden-xs"
             style="border-radius: 15px"
             scrolling="no"
           ></iframe>

@@ -72,4 +72,9 @@ const goBackTop = () => {
     bottom: 85px;
   }
 }
+@media (max-width: 512px) {
+  .go-top {
+    scale: 0.8;
+  }
+}
 </style>

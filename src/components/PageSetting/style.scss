@@ -6,6 +6,9 @@
   cursor: pointer;
   width: 35px;
   height: 35px;
+  @media (max-width: 512px) {
+    scale: 0.8;
+  }
 
   .setting-icon-top-left {
     position: absolute;
