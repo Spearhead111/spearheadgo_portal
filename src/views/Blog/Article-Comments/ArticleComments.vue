@@ -39,9 +39,11 @@
                     <span v-if="articleAuthorId === comment.commentById" class="commenter-role"
                       >作者</span
                     >
-                    <span>{{ formatTime(comment.createTime, 'YYYY.MM.DD') }}</span>
+                    <span class="hidden-xs">{{
+                      formatTime(comment.createTime, 'YYYY.MM.DD')
+                    }}</span>
                   </div>
-                  <div class="comment-actions">
+                  <div class="comment-actions hidden-xs">
                     <!-- 更多操作按钮 -->
                     <v-menu
                       attach="comment-actions"
@@ -94,6 +96,47 @@
                 </span>
               </div>
               <div class="comment-content">{{ comment.content }}</div>
+              <!-- 手机端的适配 -->
+              <div class="d-flex d-sm-none comment-action__phone">
+                <span>{{ formatTime(comment.createTime, 'YYYY MM-DD') }}</span>
+                <!-- 更多操作按钮 -->
+                <v-menu
+                  attach="comment-actions"
+                  :offset-x="-100"
+                  open-on-hover
+                  open-delay="0"
+                  close-delay="0"
+                >
+                  <template v-slot:activator="{ props }">
+                    <v-icon
+                      v-if="hasAuth(comment.commentById)"
+                      v-bind="props"
+                      icon="mdi-dots-horizontal"
+                      style="cursor: pointer; margin-left: auto"
+                    ></v-icon>
+                  </template>
+
+                  <v-list style="padding: 0">
+                    <v-list-item style="padding: 0">
+                      <v-btn
+                        variant="text"
+                        v-if="hasAuth(comment.commentById)"
+                        @click="deleteComment(comment.id, 'article')"
+                      >
+                        删除
+                      </v-btn>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+                <!-- 回复按钮 -->
+                <div
+                  style="cursor: pointer; margin-left: 20px; margin-right: 10px"
+                  @click="showReplyContent(comment.id)"
+                >
+                  <v-icon size="20" class="ma-0 mr-1" icon="mdi-comment-processing-outline"></v-icon
+                  >{{ comment.replyComment.length || '' }}
+                </div>
+              </div>
               <v-form
                 v-if="replyContentShowMap.get(String(comment.id))"
                 ref="replyFormRef"
@@ -146,9 +189,11 @@
                           <span>回复</span>
                           <span class="name">{{ replyComment.replyTo }}</span>
                         </template>
-                        <span>{{ formatTime(replyComment.createTime, 'YYYY.MM.DD') }}</span>
+                        <span class="hidden-xs">{{
+                          formatTime(replyComment.createTime, 'YYYY.MM.DD')
+                        }}</span>
                       </div>
-                      <div class="comment-actions">
+                      <div class="comment-actions hidden-xs">
                         <!-- 更多操作按钮 -->
                         <v-menu
                           attach="comment-actions"
@@ -201,6 +246,51 @@
                     </span>
                   </div>
                   <div class="comment-content-text">{{ replyComment.content }}</div>
+                  <!-- 手机端的适配 -->
+                  <div class="d-flex d-sm-none comment-action__phone">
+                    <span>{{ formatTime(replyComment.createTime, 'YYYY MM-DD') }}</span>
+                    <!-- 更多操作按钮 -->
+                    <v-menu
+                      attach="comment-actions"
+                      :offset-x="-100"
+                      open-on-hover
+                      open-delay="0"
+                      close-delay="0"
+                    >
+                      <template v-slot:activator="{ props }">
+                        <v-icon
+                          v-if="hasAuth(replyComment.commentById)"
+                          v-bind="props"
+                          icon="mdi-dots-horizontal"
+                          style="cursor: pointer; margin-left: auto"
+                        ></v-icon>
+                      </template>
+
+                      <v-list style="padding: 0">
+                        <v-list-item style="padding: 0">
+                          <v-btn
+                            variant="text"
+                            v-if="hasAuth(replyComment.commentById)"
+                            @click="deleteComment(replyComment.id, 'reply')"
+                          >
+                            删除
+                          </v-btn>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
+                    <!-- 回复按钮 -->
+                    <div
+                      style="cursor: pointer; margin-left: 20px; margin-right: 10px"
+                      @click="showReplyContent(replyComment.id)"
+                    >
+                      <v-icon
+                        size="20"
+                        class="ma-0 mr-1"
+                        icon="mdi-comment-processing-outline"
+                      ></v-icon>
+                    </div>
+                  </div>
+
                   <v-form
                     v-if="replyContentShowMap.get(String(replyComment.id))"
                     ref="replyFormRef"

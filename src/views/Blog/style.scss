@@ -78,6 +78,10 @@
   }
 }
 
+.comments-for-phone {
+  display: none;
+}
+
 .mavon-editor-show {
   z-index: 1 !important;
   width: 100%;
@@ -355,3 +359,43 @@ hue-6-2: #e6c07b
   text-decoration: underline !important;
 }
 // atom-one-dark.css end
+
+@media screen and (max-width: 768px) {
+  .blog-header-banner .blog-title-container {
+    left: 5%;
+    .blog-tittle {
+      font-size: 24px;
+    }
+
+    .blog-info-content {
+      font-size: 12px;
+    }
+  }
+}
+// 媒体流查询，支持手机端
+@media screen and (max-width: 600px) {
+  .blog-header-banner .blog-title-container {
+    left: 5%;
+    .blog-tittle {
+      font-size: 24px;
+    }
+
+    .blog-info-content {
+      font-size: 12px;
+    }
+  }
+
+  .blog-content-wrapper .mavon-editor-show .v-note-navigation-wrapper {
+    display: none;
+  }
+
+  .blog-content-wrapper {
+    width: 100%;
+    margin: 0;
+    padding: 20px 15px 0;
+  }
+
+  .comments-for-phone {
+    display: block;
+  }
+}

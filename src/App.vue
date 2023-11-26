@@ -1,6 +1,6 @@
 <template>
   <Header></Header>
-  <PageSetting />
+  <PageSetting class="hidden-xs" />
   <RouterView id="router-view" :key="routerKey" />
   <!-- 回到顶部 -->
   <v-icon
@@ -11,7 +11,7 @@
     size="large"
     @click="goBackTop"
   ></v-icon>
-  <Footer class="align-self-end"></Footer>
+  <Footer class="align-self-end hidden-xs"></Footer>
 </template>
 
 <script setup lang="ts">
@@ -72,9 +72,10 @@ const goBackTop = () => {
     bottom: 85px;
   }
 }
-@media (max-width: 512px) {
+@media (max-width: 600px) {
   .go-top {
     scale: 0.8;
+    display: none;
   }
 }
 </style>

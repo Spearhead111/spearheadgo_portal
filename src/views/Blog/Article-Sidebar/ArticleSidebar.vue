@@ -1,48 +1,50 @@
 <template>
-  <ul class="icon-list">
-    <li>
-      <v-badge :content="blogInfoDetail.like" color="grey-lighten-1">
-        <v-btn
-          class="ma-2"
-          variant="tonal"
-          icon="mdi-thumb-up"
-          :color="userArticleInfo.isLiked ? 'red-lighten-1' : 'blue-lighten-2'"
-          @click="likeArticle"
-        ></v-btn>
-      </v-badge>
-    </li>
-    <li>
-      <v-badge :content="blogInfoDetail.comments" color="grey-lighten-1">
-        <v-btn
-          ref="commentsBtn"
-          class="ma-2"
-          variant="tonal"
-          icon="mdi-comment-processing-outline"
-          color="blue-lighten-2"
-        ></v-btn>
-      </v-badge>
-    </li>
-  </ul>
-  <v-overlay
-    :activator="commentsBtn"
-    scroll-strategy="none"
-    content-class="article-comments-drawer"
-    style="z-index: 10000"
-    v-model="showCommentsDrawer"
-  >
-    <ArticleComments
-      class="article-comments"
-      :articleId="blogInfoDetail.articleId"
-      :article-author-id="(blogInfoDetail as BlogInfoDetail).authId"
-      :article-comments="(blogInfoDetail as BlogInfoDetail).commentsList"
-      :article-comments-count="(blogInfoDetail as BlogInfoDetail).commentsCount"
-      :has-more-comments="(blogInfoDetail as BlogInfoDetail).commentsHasMore"
-      :all-article-comments-count="(blogInfoDetail as BlogInfoDetail).comments"
-      is-right-drawer
-      @closeDrawer="showCommentsDrawer = false"
+  <div>
+    <ul class="icon-list">
+      <li>
+        <v-badge :content="blogInfoDetail.like" color="grey-lighten-1">
+          <v-btn
+            class="ma-2"
+            variant="tonal"
+            icon="mdi-thumb-up"
+            :color="userArticleInfo.isLiked ? 'red-lighten-1' : 'blue-lighten-2'"
+            @click="likeArticle"
+          ></v-btn>
+        </v-badge>
+      </li>
+      <li>
+        <v-badge :content="blogInfoDetail.comments" color="grey-lighten-1">
+          <v-btn
+            ref="commentsBtn"
+            class="ma-2"
+            variant="tonal"
+            icon="mdi-comment-processing-outline"
+            color="blue-lighten-2"
+          ></v-btn>
+        </v-badge>
+      </li>
+    </ul>
+    <v-overlay
+      :activator="commentsBtn"
+      scroll-strategy="none"
+      content-class="article-comments-drawer"
+      style="z-index: 10000"
+      v-model="showCommentsDrawer"
     >
-    </ArticleComments>
-  </v-overlay>
+      <ArticleComments
+        class="article-comments"
+        :articleId="blogInfoDetail.articleId"
+        :article-author-id="(blogInfoDetail as BlogInfoDetail).authId"
+        :article-comments="(blogInfoDetail as BlogInfoDetail).commentsList"
+        :article-comments-count="(blogInfoDetail as BlogInfoDetail).commentsCount"
+        :has-more-comments="(blogInfoDetail as BlogInfoDetail).commentsHasMore"
+        :all-article-comments-count="(blogInfoDetail as BlogInfoDetail).comments"
+        is-right-drawer
+        @closeDrawer="showCommentsDrawer = false"
+      >
+      </ArticleComments>
+    </v-overlay>
+  </div>
 </template>
 
 <script lang="ts" setup>

@@ -1,26 +1,28 @@
 <template>
-  <el-popover placement="left" trigger="hover" :teleported="false">
-    <template #reference>
-      <div class="setting-icon-wapper">
-        <v-icon class="setting-icon-top-left" icon="mdi-cog" size="small"></v-icon>
-        <v-icon class="setting-icon-bottom-right" icon="mdi-cog" size="large"></v-icon>
-      </div>
-    </template>
-    <ul class="page-setting-list">
-      <li>
-        <v-icon
-          :icon="isDarkTheme ? 'mdi-white-balance-sunny' : 'mdi-weather-night'"
-          @click="toggleTheme"
-        />
-      </li>
-      <li>
-        <v-icon
-          :icon="isDarkTheme ? 'mdi-white-balance-sunny' : 'mdi-weather-night'"
-          @click="toggleTheme"
-        />
-      </li>
-    </ul>
-  </el-popover>
+  <div>
+    <el-popover placement="left" trigger="hover" :teleported="false">
+      <template #reference>
+        <div class="setting-icon-wapper">
+          <v-icon class="setting-icon-top-left" icon="mdi-cog" size="small"></v-icon>
+          <v-icon class="setting-icon-bottom-right" icon="mdi-cog" size="large"></v-icon>
+        </div>
+      </template>
+      <ul class="page-setting-list">
+        <li>
+          <v-icon
+            :icon="isDarkTheme ? 'mdi-white-balance-sunny' : 'mdi-weather-night'"
+            @click="toggleTheme"
+          />
+        </li>
+        <li>
+          <v-icon
+            :icon="isDarkTheme ? 'mdi-white-balance-sunny' : 'mdi-weather-night'"
+            @click="toggleTheme"
+          />
+        </li>
+      </ul>
+    </el-popover>
+  </div>
 </template>
 
 <script lang="ts" setup>

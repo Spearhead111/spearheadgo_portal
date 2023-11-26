@@ -25,9 +25,9 @@
               :fill="['#333', '#4a90e2', '#ffffff', '#ffffff']"
               :strokeWidth="2"
             />
-            {{ formatDate(blogInfoDetail.createTime || new Date().getTime()) }}
+            {{ formatTime(blogInfoDetail.createTime || new Date(), 'YYYY-MM-DD HH:MM') }}
           </div>
-          <div>
+          <div class="hidden-xs">
             <endocrine
               theme="multi-color"
               size="20"
@@ -36,7 +36,7 @@
             />
             <span>{{ blogInfoDetail.view || 0 }} 浏览</span>
           </div>
-          <div>
+          <div class="hidden-xs">
             <comments
               theme="multi-color"
               size="20"
@@ -45,7 +45,7 @@
             />
             <span>{{ blogInfoDetail.comments || 0 }} 评论</span>
           </div>
-          <div>
+          <div class="hidden-xs">
             <Like
               theme="two-tone"
               size="20"
@@ -59,6 +59,7 @@
       </div>
     </div>
     <ArticleSidebar
+      class="hidden-xs"
       v-if="props.type === BLOG_VISIBLE_TYPE.DETAIL"
       :blogInfoDetail="blogInfoDetail"
       :userArticleInfo="userArticleInfo"
@@ -104,6 +105,7 @@
       />
       <ArticleComments
         v-if="type === BLOG_VISIBLE_TYPE.DETAIL"
+        class="hidden-xs"
         :articleId="(blogInfoDetail as BlogInfoDetail).articleId"
         :article-author-id="(blogInfoDetail as BlogInfoDetail).authId"
         :article-comments="(blogInfoDetail as BlogInfoDetail).commentsList"
@@ -111,6 +113,16 @@
         :has-more-comments="(blogInfoDetail as BlogInfoDetail).commentsHasMore"
       />
     </v-container>
+    <!-- 这个专门给手机端适配的 -->
+    <ArticleComments
+      class="comments-for-phone"
+      v-if="type === BLOG_VISIBLE_TYPE.DETAIL"
+      :articleId="(blogInfoDetail as BlogInfoDetail).articleId"
+      :article-author-id="(blogInfoDetail as BlogInfoDetail).authId"
+      :article-comments="(blogInfoDetail as BlogInfoDetail).commentsList"
+      :article-comments-count="(blogInfoDetail as BlogInfoDetail).commentsCount"
+      :has-more-comments="(blogInfoDetail as BlogInfoDetail).commentsHasMore"
+    />
   </div>
 </template>
 
@@ -130,7 +142,7 @@ import {
 } from 'vue'
 import { BLOG_VISIBLE_TYPE } from '@/constants/common'
 import { ElButton, ElImage, ElMessage } from 'element-plus'
-import { errorCodeMap, highlightCode } from '@/utils'
+import { errorCodeMap, highlightCode, formatTime } from '@/utils'
 import { debounce, throttle } from 'lodash'
 //@ts-ignore
 import { addCodeBtn } from '@/utils/mavon.js'
@@ -430,6 +442,7 @@ const addImgClickFunc = () => {
           src: img.src,
           alt: img.alt,
           zIndex: 9000,
+          hideOnClickModal: true,
           // fit: 'cover',
           style: { width, height },
           previewSrcList: [img.src],
