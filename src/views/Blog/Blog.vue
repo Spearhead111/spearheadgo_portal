@@ -103,6 +103,15 @@
         :boxShadow="false"
         :navigation="true"
       />
+      <div class="d-flex align-center justify-center mb-5">
+        <span style="color: #90a4ae">{{
+          `—— 更新于 ${formatTime(
+            (blogInfoDetail as BlogInfoDetail).updateTime,
+            'YYYY-MM-DD HH:MM'
+          )} ——`
+        }}</span>
+      </div>
+      <v-divider class="hidden-xs" :thickness="10"></v-divider>
       <ArticleComments
         v-if="type === BLOG_VISIBLE_TYPE.DETAIL"
         class="hidden-xs"
@@ -114,40 +123,45 @@
       />
     </v-container>
     <!-- 这个专门给手机端适配的 -->
-    <ArticleComments
-      class="comments-for-phone"
-      v-if="type === BLOG_VISIBLE_TYPE.DETAIL"
-      :articleId="(blogInfoDetail as BlogInfoDetail).articleId"
-      :article-author-id="(blogInfoDetail as BlogInfoDetail).authId"
-      :article-comments="(blogInfoDetail as BlogInfoDetail).commentsList"
-      :article-comments-count="(blogInfoDetail as BlogInfoDetail).commentsCount"
-      :has-more-comments="(blogInfoDetail as BlogInfoDetail).commentsHasMore"
-    />
+    <v-divider class="d-flex d-sm-none" :thickness="10"></v-divider>
+    <div class="d-sm-none" ref="phoneArticleCommentsRef">
+      <ArticleComments
+        class="d-sm-none"
+        v-if="type === BLOG_VISIBLE_TYPE.DETAIL"
+        :articleId="(blogInfoDetail as BlogInfoDetail).articleId"
+        :article-author-id="(blogInfoDetail as BlogInfoDetail).authId"
+        :article-comments="(blogInfoDetail as BlogInfoDetail).commentsList"
+        :article-comments-count="(blogInfoDetail as BlogInfoDetail).commentsCount"
+        :has-more-comments="(blogInfoDetail as BlogInfoDetail).commentsHasMore"
+      />
+    </div>
+
+    <!-- 手机端的底部bar -->
+    <template v-if="type === BLOG_VISIBLE_TYPE.DETAIL">
+      <BottomActionBar
+        v-show="showBottomBar"
+        ref="bottomActionBarRef"
+        class="d-sm-none animate__animated animate__fadeInUp"
+        :blogInfoDetail="blogInfoDetail"
+        :userArticleInfo="userArticleInfo"
+        :isAtComment="isAtComment"
+        @likeArticle="likeArticle"
+        @jumpToComment="jumpToComment"
+      ></BottomActionBar>
+    </template>
   </div>
 </template>
 
 <script lang="ts" setup>
 import './style.scss'
-import {
-  ref,
-  nextTick,
-  onMounted,
-  onUnmounted,
-  watch,
-  computed,
-  provide,
-  createApp,
-  h,
-  getCurrentInstance
-} from 'vue'
+import { ref, nextTick, onMounted, onUnmounted, computed, provide, createApp, h } from 'vue'
 import { BLOG_VISIBLE_TYPE } from '@/constants/common'
-import { ElButton, ElImage, ElMessage } from 'element-plus'
+import { ElImage, ElMessage } from 'element-plus'
 import { errorCodeMap, highlightCode, formatTime } from '@/utils'
 import { debounce, throttle } from 'lodash'
 //@ts-ignore
 import { addCodeBtn } from '@/utils/mavon.js'
 import { People, Like, Comments, Endocrine, CalendarDot } from '@icon-park/vue-next'
-import { formatDate } from '@/utils'
 import { type ArticleProfile } from '../Home/Home.vue'
 import useArticleStore from '@/stores/modules/article'
 import { useRoute, useRouter } from 'vue-router'
@@ -157,6 +171,7 @@ import { storeToRefs } from 'pinia'
 import { type BlogInfo } from '../Write/Write.vue'
 import ArticleComments from './Article-Comments/ArticleComments.vue'
 import ArticleSidebar from './Article-Sidebar/ArticleSidebar.vue'
+import BottomActionBar from './Bottom-Action-Bar/BottomActionBar.vue'
 
 export interface BlogInfoDetail extends ArticleProfile {
   /** 文章内容 */
@@ -193,6 +208,13 @@ const { userInfo, getUserId } = storeToRefs(userStore)
 const commentPageNo = ref(1)
 const commentPageSize = ref(10)
 const blogEleRef = ref<HTMLElement | null>(null)
+const phoneArticleCommentsRef = ref<HTMLElement | null>(null) // 手机端的评论
+const bottomActionBarRef = ref<HTMLElement | null>(null) // 手机端底部bottomBar
+const bodyTextPos = ref(0) // 跳转到评论区之前的正文位置
+const commentPos = ref(0) // 从评论区跳转回正文之前所在的位置
+const isAtComment = ref(false) // 当前滚动距离是否在评论区
+const lastScrollPosition = ref(0) // 上一次的滚动距离
+const showBottomBar = ref(true) // 手机端的bottomBar是否展示
 /** 导航目录 */
 const navigationElement = ref<HTMLElement | null>(null)
 const mavonEditorRef = ref(null)
@@ -224,9 +246,7 @@ onMounted(async () => {
   loading.value = true
   if (props.type === BLOG_VISIBLE_TYPE.DETAIL) {
     await Promise.all([getArticleDetail(), getArticleComment(), getArticleUserInfo()])
-
-    // getArticleComment()
-    // getArticleUserInfo()
+    window.addEventListener('scroll', bottomBarScrollFunc)
   } else if (props.type === BLOG_VISIBLE_TYPE.PREVIEW) {
     blogInfoDetail.value = { ...props.blogInfo }
     // 判断传入的banner是string还是File，如果是file需要转换成url
@@ -244,7 +264,31 @@ onUnmounted(() => {
     'scroll',
     navigationScroll
   )
+  window.removeEventListener('scroll', bottomBarScrollFunc)
 })
+
+/** 手机端底部的操作bar向上滚动展示事件，在这里顺便处理一下评论和正文来回跳转位置的判断逻辑 */
+const bottomBarScrollFunc = () => {
+  if (!bottomActionBarRef.value) {
+    return
+  }
+  const currentScrollPosition = window.scrollY
+  // 判断一下当前的滚动距离的位置是否在评论区内
+  const phoneArticleCommentsTop = phoneArticleCommentsRef.value!.getBoundingClientRect().top
+  // phoneArticleCommentsTop 为评论区域距离当前视口的top的距离
+  isAtComment.value = phoneArticleCommentsTop < window.innerHeight
+  // if (!isAtComment.value) {
+  //   bodyTextPos.value = window.scrollY
+  // }
+
+  // 用最后一次的滚动位置和当前的滚动位置进行比较
+  if (currentScrollPosition > lastScrollPosition.value) {
+    showBottomBar.value = false
+  } else {
+    showBottomBar.value = true
+  }
+  lastScrollPosition.value = currentScrollPosition
+}
 
 /** 文章内容渲染完毕后：高亮代码，导航目录添加href跳转 */
 const initAfterBlogDone = async () => {
@@ -488,6 +532,30 @@ const addImgClickFunc = () => {
       handleImageClick()
     }
   })
+}
+
+/** 用于手机端的bottomBar, 跳转到评论区或者跳回正文 */
+const jumpToComment = () => {
+  console.log(bodyTextPos.value, commentPos.value)
+  if (isAtComment.value) {
+    // 当前已经是在评论区，需要跳转回正文
+    // 记录一下当前所在的评论区位置，下次跳转到评论区能够继续浏览
+    commentPos.value = window.scrollY
+    window.scrollTo({
+      top: bodyTextPos.value,
+      behavior: 'smooth'
+    })
+  } else {
+    const bottomActionTop = phoneArticleCommentsRef.value?.getBoundingClientRect().top as number
+    // 当前在正文，需要跳转到评论区
+    // 记录一下当前的正文位置
+    bodyTextPos.value = window.scrollY
+    window.scrollTo({
+      top: commentPos.value || bottomActionTop + window.scrollY,
+      behavior: 'smooth'
+    })
+  }
+  isAtComment.value = !isAtComment.value
 }
 
 /** 文章中的图片的点击事件 */

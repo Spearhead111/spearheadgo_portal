@@ -78,10 +78,6 @@
   }
 }
 
-.comments-for-phone {
-  display: none;
-}
-
 .mavon-editor-show {
   z-index: 1 !important;
   width: 100%;
@@ -394,8 +390,8 @@ hue-6-2: #e6c07b
     margin: 0;
     padding: 20px 15px 0;
   }
+}
 
-  .comments-for-phone {
-    display: block;
-  }
+.animate__animated.animate__fadeInUp {
+  --animate-duration: 0.3s;
 }

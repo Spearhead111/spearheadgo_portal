@@ -1,8 +1,9 @@
 <template>
   <div
     :class="['header-wrapper', lastScrollPosition > 500 ? 'header-wrapper-additional' : '']"
-    v-if="showHeader"
+    v-show="showHeader"
   >
+    <!-- 适配手机端 -->
     <div class="menu-drawer-wrapper">
       <v-layout>
         <v-app-bar-nav-icon
@@ -46,7 +47,11 @@
                   :key="idx"
                   style="padding: 0"
                 >
-                  <v-btn variant="text" @click="routerJump(subSubmenu)">
+                  <v-btn
+                    class="w-100 flex justify-start"
+                    variant="text"
+                    @click="routerJump(subSubmenu)"
+                  >
                     <span
                       :class="{
                         'submenu-selected': selectedSubMenu === subSubmenu.submenuName

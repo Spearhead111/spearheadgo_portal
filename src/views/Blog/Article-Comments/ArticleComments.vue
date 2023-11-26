@@ -1,5 +1,5 @@
 <template>
-  <v-card elevation="8" rounded="0" style="color: rgb(var(--v-theme-primary))">
+  <v-card elevation="0" rounded="0" style="color: rgb(var(--v-theme-primary))">
     <v-card-item>
       <v-card-title class="text-center">
         <div v-if="isRightDrawer" class="flex justify-space-between">
@@ -23,7 +23,9 @@
         <div v-else class="comment-login-tips">
           <span>您需要先<span class="login-span" @click="jumpToLogin">登录</span>才能发布评论</span>
         </div>
-        <v-btn color="deep-orange-accent-4" rounded @click="sendComment('comment')">评论</v-btn>
+        <v-btn v-if="getUserId" color="deep-orange-accent-4" rounded @click="sendComment('comment')"
+          >评论</v-btn
+        >
       </v-form>
       <div class="comment-list-box">
         <div class="comment-list-item" v-for="(comment, index) in articleComments">
@@ -75,8 +77,19 @@
                     </v-menu>
                     <!-- 回复按钮 -->
                     <div style="cursor: pointer" @click="showReplyContent(comment.id)">
-                      <v-icon size="20" class="ma-0 mr-1" icon="mdi-comment-outline"></v-icon
-                      >{{ replyContentShowMap.get(String(comment.id)) ? '收起' : '回复' }}
+                      <v-icon
+                        :size="18"
+                        class="ma-0 mr-1"
+                        :icon="
+                          isOpenReplyText(comment.id)
+                            ? 'mdi-comment-processing'
+                            : 'mdi-comment-processing-outline'
+                        "
+                        :color="isOpenReplyText(comment.id) ? 'blue-lighten-1' : ''"
+                      ></v-icon
+                      ><span :style="{ color: isOpenReplyText(comment.id) ? '#42A5F5' : '' }">{{
+                        isOpenReplyText(comment.id) ? '取消回复' : comment.replyComment.length || ''
+                      }}</span>
                     </div>
                   </div>
                 </div>
@@ -98,7 +111,9 @@
               <div class="comment-content">{{ comment.content }}</div>
               <!-- 手机端的适配 -->
               <div class="d-flex d-sm-none comment-action__phone">
-                <span>{{ formatTime(comment.createTime, 'YYYY MM-DD') }}</span>
+                <span style="margin-right: auto">{{
+                  formatTime(comment.createTime, 'YYYY MM-DD')
+                }}</span>
                 <!-- 更多操作按钮 -->
                 <v-menu
                   attach="comment-actions"
@@ -111,8 +126,9 @@
                     <v-icon
                       v-if="hasAuth(comment.commentById)"
                       v-bind="props"
+                      :size="18"
                       icon="mdi-dots-horizontal"
-                      style="cursor: pointer; margin-left: auto"
+                      style="cursor: pointer"
                     ></v-icon>
                   </template>
 
@@ -133,12 +149,23 @@
                   style="cursor: pointer; margin-left: 20px; margin-right: 10px"
                   @click="showReplyContent(comment.id)"
                 >
-                  <v-icon size="20" class="ma-0 mr-1" icon="mdi-comment-processing-outline"></v-icon
-                  >{{ comment.replyComment.length || '' }}
+                  <v-icon
+                    :size="18"
+                    class="ma-0 mr-1"
+                    :icon="
+                      isOpenReplyText(comment.id)
+                        ? 'mdi-comment-processing'
+                        : 'mdi-comment-processing-outline'
+                    "
+                    :color="isOpenReplyText(comment.id) ? 'blue-lighten-1' : ''"
+                  ></v-icon
+                  ><span :style="{ color: isOpenReplyText(comment.id) ? '#42A5F5' : '' }">{{
+                    isOpenReplyText(comment.id) ? '取消回复' : comment.replyComment.length || ''
+                  }}</span>
                 </div>
               </div>
               <v-form
-                v-if="replyContentShowMap.get(String(comment.id))"
+                v-if="isOpenReplyText(comment.id)"
                 ref="replyFormRef"
                 class="pb-3"
                 style="text-align: end"
@@ -160,6 +187,7 @@
                   >
                 </div>
                 <v-btn
+                  v-if="getUserId"
                   color="deep-orange-accent-4"
                   rounded
                   size="small"
@@ -225,8 +253,20 @@
                         </v-menu>
                         <!-- 回复按钮 -->
                         <div style="cursor: pointer" @click="showReplyContent(replyComment.id)">
-                          <v-icon size="20" class="ma-0 mr-1" icon="mdi-comment-outline"></v-icon
-                          >{{ replyContentShowMap.get(String(replyComment.id)) ? '收起' : '回复' }}
+                          <v-icon
+                            :size="18"
+                            class="ma-0 mr-1"
+                            :icon="
+                              isOpenReplyText(replyComment.id)
+                                ? 'mdi-comment-processing'
+                                : 'mdi-comment-processing-outline'
+                            "
+                            :color="isOpenReplyText(replyComment.id) ? 'blue-lighten-1' : ''"
+                          ></v-icon
+                          ><span
+                            :style="{ color: isOpenReplyText(replyComment.id) ? '#42A5F5' : '' }"
+                            >{{ isOpenReplyText(replyComment.id) ? '取消回复' : '' }}</span
+                          >
                         </div>
                       </div>
                     </div>
@@ -248,7 +288,9 @@
                   <div class="comment-content-text">{{ replyComment.content }}</div>
                   <!-- 手机端的适配 -->
                   <div class="d-flex d-sm-none comment-action__phone">
-                    <span>{{ formatTime(replyComment.createTime, 'YYYY MM-DD') }}</span>
+                    <span style="margin-right: auto">{{
+                      formatTime(replyComment.createTime, 'YYYY MM-DD')
+                    }}</span>
                     <!-- 更多操作按钮 -->
                     <v-menu
                       attach="comment-actions"
@@ -262,7 +304,7 @@
                           v-if="hasAuth(replyComment.commentById)"
                           v-bind="props"
                           icon="mdi-dots-horizontal"
-                          style="cursor: pointer; margin-left: auto"
+                          style="cursor: pointer"
                         ></v-icon>
                       </template>
 
@@ -284,15 +326,24 @@
                       @click="showReplyContent(replyComment.id)"
                     >
                       <v-icon
-                        size="20"
+                        :size="18"
                         class="ma-0 mr-1"
-                        icon="mdi-comment-processing-outline"
-                      ></v-icon>
+                        :icon="
+                          isOpenReplyText(replyComment.id)
+                            ? 'mdi-comment-processing'
+                            : 'mdi-comment-processing-outline'
+                        "
+                        :color="isOpenReplyText(replyComment.id) ? 'blue-lighten-1' : ''"
+                      ></v-icon
+                      ><span
+                        :style="{ color: isOpenReplyText(replyComment.id) ? '#42A5F5' : '' }"
+                        >{{ isOpenReplyText(replyComment.id) ? '取消回复' : '' }}</span
+                      >
                     </div>
                   </div>
 
                   <v-form
-                    v-if="replyContentShowMap.get(String(replyComment.id))"
+                    v-if="isOpenReplyText(replyComment.id)"
                     ref="replyFormRef"
                     class="pb-3"
                     style="text-align: end"
@@ -314,6 +365,7 @@
                       >
                     </div>
                     <v-btn
+                      v-if="getUserId"
                       color="deep-orange-accent-4"
                       rounded
                       size="small"
@@ -493,6 +545,11 @@ const showReplyContent = (id: string | number) => {
     replyContentShowMap.value = new Map<string, boolean>()
     replyContentShowMap.value.set(id, true)
   }
+}
+
+/** 当前评论的回复框是否打开 */
+const isOpenReplyText = (commentId: number) => {
+  return replyContentShowMap.value.get(String(commentId))
 }
 
 /** 查看更多评论 */
