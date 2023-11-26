@@ -145,6 +145,7 @@
         :blogInfoDetail="blogInfoDetail"
         :userArticleInfo="userArticleInfo"
         :isAtComment="isAtComment"
+        :navigationElement="navigationElement"
         @likeArticle="likeArticle"
         @jumpToComment="jumpToComment"
       ></BottomActionBar>
@@ -298,6 +299,7 @@ const initAfterBlogDone = async () => {
     addCodeBtn()
     addImgClickFunc()
   })
+
   // 导航目录添加href跳转, 这里因为nexttick后不在目录渲染完毕的时机，所以延迟500ms执行
   setTimeout(() => {
     addNavigationUrl()
@@ -305,11 +307,13 @@ const initAfterBlogDone = async () => {
       props.type === BLOG_VISIBLE_TYPE.DETAIL ? document : blogEleRef.value
     )?.querySelector('.v-note-navigation-wrapper') as HTMLElement
     // 添加滚动事件，确保导航目录的位置
-    ;(props.type === BLOG_VISIBLE_TYPE.DETAIL ? window : blogEleRef.value)?.addEventListener(
-      'scroll',
-      navigationScroll
-    )
-  }, 500)
+    // (如果是手机端，不添加这个事件，这个事件是让滚动的时候右侧的目录定位改变的，手机端不需要，防止手机的目录错位)
+    !phoneArticleCommentsRef.value &&
+      (props.type === BLOG_VISIBLE_TYPE.DETAIL ? window : blogEleRef.value)?.addEventListener(
+        'scroll',
+        navigationScroll
+      )
+  }, 300)
 }
 
 /** 获取文章详情 */
@@ -536,7 +540,6 @@ const addImgClickFunc = () => {
 
 /** 用于手机端的bottomBar, 跳转到评论区或者跳回正文 */
 const jumpToComment = () => {
-  console.log(bodyTextPos.value, commentPos.value)
   if (isAtComment.value) {
     // 当前已经是在评论区，需要跳转回正文
     // 记录一下当前所在的评论区位置，下次跳转到评论区能够继续浏览
