@@ -303,12 +303,13 @@ const initAfterBlogDone = async () => {
   // 导航目录添加href跳转, 这里因为nexttick后不在目录渲染完毕的时机，所以延迟500ms执行
   setTimeout(() => {
     addNavigationUrl()
-    navigationElement.value = (
-      props.type === BLOG_VISIBLE_TYPE.DETAIL ? document : blogEleRef.value
-    )?.querySelector('.v-note-navigation-wrapper') as HTMLElement
+    navigationElement.value = blogEleRef.value?.querySelector(
+      '.v-note-navigation-wrapper'
+    ) as HTMLElement
     // 添加滚动事件，确保导航目录的位置
     // (如果是手机端，不添加这个事件，这个事件是让滚动的时候右侧的目录定位改变的，手机端不需要，防止手机的目录错位)
-    !phoneArticleCommentsRef.value &&
+    const isMobile = window.innerWidth < 600
+    !isMobile &&
       (props.type === BLOG_VISIBLE_TYPE.DETAIL ? window : blogEleRef.value)?.addEventListener(
         'scroll',
         navigationScroll
