@@ -126,7 +126,7 @@ const jumpToComment = () => {
   align-items: center;
   justify-content: space-evenly;
   width: 100%;
-  height: 40px;
+  height: 50px;
   z-index: 100;
   background: #fff;
   transition: all 0.3s;

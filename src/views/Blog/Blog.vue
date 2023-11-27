@@ -1,5 +1,5 @@
 <template>
-  <div ref="blogEleRef" v-loading="loading" style="overflow: auto">
+  <div ref="blogEleRef" v-loading="loading">
     <v-btn
       v-if="props.type === BLOG_VISIBLE_TYPE.PREVIEW"
       @click="emit('update:previewVisible', false)"

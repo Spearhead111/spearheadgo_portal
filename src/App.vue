@@ -58,6 +58,7 @@ const goBackTop = () => {
 
 <style lang="scss" scoped>
 #router-view {
+  overflow-x: hidden;
 }
 .go-top {
   position: fixed;

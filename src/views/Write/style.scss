@@ -23,12 +23,17 @@
 .blog-preview-dialog {
   background-color: rgba($color: var(--v-theme-background), $alpha: 1);
   z-index: 1001 !important;
+  overflow-y: auto;
   .v-overlay__content {
-    // overflow: auto;
+    // overflow-y: auto;
     // max-height: none;
     // max-width: none;
     // height: 100%;
     // width: 100%;
+    > div {
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
   }
 }
 
