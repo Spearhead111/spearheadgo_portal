@@ -195,11 +195,13 @@ const deleteDialog = ref(false) // 删除文章的二次确认dialog
 
 onMounted(() => {})
 
-watch(
+/** 监听isIntersecting，当前元素出现在页面中后取消监听 */
+const isIntersectingWatch = watch(
   () => isIntersecting.value,
   (newVal) => {
     if (newVal) {
       hasIntersecting.value = true
+      isIntersectingWatch()
     }
   },
   { immediate: true }

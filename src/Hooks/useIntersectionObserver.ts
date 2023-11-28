@@ -1,4 +1,4 @@
-import { ref, onBeforeUnmount, type Ref } from 'vue'
+import { ref, onBeforeUnmount, onMounted, type Ref } from 'vue'
 
 export interface IntersectionObserverOptions {
   root?: Element | null
