@@ -114,7 +114,6 @@
             <div
               v-for="articleProfile in articleProfileData"
               :key="articleProfile.articleId"
-              v-animate="'animate__zoomIn'"
             >
               <BlogProfile
                 :articleProfile="articleProfile"

@@ -15,7 +15,7 @@ export const animateDirective: Directive<HTMLElement, string> = {
         el.classList.add('animate__animated', animateClassName)
       }
     }
-    window.addEventListener('scroll', scrollFunc)
+    el.addEventListener('scroll', scrollFunc)
   },
 
   updated(el, binding) {
