@@ -271,6 +271,8 @@ const openEditTagDialog = (type: string, tag?: Tag) => {
   addTagDialog.value = true
   if (type === 'edit') {
     form.value = { ...(tag as Tag) }
+  } else {
+    form.value = { label: '', code: '', icon: '', color: '#000000', iconColor: '#FFFFFF' }
   }
 }
 
