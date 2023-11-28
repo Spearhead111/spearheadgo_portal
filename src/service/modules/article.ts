@@ -132,4 +132,4 @@ class articleService {
   }
 }
 
-export default new articleService()
+export default new articleService() as articleService

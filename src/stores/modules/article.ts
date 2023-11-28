@@ -1,7 +1,7 @@
 import articleService from '@/service/modules/article'
 import { defineStore } from 'pinia'
 
-const useArticleStore = defineStore('article', {
+export const useArticleStore = defineStore('article', {
   state: () => ({}),
   actions: {
     /** 获取文章列表，页面展示用 */

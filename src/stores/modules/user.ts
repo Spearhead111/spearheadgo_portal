@@ -8,7 +8,7 @@ interface LoginResponseData {
   token: string
 }
 
-const useUserStore = defineStore('user', {
+export const useUserStore = defineStore('user', {
   state: () => ({
     token: localStorage.getItem('accessToken') || '',
     userInfo: JSON.parse(localStorage.getItem('userInfo') || '{}'),
