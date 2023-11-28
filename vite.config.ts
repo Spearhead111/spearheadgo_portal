@@ -39,6 +39,6 @@ export default defineConfig({
     // }
   },
   define: {
-    __VUE_PROD_DEVTOOLS__: true // 开启vue-devtools调试工具
+    __VUE_PROD_DEVTOOLS__: process.env.NODE_ENV !== 'production' // 开启vue-devtools调试工具
   }
 })
