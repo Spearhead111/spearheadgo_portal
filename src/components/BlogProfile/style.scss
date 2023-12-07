@@ -2,7 +2,7 @@
   position: relative;
   animation: zoomIn 0.5s ease;
   height: 405px;
-  background-color: var(--second-bg-color);
+  background-color: var(--second-bg-color) !important;
   @keyframes zoomIn {
     0% {
       scale: 0;

@@ -1,7 +1,7 @@
 const darkTheme = {
   '--hover-bg-color': '#494949',
   '--header-bg-color': 'rgb(120, 120, 120)',
-  '--second-bg-color': '#606060'
+  '--second-bg-color': '#404040'
 }
 const lightTheme = {
   '--hover-bg-color': '#eeeeee',
