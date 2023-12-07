@@ -97,12 +97,12 @@
                 <span>
                   <span
                     v-if="comment.commentLikes"
-                    :style="{ color: comment.isLiked ? '#EF5350' : '#fff' }"
+                    :style="{ color: comment.isLiked ? '#EF5350' : '' }"
                     >{{ comment.commentLikes }}</span
                   >
                   <v-icon
                     class="like-icon"
-                    :color="comment.isLiked ? 'red-lighten-1' : 'grey-darken-4'"
+                    :color="comment.isLiked ? 'red-lighten-1' : ''"
                     :icon="comment.isLiked ? 'mdi-thumb-up' : 'mdi-thumb-up-outline'"
                     @click="likeComment(comment, 'article')"
                   />
@@ -274,12 +274,14 @@
                     <span>
                       <span
                         v-if="replyComment.commentLikes"
-                        :style="{ color: replyComment.isLiked ? '#EF5350' : '#fff' }"
+                        :style="{
+                          color: replyComment.isLiked ? '#EF5350' : ''
+                        }"
                         >{{ replyComment.commentLikes }}</span
                       >
                       <v-icon
                         class="like-icon"
-                        :color="replyComment.isLiked ? 'red-lighten-1' : 'grey-darken-4'"
+                        :color="replyComment.isLiked ? 'red-lighten-1' : ''"
                         :icon="replyComment.isLiked ? 'mdi-thumb-up' : 'mdi-thumb-up-outline'"
                         @click="likeComment(replyComment, 'reply')"
                       />

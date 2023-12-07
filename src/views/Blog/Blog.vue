@@ -248,6 +248,15 @@ onMounted(async () => {
   if (props.type === BLOG_VISIBLE_TYPE.DETAIL) {
     await Promise.all([getArticleDetail(), getArticleComment(), getArticleUserInfo()])
     window.addEventListener('scroll', bottomBarScrollFunc)
+    // 添加一个Google Analytics
+    // @ts-ignore
+    const gtag = window.gtag || console.error('gtag is not defined')
+    gtag('event', 'page_view', {
+      send_to: import.meta.env.GA_MEASUREMENT_ID,
+      event_category: 'URL访问',
+      event_label: `/articleDetail?articleId=${route.query.articleId}`,
+      value: 1
+    })
   } else if (props.type === BLOG_VISIBLE_TYPE.PREVIEW) {
     blogInfoDetail.value = { ...props.blogInfo }
     // 判断传入的banner是string还是File，如果是file需要转换成url

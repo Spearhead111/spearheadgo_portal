@@ -2,7 +2,7 @@
   <v-card class="footer-wrapper flex flex-column align-center justify-center" rounded="0">
     <div class="pt-0 font-18">
       The only <span class="font-weight-bold">limit</span> is your
-      <span class="font-weight-bold" style="color: #880e4f">imagination</span>.
+      <span class="font-weight-bold" style="color: #880e4f">imagination</span>
     </div>
     <v-divider></v-divider>
     <div>

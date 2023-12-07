@@ -186,6 +186,8 @@
         .tag-tabs {
           width: 100%;
           margin-bottom: 20px;
+          background-color: var(--second-bg-color);
+
           .tag-tab-item {
             cursor: pointer;
           }
