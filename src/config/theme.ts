@@ -14,5 +14,5 @@ export const toggleThemeGlobal = (isDark: boolean) => {
   for (let key in theme) {
     document.documentElement.style.setProperty(key, theme[key as keyof typeof theme])
   }
-  document.documentElement.classList.add('dark')
+  document.documentElement.classList.toggle('dark', isDark)
 }

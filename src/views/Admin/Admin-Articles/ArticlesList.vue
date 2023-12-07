@@ -128,9 +128,8 @@
       :data="articleDataList"
       tooltip-effect="dark"
       class="article-table"
-      :header-cell-style="{ background: '#eef1f6', color: '#606266', fontWeight: 'bold' }"
+      :header-cell-style="{ background: 'var(--second-bg-color)', fontWeight: 'bold' }"
       stripe
-      highlight-current-row
       style="width: 100%"
       height="480"
     >
