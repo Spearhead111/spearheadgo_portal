@@ -374,10 +374,16 @@ const recoverDialog = ref(false)
 const curRecoverArticleId = ref('')
 
 onMounted(async () => {
+  init()
+})
+
+const init = async () => {
+  loading.value = true
   await getArticleTagList()
   await getArticlesData()
   await getUserList()
-})
+  loading.value = false
+}
 
 /** 获取用户列表 */
 const getUserList = async () => {
@@ -398,7 +404,6 @@ const getUserList = async () => {
 
 /** 获取文章列表数据 */
 const getArticlesData = async () => {
-  loading.value = true
   const params = {
     pageNo: pageNo.value,
     pageSize: pageSize.value,
@@ -415,7 +420,6 @@ const getArticlesData = async () => {
   } else {
     ElMessage(errorCodeMap(res.result_code, res.message))
   }
-  loading.value = false
 }
 
 /** 获取文章标签 */

@@ -324,6 +324,7 @@ const resetForm = () => {
 
 /** 获取用户列表 */
 const getUserList = async () => {
+  loading.value = true
   const params = {
     pageNo: pageNo.value,
     pageSize: pageSize.value,
@@ -338,6 +339,7 @@ const getUserList = async () => {
   } else {
     ElMessage(errorCodeMap(res.result_code, res.message))
   }
+  loading.value = false
 }
 
 /** pageNo 改变 */
