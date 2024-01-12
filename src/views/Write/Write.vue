@@ -45,7 +45,7 @@
           class="pb-5"
           accept="image/*"
           label="文章封面"
-          hint="请选择文章封面图片(仅支持最大1M)"
+          hint="请选择文章封面图片(仅支持最大2M)"
           prepend-icon=""
           append-inner-icon="mdi-image"
           v-model="blogBanner"
@@ -260,7 +260,7 @@ const rules = ref<any>({
       return !isCreate.value || !!v.length || '请选择文章封面图片'
     },
     (v: any) => {
-      return !v || !v.length || v[0].size < 1000000 || '上传的文章封面图片不能超过1M'
+      return !v || !v.length || v[0].size < 2 * 1024 * 1024 || '上传的文章封面图片不能超过2M'
     }
   ]
 })
@@ -359,8 +359,8 @@ const debouncePreviewBlog = debounce(previewBlog, 300)
 
 /** 添加图片 */
 const imgAdd = async (pos: string, file: File) => {
-  if (file.size > 1024 * 1024 * 1) {
-    return ElMessage.error('图片大小不能超过1M')
+  if (file.size > 1024 * 1024 * 2) {
+    return ElMessage.error('图片大小不能超过2M')
   }
   const fileNameArr = file.name.split('.')
 
