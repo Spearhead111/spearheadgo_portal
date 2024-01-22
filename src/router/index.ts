@@ -11,6 +11,13 @@ const router = createRouter({
       component: () => import('@/views/Home/Home.vue')
     },
     {
+      path: '/tools',
+      name: 'Tools',
+      component: () => import('@/views/MyTools/MyTools.vue'),
+      meta: { isNoFooter: true },
+      children: []
+    },
+    {
       path: '/goal',
       name: 'Goal',
       component: () => import('@/views/Goal/Goal.vue')
