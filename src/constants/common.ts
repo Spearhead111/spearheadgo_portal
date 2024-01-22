@@ -85,6 +85,15 @@ export const HEAD_MENU = {
     iconUrl: imgUrl + 'house.png',
     children: []
   },
+  tools: {
+    des: '工具包',
+    needAuth: false,
+    path: '/tools',
+    submenuName: 'tools',
+    auth: USER_ROLE_MAP.GUEST,
+    iconUrl: imgUrl + 'tools.png',
+    children: []
+  },
   goal: {
     des: '目标',
     needAuth: true,

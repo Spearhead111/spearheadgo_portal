@@ -1,0 +1,214 @@
+.chart-tool-wrapper {
+  flex: 1;
+  display: flex;
+}
+
+.chart-tool-wrapper .chart-data-wrapper {
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  width: 250px;
+  border-right: 4px solid var(--third-bg-color);
+  .upload-content {
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--third-bg-color);
+    .add-data-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 40px;
+      border: 2px dashed var(--third-bg-color);
+    }
+    .el-upload {
+      display: flex;
+      justify-content: flex-end;
+    }
+    // .el-upload-list {
+    //   height: 120px;
+    //   overflow: auto;
+    // }
+  }
+  .variable-list-wrapper .variable-list {
+    margin-top: 12px;
+    flex: 1 1 0;
+    background-color: var(--third-bg-color);
+    overflow-y: auto;
+    padding: 10px;
+    border-radius: 5px;
+    > li + li {
+      margin-top: 4px;
+    }
+  }
+}
+
+.variable-chip {
+  padding-left: 7px;
+  cursor: pointer;
+
+  .variable-name {
+    max-width: 160px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .pre-icon::before {
+    border: 1px solid;
+    border-radius: 3px;
+  }
+
+  .close-icon {
+    position: relative;
+    right: -4px;
+  }
+}
+
+.chart-tool-wrapper .chart-setting-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 250px;
+  border-right: 4px solid var(--third-bg-color);
+
+  .tab-item-wrapper {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    padding: 10px;
+
+    .basic-config-content {
+      display: flex;
+      overflow-y: scroll;
+      .config-item-wrapper {
+        min-width: 100%;
+        flex: 0;
+      }
+    }
+  }
+
+  .v-tab--selected {
+    font-weight: bold;
+    color: var(--primary-selected-color);
+  }
+}
+
+.file-list-ul {
+  height: 130px;
+  overflow-y: auto;
+  > li + li {
+    margin-top: 4px;
+  }
+  > li {
+    display: flex;
+    align-items: center;
+    border-radius: 5px;
+    cursor: pointer;
+    &:hover {
+      background-color: var(--hover-bg-color);
+      .delete-icon {
+        display: block;
+      }
+    }
+
+    .file-name {
+      max-width: 160px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .delete-icon {
+      display: none;
+      margin-left: auto;
+      position: relative;
+      top: -1px;
+      &:hover {
+        color: rgb(199, 0, 0);
+      }
+    }
+  }
+}
+
+.chart-setting-wrapper .chart-types-ul {
+  display: flex;
+  flex-wrap: wrap;
+  > li {
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    width: calc((100% - 18px) / 4);
+    margin-right: 6px;
+    border-radius: 3px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--third-bg-color);
+    }
+  }
+  > li:nth-child(4n) {
+    margin-right: 0px;
+  }
+
+  > li.chart-type__selected {
+    color: var(--primary-selected-color);
+    border: 1px solid var(--primary-selected-color);
+  }
+}
+
+.chart-show-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border-left: 4px solid var(--third-bg-color);
+
+  .chart-dim-config-wrapper {
+    border: 6px solid var(--third-bg-color);
+    border-left: 0px solid var(--third-bg-color);
+
+    .dim-item-content {
+      display: flex;
+      align-items: center;
+      &:not(:last-child) {
+        border-bottom: 2px solid var(--third-bg-color);
+      }
+
+      .dim-name {
+        text-align: center;
+        width: 50px;
+        border-right: 1px solid var(--third-bg-color);
+      }
+
+      .dim-content {
+        flex: 1;
+        padding: 0 6px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        min-height: 34px;
+        .variable-chip {
+          margin: 0 4px;
+        }
+      }
+
+      .dim-content.show-location-icon::before {
+        content: '';
+        order: 99999;
+        display: block;
+        height: 28px;
+        width: 2px;
+        background-color: var(--primary-selected-color);
+      }
+    }
+  }
+
+  .chart-preview-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 10px;
+    .chart-preview-content {
+      flex: 1;
+    }
+  }
+}

@@ -1,0 +1,106 @@
+.header-background {
+  height: 60px;
+  background-color: rgb(92, 77, 77);
+}
+
+.tools-page-content {
+  background-color: rgb(var(--v-theme-background));
+  height: calc(100vh - 60px);
+  display: flex;
+}
+
+.tools-menu-content {
+  position: relative;
+  width: 300px;
+  padding: 0 15px 15px;
+  border-right: 4px solid var(--third-bg-color);
+  transition: all 0.3s ease;
+
+  .tools-menu-content-ul > li {
+    display: flex;
+    flex-direction: column;
+    margin: 15px 0;
+    border-radius: 10px;
+    padding: 10px;
+    background-color: var(--second-bg-color);
+
+    > p {
+      font-weight: bold;
+      font-size: 16px;
+      font-family:
+        Inter,
+        Helvetica Neue,
+        Helvetica,
+        Arial,
+        sans-serif;
+    }
+
+    .tools-submenu-content {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      .tool-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 70px;
+        width: 30%;
+        margin: 5px 0;
+        cursor: pointer;
+        font-size: 12px;
+        border-radius: 5px;
+
+        &:hover {
+          background-color: rgba(125, 177, 250, 0.8);
+          animation: shake 0.3s ease-in-out;
+          transform: rotate(1deg);
+        }
+      }
+
+      .tool-item__selected {
+        border: 2px solid rgba(125, 177, 250, 0.8);
+      }
+    }
+  }
+  .collapse-btn {
+    position: absolute;
+    right: 0;
+    top: 10px;
+    transform: translate(50%, 0);
+  }
+}
+.tools-menu-content.tools-menu-content__collapsed {
+  transform: translate(calc(-100% + 35px), 0);
+  width: 0;
+  .tools-menu-content-ul {
+    display: none;
+  }
+}
+
+.tool-content {
+  flex: 1;
+  overflow: hidden;
+  ::-webkit-scrollbar {
+    width: 3px;
+    height: 3px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--primary-selected-color);
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-5deg);
+  }
+  50% {
+    transform: rotate(5deg);
+  }
+  75% {
+    transform: rotate(-2deg);
+  }
+}
