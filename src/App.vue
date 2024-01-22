@@ -11,7 +11,7 @@
     size="large"
     @click="goBackTop"
   ></v-icon>
-  <Footer class="align-self-end hidden-xs"></Footer>
+  <Footer v-if="!isNoFooter" class="align-self-end hidden-xs"></Footer>
 </template>
 
 <script setup lang="ts">
@@ -30,6 +30,11 @@ const showGoTop = ref(false)
 
 const routerKey = computed(() => {
   return route.path + JSON.stringify(route.query)
+})
+
+/** 是否隐藏footer */
+const isNoFooter = computed(() => {
+  return route.meta.isNoFooter
 })
 
 onMounted(async () => {
