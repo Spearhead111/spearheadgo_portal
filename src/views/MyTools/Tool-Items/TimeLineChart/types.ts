@@ -62,7 +62,7 @@ export class ChartInfo {
   /** 字段 */
   indicatorList: AxisDim[]
   constructor(chartInfo?: ChartInfoType) {
-    this.chartType = chartInfo?.chartType ?? CHART_TYPES.Line.name
+    this.chartType = chartInfo?.chartType ?? CHART_TYPES.LINE
     this.XAxis = chartInfo?.XAxis
     this.indicatorList = chartInfo?.indicatorList ?? []
   }

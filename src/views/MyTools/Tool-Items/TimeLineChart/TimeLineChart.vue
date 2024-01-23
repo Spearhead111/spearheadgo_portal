@@ -107,7 +107,7 @@
           <p class="font-bold">图表类型</p>
           <ul class="chart-types-ul">
             <li
-              v-for="chartType in CHART_TYPES"
+              v-for="chartType in CHART_TYPES_ICON"
               :class="[{ 'chart-type__selected': currChartInfo.chartType === chartType.name }]"
               @click="selectChartType(chartType.name)"
             >
@@ -180,10 +180,17 @@
       </div>
       <!-- 图表展示 -->
       <div class="chart-preview-wrapper">
-        <div>
-          <v-button>预览</v-button>
+        <div class="flex align-center">
+          <v-btn text="预览" elevation="0" color="#4DB6AC" @click="preview"></v-btn>
+          <span v-show="previewTipVisiable" class="ml-5" style="color: #747474"
+            >配置信息修改后需重新预览</span
+          >
         </div>
-        <div class="chart-preview-content"></div>
+        <PreviewChart
+          class="chart-preview-content"
+          v-if="isPreview"
+          :is-preview="isPreview"
+        ></PreviewChart>
       </div>
     </div>
   </div>
@@ -200,10 +207,12 @@ import { ChartData, ChartInfo, type AxisDimType, AxisDim } from './types'
 import {
   CHART_CONFIG_ITEMS,
   CHART_TYPES,
+  CHART_TYPES_ICON,
   INDICATOR_MAX_NUM,
   VariableFromType
 } from '../../constants/chartConfig'
 import DimChip from './DimChip/DimChip.vue'
+import PreviewChart from './PreviewChart/PreviewChart.vue'
 
 const fileList = ref<UploadUserFile[]>([])
 /** 上传的文件数据 */
@@ -216,10 +225,22 @@ const currTab = ref(CHART_CONFIG_ITEMS.Basic.name)
 const currChartInfo = ref<ChartInfo>(new ChartInfo())
 const isAtXDim = ref(false)
 const isAtYDim = ref(false)
+/** 配置信息修改提示是否展示 */
+const previewTipVisiable = ref(false)
+/** 控制预览渲染 */
+const isPreview = ref(false)
 
 onBeforeUnmount(() => {
   chartData.value.clear()
 })
+
+watch(
+  () => currChartInfo.value,
+  (newValue, oldValue) => {
+    previewTipVisiable.value = true
+  },
+  { deep: true }
+)
 
 /** 删除文件数据 */
 const removeFile = (fileName: string) => {
@@ -280,6 +301,7 @@ const handleChange: UploadProps['onChange'] = (uploadFile, uploadFiles) => {
 /** 选择图表类型 */
 const selectChartType = (chartType: string) => {
   currChartInfo.value.chartType = chartType
+  switchChartType(chartType)
 }
 
 /** 拖拽开始 */
@@ -318,6 +340,14 @@ const addXAxis = (event: DragEvent) => {
     return ElMessage.warning('X轴只能添加一个维度')
   }
   currChartInfo.value.XAxis = new AxisDim(data)
+  switch (data.type) {
+    case VariableFromType.Indicator:
+      currChartInfo.value.indicatorList.splice(data.index, 1)
+      break
+
+    default:
+      break
+  }
 }
 
 /**
@@ -332,29 +362,30 @@ const addIndicator = (event: DragEvent, targetIndex?: number) => {
   // 获取拖动的数据
   const data = JSON.parse(event.dataTransfer!.getData('varInfo'))
   const newIndicator = new AxisDim(data)
+  targetIndex = isNumber(targetIndex) ? targetIndex : currChartInfo.value.indicatorList.length
   // 判断拖动的字段来源是指标还是其他
   if (data.type !== 'Indicator') {
+    // 判断数量限制
     if (currChartInfo.value.indicatorList.length >= INDICATOR_MAX_NUM) {
       return ElMessage.warning(`最多添加${INDICATOR_MAX_NUM}个指标`)
-    } else {
-      isNumber(targetIndex)
-        ? currChartInfo.value.indicatorList.splice(targetIndex, 0, newIndicator)
-        : currChartInfo.value.indicatorList.push(newIndicator)
+    }
+    currChartInfo.value.indicatorList.splice(targetIndex, 0, newIndicator)
+    switch (data.type) {
+      case VariableFromType.XAxis:
+        currChartInfo.value.XAxis = undefined
+        break
+      default:
+        break
     }
   } else {
-    if (isNumber(targetIndex)) {
-      if (data.dimCode === currChartInfo.value.indicatorList[targetIndex!].dimCode) {
-        return
-      } else {
-        currChartInfo.value.indicatorList.splice(targetIndex!, 0, newIndicator)
-        currChartInfo.value.indicatorList.splice(
-          data.index > targetIndex! ? data.index + 1 : data.index,
-          1
-        )
-      }
+    if (data.dimCode === (currChartInfo.value.indicatorList[targetIndex]?.dimCode ?? '')) {
+      return
     } else {
-      currChartInfo.value.indicatorList.splice(data.index, 1)
-      currChartInfo.value.indicatorList.push(newIndicator)
+      currChartInfo.value.indicatorList.splice(targetIndex, 0, newIndicator)
+      currChartInfo.value.indicatorList.splice(
+        data.index > targetIndex ? data.index + 1 : data.index,
+        1
+      )
     }
   }
 }
@@ -367,5 +398,30 @@ const deleteAxis = () => {
 /** 删除指标 */
 const deleteIndicator = (index: number) => {
   currChartInfo.value.indicatorList.splice(index, 1)
+}
+
+/** 切换图表类型，配置有相应的变化 */
+const switchChartType = (chartType: string) => {
+  switch (chartType) {
+    case CHART_TYPES.LINE:
+      currChartInfo.value.indicatorList = currChartInfo.value.indicatorList.slice(
+        0,
+        INDICATOR_MAX_NUM
+      )
+      break
+    case CHART_TYPES.SCATTER:
+      currChartInfo.value.indicatorList = currChartInfo.value.indicatorList.slice(0, 1)
+      break
+    default:
+      break
+  }
+}
+
+const preview = () => {
+  previewTipVisiable.value = false
+  isPreview.value = false
+  nextTick(() => {
+    isPreview.value = true
+  })
 }
 </script>
