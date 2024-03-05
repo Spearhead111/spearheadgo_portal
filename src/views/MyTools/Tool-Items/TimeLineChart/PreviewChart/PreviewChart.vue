@@ -5,10 +5,13 @@
 <script lang="ts" setup>
 import * as echarts from 'echarts'
 import { onMounted, onBeforeUnmount, ref } from 'vue'
+import type { ChartData, ChartInfo } from '../types'
 
 const props = withDefaults(
   defineProps<{
     isPreview: boolean
+    chartInfo: ChartInfo
+    chartData: ChartData
   }>(),
   { isPreview: false }
 )
@@ -35,22 +38,26 @@ const initChart = () => {
   if (chartContainereRef.value) {
     echartsInstance.value = echarts.init(chartContainereRef.value)
     // 图表配置
+    const { chartData, chartInfo } = props
     const options: echarts.EChartsOption = {
       title: {
-        text: 'ECharts Demo'
+        text: chartInfo.chartName,
+        left: 'center'
       },
       xAxis: {
         type: 'category',
-        data: ['A', 'B', 'C', 'D', 'E']
+        data: chartData.data[chartInfo.XAxis?.fileName!].colData[chartInfo.XAxis?.variableName!]
       },
       yAxis: {
-        type: 'value'
+        // type: 'value'
       },
       series: [
         {
           name: 'Example Series',
-          type: 'bar',
-          data: [10, 20, 15, 25, 30]
+          type: 'line',
+          data: chartData.data[chartInfo.indicatorList[0]?.fileName!].colData[
+            chartInfo.indicatorList[0]?.variableName!
+          ]
         }
       ]
     }
@@ -69,6 +76,7 @@ const resizeChart = () => {
 
 watchEffect(() => {
   if (props.isPreview) {
+    console.log(props)
     nextTick(() => {
       initChart()
     })

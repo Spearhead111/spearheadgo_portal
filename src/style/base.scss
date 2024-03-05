@@ -86,6 +86,10 @@
   font-size: 24px;
 }
 
+.cursor-pointer {
+  cursor: pointer;
+}
+
 // 自定义一下elmessage的全局样式
 .el-message {
   z-index: 99999 !important;

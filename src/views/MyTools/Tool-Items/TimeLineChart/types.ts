@@ -55,22 +55,56 @@ export class FileData {
 }
 
 export class ChartInfo {
+  /** 图表名 */
+  chartName: string
   /** 图表类型 */
   chartType: string
+  /** 是否忽略缺省值 */
+  omitDefaultVals: boolean
+  /** 缺省值 */
+  defaultVal: number
   /** X轴 */
   XAxis: AxisDimType | undefined
   /** 字段 */
   indicatorList: AxisDim[]
   constructor(chartInfo?: ChartInfoType) {
+    this.chartName = chartInfo?.chartName ?? ''
     this.chartType = chartInfo?.chartType ?? CHART_TYPES.LINE
+    this.omitDefaultVals = chartInfo?.omitDefaultVals ?? false
+    this.defaultVal = this.omitDefaultVals ? chartInfo?.defaultVal ?? -9999 : -9999
     this.XAxis = chartInfo?.XAxis
     this.indicatorList = chartInfo?.indicatorList ?? []
+  }
+  isValid() {
+    let valid = true
+    let message = ''
+    switch (this.chartType) {
+      case CHART_TYPES.LINE:
+        if (!this.XAxis || !this.XAxis.dimCode) {
+          valid = false
+          message = 'X轴必须选择一个维度'
+        } else if (this.indicatorList.length === 0) {
+          valid = false
+          message = '至少选择一个指标'
+        }
+        break
+      case CHART_TYPES.SCATTER:
+      default:
+        break
+    }
+    return { valid, message }
   }
 }
 
 export interface ChartInfoType {
+  /** 图表名 */
+  chartName: string
   /** 图表类型 */
   chartType: string
+  /** 是否忽略默认值 */
+  omitDefaultVals: boolean
+  /** 缺省值 */
+  defaultVal: number
   /** X轴 */
   XAxis?: AxisDimType
   /** 字段 */

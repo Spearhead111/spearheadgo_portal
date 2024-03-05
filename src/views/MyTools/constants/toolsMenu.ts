@@ -6,10 +6,10 @@ const imgUrl = CDN_URL + 'img/icon/'
 
 export const TOOL_MENU_CONFIG = {
   research: {
-    titleName: '科研工具',
+    titleName: '数据分析',
     toolItems: [
       {
-        name: '折线图',
+        name: '图分析',
         icon: imgUrl + 'line-graph.png',
         component: TimeLineChartVue
       }

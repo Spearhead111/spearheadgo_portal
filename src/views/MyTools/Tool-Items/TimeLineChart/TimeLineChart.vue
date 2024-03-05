@@ -14,8 +14,23 @@
           <v-icon icon="mdi-plus-circle" color="#009688"></v-icon>
         </div>
         <template #tip>
-          <div class="el-upload__tip flex justify-content-between">
-            <span>支持识别txt和excel文件</span>
+          <div class="el-upload__tip flex align-center justify-content-between">
+            <div>
+              <span>支持识别excel/csv文件</span>
+              <v-tooltip
+                width="360"
+                location="top"
+                text="支持识别excel/csv文件以及类csv的文本文件(txt)，类cxv指分隔符为制表位或逗号分隔符号的文本文件"
+              >
+                <template v-slot:activator="{ props }">
+                  <v-icon
+                    v-bind="props"
+                    class="cursor-pointer ml-1"
+                    icon="mdi-help-circle-outline"
+                  />
+                </template>
+              </v-tooltip>
+            </div>
             <el-link
               href="https://file.spearheadgo.com/file/tools/图表数据模板.xlsx"
               :underline="false"
@@ -117,17 +132,49 @@
           </ul>
           <!-- 基础配置项 -->
           <p class="font-bold mt-2">基础配置</p>
-          <v-expansion-panels multiple variant="accordion" class="basic-config-content">
+          <v-expansion-panels
+            v-model="panels"
+            multiple
+            variant="accordion"
+            class="basic-config-content"
+          >
             <v-expansion-panel
               class="config-item-wrapper"
               :elevation="0"
-              v-for="i in 7"
-              :key="i"
               expand-icon="mdi-menu-down"
               collapse-icon="mdi-menu-up"
-              title="Item"
-              text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-            ></v-expansion-panel>
+              title="基础配置"
+            >
+              <v-expansion-panel-text>
+                <span>图表名称</span>
+                <v-text-field
+                  v-model="currChartInfo.chartName"
+                  variant="outlined"
+                  density="compact"
+                  counter="20"
+                  placeholder=""
+                  clearable
+                  single-line
+                  hide-details="auto"
+                ></v-text-field>
+              </v-expansion-panel-text>
+            </v-expansion-panel>
+            <v-expansion-panel
+              class="config-item-wrapper"
+              :elevation="0"
+              expand-icon="mdi-menu-down"
+              collapse-icon="mdi-menu-up"
+              title="数据配置"
+            >
+              <v-expansion-panel-text>
+                <v-switch
+                  class="config-switch"
+                  hide-details
+                  label="省略缺省值"
+                  color="var(--primary-selected-color)"
+                ></v-switch>
+              </v-expansion-panel-text>
+            </v-expansion-panel>
           </v-expansion-panels>
         </v-window-item>
         <!-- 分析 -->
@@ -156,6 +203,7 @@
               @add-dim="addXAxis"
               @init-drag-dim-info="initDragVariable"
             />
+            <span class="dim-tips" v-else>拖拽左侧字段</span>
           </div>
         </div>
         <div class="dim-item-content">
@@ -166,6 +214,7 @@
             @dragleave.prevent="isAtYDim = false"
             @drop="addIndicator($event)"
           >
+            <span class="dim-tips" v-if="!currChartInfo.indicatorList.length">拖拽左侧字段</span>
             <DimChip
               v-for="(indicator, index) in currChartInfo.indicatorList"
               :dim="indicator"
@@ -190,6 +239,8 @@
           class="chart-preview-content"
           v-if="isPreview"
           :is-preview="isPreview"
+          :chart-info="currChartInfo"
+          :chart-data="chartData"
         ></PreviewChart>
       </div>
     </div>
@@ -229,6 +280,8 @@ const isAtYDim = ref(false)
 const previewTipVisiable = ref(false)
 /** 控制预览渲染 */
 const isPreview = ref(false)
+/** 默认打开第一个配置panel */
+const panels = ref<number[]>([0])
 
 onBeforeUnmount(() => {
   chartData.value.clear()
@@ -417,7 +470,20 @@ const switchChartType = (chartType: string) => {
   }
 }
 
+/** 判断当前配置是否有效 */
+const judgeValid = () => {
+  let { valid, message } = currChartInfo.value.isValid()
+  !valid && ElMessage.error(message)
+  return valid
+}
+
+/** 预览 */
 const preview = () => {
+  let valid = true
+  valid = judgeValid()
+  if (!valid) {
+    return
+  }
   previewTipVisiable.value = false
   isPreview.value = false
   nextTick(() => {
