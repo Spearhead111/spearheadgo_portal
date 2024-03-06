@@ -152,6 +152,8 @@ export class AxisDim {
   decimalDigits: number
   /** 图表类型 */
   chartType: string
+  /** 字段颜色 */
+  color: string
   constructor(axisDim?: AxisDimType) {
     this.fileName = axisDim?.fileName ?? ''
     this.fileIndex = axisDim?.fileIndex ?? -99
@@ -165,6 +167,7 @@ export class AxisDim {
     this.unit = axisDim?.unit ?? ''
     this.decimalDigits = isNumber(axisDim?.decimalDigits) ? (axisDim?.decimalDigits as number) : 2
     this.chartType = axisDim?.chartType ?? CHART_TYPES.LINE
+    this.color = axisDim?.color ?? ''
   }
 }
 
@@ -187,4 +190,6 @@ export interface AxisDimType {
   decimalDigits: number
   /** 图表类型 */
   chartType: string
+  /** 字段颜色 */
+  color: string
 }

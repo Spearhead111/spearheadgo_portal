@@ -111,9 +111,8 @@ const initChart = () => {
         },
         {
           type: 'slider',
-          // handleSize: '100%', // 设置缩放滑块的大小
           handleStyle: {
-            color: '#1890ff' // 设置缩放滑块的颜色
+            color: '#00c0a6' // 设置缩放滑块的颜色
           }
         }
       ]
@@ -147,7 +146,9 @@ const getSeriesData = (chartData: ChartData, chartInfo: ChartInfo) => {
       name: indicator.desc,
       //@ts-ignore
       type: indicator.chartType,
-      // color: 'blue',
+      itemStyle: {
+        color: indicator.color // 设置系列2的颜色
+      },
       data: chartData.data[indicator.fileName].colData[indicator.variableName]
     }
     if (chartInfo.omitDefaultVals) {

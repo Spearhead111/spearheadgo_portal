@@ -90,6 +90,31 @@
             </v-card>
           </v-dialog>
         </v-btn>
+        <v-btn class="sub-menu-btn"
+          >设置颜色
+          <div class="color-show" :style="{ backgroundColor: dim.color }"></div>
+          <v-dialog
+            v-model="dimColorPickerShow"
+            activator="parent"
+            max-width="300"
+            style="overflow: hidden"
+          >
+            <v-card>
+              <v-color-picker
+                elevation="0"
+                v-model="originColor"
+                show-swatches
+                :swatches="SWATCHES"
+              ></v-color-picker>
+              <div style="text-align: end" class="mb-1">
+                <v-btn variant="text" class="mr-5" @click="cancelChangeColor">取消</v-btn>
+                <v-btn variant="text" class="mr-5" color="purple-darken-4" @click="changeColor"
+                  >确定</v-btn
+                >
+              </div>
+            </v-card>
+          </v-dialog>
+        </v-btn>
         <!-- <v-btn class="sub-menu-btn"
           >有子菜单
           <v-icon class="expand-icon" icon="mdi-chevron-right"></v-icon>
@@ -110,6 +135,7 @@ import { onMounted, onBeforeUnmount, ref } from 'vue'
 import { type AxisDimType } from '../types'
 import { type DimType } from '../../../constants/chartConfig'
 import { ElMessage } from 'element-plus'
+import { SWATCHES } from '@/constants'
 
 const props = withDefaults(
   defineProps<{
@@ -142,6 +168,10 @@ const dimChipRef = ref()
 const dimSettingVisable = ref(false)
 const dimInfoFormRef = ref()
 const dimInfoForm = ref<AxisDimType>({ ...props.dim })
+/** 字段颜色选择器是否显示 */
+const dimColorPickerShow = ref(false)
+/** 字段颜色选择器的原始颜色 */
+const originColor = ref('')
 
 const rules = ref<any>({
   desc: [
@@ -204,6 +234,17 @@ const changeDimInfo = async () => {
   props.dim.unit = dimInfoForm.value.unit
   props.dim.decimalDigits = dimInfoForm.value.decimalDigits
 }
+
+/** 取消修改颜色 */
+const cancelChangeColor = () => {
+  dimColorPickerShow.value = false
+  originColor.value = props.dim.color
+}
+
+const changeColor = () => {
+  dimColorPickerShow.value = false
+  props.dim.color = originColor.value
+}
 </script>
 
 <style lang="scss" scoped>
@@ -232,6 +273,13 @@ const changeDimInfo = async () => {
     .expand-icon {
       position: absolute;
       right: 0px;
+    }
+
+    .color-show {
+      margin-left: 5px;
+      width: 20px;
+      height: 15px;
+      border-radius: 4px;
     }
   }
 }
