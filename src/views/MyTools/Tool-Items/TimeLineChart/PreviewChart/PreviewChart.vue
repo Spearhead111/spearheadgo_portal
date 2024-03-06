@@ -72,7 +72,7 @@ const initChart = () => {
       legend: {
         data: chartInfo.indicatorList.map((indicator) => indicator.desc),
         // 设置图例位置为底部
-        bottom: 0
+        bottom: 45
       },
       tooltip: {
         // 触发条件，鼠标悬停时显示
@@ -102,9 +102,21 @@ const initChart = () => {
       grid: {
         left: '3%',
         right: '10%',
-        bottom: '5%',
+        bottom: '10%',
         containLabel: true
-      }
+      },
+      dataZoom: [
+        {
+          type: 'inside'
+        },
+        {
+          type: 'slider',
+          // handleSize: '100%', // 设置缩放滑块的大小
+          handleStyle: {
+            color: '#1890ff' // 设置缩放滑块的颜色
+          }
+        }
+      ]
     }
 
     // 使用配置项初始化图表
