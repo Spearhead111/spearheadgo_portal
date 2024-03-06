@@ -5,6 +5,7 @@
 <script lang="ts" setup>
 import * as echarts from 'echarts'
 import { onMounted, onBeforeUnmount, ref } from 'vue'
+import { isNumber } from 'lodash'
 import type { ChartData, ChartInfo } from '../types'
 import { CHART_TYPES } from '../../../constants/chartConfig'
 
@@ -176,7 +177,9 @@ const getValueContent = (
   const decimalDigits = isAxis
     ? chartInfo.XAxis?.decimalDigits
     : chartInfo.indicatorList.find((indicator) => indicator.desc === dimDesc)?.decimalDigits
-  return value === '-' ? value : `${Number(value).toFixed(decimalDigits)} ${unit}`
+  return value === '-'
+    ? value
+    : `${isNumber(value) ? Number(value).toFixed(decimalDigits) : value} ${unit}`
 }
 
 /** 下载图表 */
