@@ -109,9 +109,9 @@ export interface YAxisSetting {
   /** 自适应 */
   autoAdapt: boolean
   /** Y轴最大值 */
-  max: number
+  max: number | string
   /** Y轴最小值 */
-  min: number
+  min: number | string
 }
 
 export interface ChartInfoType {
