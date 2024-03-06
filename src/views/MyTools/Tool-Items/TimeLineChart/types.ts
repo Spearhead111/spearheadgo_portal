@@ -163,7 +163,7 @@ export class AxisDim {
     }
     this.dimType = axisDim?.dimType ?? 'Number'
     this.unit = axisDim?.unit ?? ''
-    this.decimalDigits = isNumber(axisDim?.decimalDigits) ? axisDim.decimalDigits : 2
+    this.decimalDigits = isNumber(axisDim?.decimalDigits) ? (axisDim?.decimalDigits as number) : 2
     this.chartType = axisDim?.chartType ?? CHART_TYPES.LINE
   }
 }

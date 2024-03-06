@@ -45,6 +45,7 @@ const initChart = () => {
         text: chartInfo.chartName,
         left: 'center'
       },
+      //@ts-ignore
       xAxis: {
         // type: 'value',
         name: chartInfo.XAxis?.desc,
@@ -53,6 +54,7 @@ const initChart = () => {
             ? null
             : chartData.data[chartInfo.XAxis?.fileName!].colData[chartInfo.XAxis?.variableName!]
       },
+      //@ts-ignore
       yAxis: {
         // type: 'value',
         max:
@@ -169,10 +171,10 @@ const getValueContent = (
   isAxis = false
 ) => {
   const unit = isAxis
-    ? chartInfo.XAxis.unit
+    ? chartInfo.XAxis?.unit ?? ''
     : chartInfo.indicatorList.find((indicator) => indicator.desc === dimDesc)?.unit || ''
   const decimalDigits = isAxis
-    ? chartInfo.XAxis.decimalDigits
+    ? chartInfo.XAxis?.decimalDigits
     : chartInfo.indicatorList.find((indicator) => indicator.desc === dimDesc)?.decimalDigits
   return value === '-' ? value : `${Number(value).toFixed(decimalDigits)} ${unit}`
 }
@@ -204,11 +206,11 @@ const downloadChart = () => {
   }
 }
 
-const tooltipFormatter = (params) => {
+const tooltipFormatter = (params: any) => {
   if (props.chartInfo.chartType === CHART_TYPES.SCATTER) {
     return `<b>${props.chartInfo.XAxis?.desc}:</b> ${getValueContent(
       params.value[0],
-      props.chartInfo.XAxis?.desc,
+      props.chartInfo.XAxis?.desc as string,
       props.chartInfo,
       true
     )} <br/>
@@ -221,7 +223,7 @@ const tooltipFormatter = (params) => {
   //@ts-ignore
   let tooltipContent = `<b>${props.chartInfo.XAxis?.desc}:</b> ${getValueContent(
     params[0].axisValueLabel,
-    props.chartInfo.XAxis?.desc,
+    props.chartInfo.XAxis?.desc as string,
     props.chartInfo,
     true
   )}</b><br/>`
