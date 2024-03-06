@@ -2,6 +2,7 @@
   <div class="chart-tool-wrapper">
     <div class="chart-data-wrapper">
       <el-upload
+        :disabled="onReadingFile"
         v-model:file-list="fileList"
         class="upload-content"
         :auto-upload="false"
@@ -10,7 +11,7 @@
         :on-change="handleChange"
       >
         <div class="add-data-btn">
-          <span class="mr-1">添加数据</span>
+          <span class="mr-1">{{ onReadingFile ? '正在读取数据，请稍等' : '添加数据' }}</span>
           <v-icon icon="mdi-plus-circle" color="#009688"></v-icon>
         </div>
         <template #tip>
@@ -117,69 +118,119 @@
       </v-tabs>
       <v-window v-model="currTab" class="flex height-100">
         <!-- 基础配置 -->
-        <v-window-item :value="CHART_CONFIG_ITEMS.Basic.name" class="tab-item-wrapper">
-          <!-- 图表类型 -->
-          <p class="font-bold">图表类型</p>
-          <ul class="chart-types-ul">
-            <li
-              v-for="chartType in CHART_TYPES_ICON"
-              :class="[{ 'chart-type__selected': currChartInfo.chartType === chartType.name }]"
-              @click="selectChartType(chartType.name)"
+
+        <v-form ref="chartInfoFormRef">
+          <v-window-item :value="CHART_CONFIG_ITEMS.Basic.name" class="tab-item-wrapper">
+            <!-- 图表类型 -->
+            <p class="font-bold">图表类型</p>
+            <ul class="chart-types-ul">
+              <li
+                v-for="chartType in CHART_TYPES_ICON"
+                :class="[{ 'chart-type__selected': currChartInfo.chartType === chartType.name }]"
+                @click="selectChartType(chartType.name)"
+              >
+                <v-icon size="26" :icon="chartType.icon"></v-icon>
+                <span class="font-12">{{ chartType.desc }}</span>
+              </li>
+            </ul>
+            <!-- 基础配置项 -->
+            <p class="font-bold mt-2">基础配置</p>
+            <v-expansion-panels
+              v-model="panels"
+              multiple
+              variant="accordion"
+              class="basic-config-content"
             >
-              <v-icon size="26" :icon="chartType.icon"></v-icon>
-              <span class="font-12">{{ chartType.desc }}</span>
-            </li>
-          </ul>
-          <!-- 基础配置项 -->
-          <p class="font-bold mt-2">基础配置</p>
-          <v-expansion-panels
-            v-model="panels"
-            multiple
-            variant="accordion"
-            class="basic-config-content"
-          >
-            <v-expansion-panel
-              class="config-item-wrapper"
-              :elevation="0"
-              expand-icon="mdi-menu-down"
-              collapse-icon="mdi-menu-up"
-              title="基础配置"
-            >
-              <v-expansion-panel-text>
-                <span>图表名称</span>
-                <v-text-field
-                  v-model="currChartInfo.chartName"
-                  variant="outlined"
-                  density="compact"
-                  counter="20"
-                  placeholder=""
-                  clearable
-                  single-line
-                  hide-details="auto"
-                ></v-text-field>
-              </v-expansion-panel-text>
-            </v-expansion-panel>
-            <v-expansion-panel
-              class="config-item-wrapper"
-              :elevation="0"
-              expand-icon="mdi-menu-down"
-              collapse-icon="mdi-menu-up"
-              title="数据配置"
-            >
-              <v-expansion-panel-text>
-                <v-switch
-                  class="config-switch"
-                  hide-details
-                  label="省略缺省值"
-                  color="var(--primary-selected-color)"
-                ></v-switch>
-              </v-expansion-panel-text>
-            </v-expansion-panel>
-          </v-expansion-panels>
-        </v-window-item>
+              <v-expansion-panel
+                class="config-item-wrapper"
+                :elevation="0"
+                expand-icon="mdi-menu-down"
+                collapse-icon="mdi-menu-up"
+                title="基础配置"
+              >
+                <v-expansion-panel-text>
+                  <span>图表名称</span>
+                  <v-text-field
+                    v-model="currChartInfo.chartName"
+                    :rules="rules.chartName"
+                    variant="outlined"
+                    density="compact"
+                    counter="20"
+                    placeholder=""
+                    clearable
+                    single-line
+                    hide-details="auto"
+                  ></v-text-field>
+                </v-expansion-panel-text>
+              </v-expansion-panel>
+              <v-expansion-panel
+                class="config-item-wrapper"
+                :elevation="0"
+                expand-icon="mdi-menu-down"
+                collapse-icon="mdi-menu-up"
+                title="数据配置"
+              >
+                <v-expansion-panel-text>
+                  <v-switch
+                    v-model="currChartInfo.omitDefaultVals"
+                    class="config-switch"
+                    hide-details
+                    label="省略缺省值"
+                    color="var(--primary-selected-color)"
+                  ></v-switch>
+                  <!-- 缺省值设置 -->
+                  <div class="config-label-num-input" v-if="currChartInfo.omitDefaultVals">
+                    <span>缺省值设置</span>
+                    <v-text-field
+                      v-model="currChartInfo.defaultVal"
+                      type="number"
+                      variant="outlined"
+                      density="compact"
+                      placeholder=""
+                      single-line
+                      hide-details
+                    ></v-text-field>
+                  </div>
+                  <v-switch
+                    v-model="currChartInfo.yAxisSetting.autoAdapt"
+                    class="config-switch"
+                    hide-details
+                    label="数据轴自适应"
+                    color="var(--primary-selected-color)"
+                  ></v-switch>
+                  <template v-if="!currChartInfo.yAxisSetting.autoAdapt">
+                    <div class="config-label-num-input has-detail">
+                      <span>最大值</span>
+                      <v-text-field
+                        v-model="currChartInfo.yAxisSetting.max"
+                        type="number"
+                        variant="outlined"
+                        density="compact"
+                        placeholder=""
+                        single-line
+                      ></v-text-field>
+                    </div>
+                    <div class="config-label-num-input has-detail">
+                      <span>最小值</span>
+                      <v-text-field
+                        v-model="currChartInfo.yAxisSetting.min"
+                        :rules="rules.yAxisSettingMin"
+                        type="number"
+                        variant="outlined"
+                        density="compact"
+                        placeholder=""
+                        single-line
+                      ></v-text-field>
+                    </div>
+                  </template>
+                </v-expansion-panel-text>
+              </v-expansion-panel>
+            </v-expansion-panels>
+          </v-window-item>
+        </v-form>
         <!-- 分析 -->
         <v-window-item :value="CHART_CONFIG_ITEMS.Analysis.name" class="tab-item-wrapper"
-          >2
+          >敬请期待！
         </v-window-item>
       </v-window>
     </div>
@@ -198,6 +249,7 @@
               v-if="currChartInfo.XAxis?.variableName"
               :dim="currChartInfo.XAxis"
               :index="0"
+              :dimDescList="getOtherDimDescList(currChartInfo.XAxis)"
               type="XAxis"
               @delete-dim="deleteAxis"
               @add-dim="addXAxis"
@@ -220,6 +272,7 @@
               :dim="indicator"
               type="Indicator"
               :index="index"
+              :dimDescList="getOtherDimDescList(indicator)"
               @delete-dim="deleteIndicator"
               @add-dim="addIndicator"
               @init-drag-dim-info="initDragVariable"
@@ -228,14 +281,38 @@
         </div>
       </div>
       <!-- 图表展示 -->
-      <div class="chart-preview-wrapper">
+      <div ref="chartPreviewRef" class="chart-preview-wrapper">
         <div class="flex align-center">
-          <v-btn text="预览" elevation="0" color="#4DB6AC" @click="preview"></v-btn>
-          <span v-show="previewTipVisiable" class="ml-5" style="color: #747474"
-            >配置信息修改后需重新预览</span
+          <template v-if="!isFullscreen">
+            <v-btn text="预览" elevation="0" color="#4DB6AC" @click="preview"></v-btn>
+            <span v-show="previewTipVisiable" class="ml-5" style="color: #747474"
+              >配置信息修改后需重新预览</span
+            ></template
           >
+
+          <div class="more-actions ml-auto pr-4">
+            <v-slider
+              class="chart-download-quality-slider"
+              v-model="currChartInfo.pixelRatio"
+              density="compact"
+              hide-details
+              thumb-label
+              thumb-size="13"
+              max="10"
+              min="1"
+              color="var(--primary-selected-color)"
+              label="下载质量"
+            ></v-slider>
+            <v-icon @click="downloadChart" color="#4DB6AC" icon="mdi-download"></v-icon>
+            <v-icon
+              @click="toggle"
+              color="#4DB6AC"
+              :icon="isFullscreen ? 'mdi-arrow-collapse-all' : 'mdi-arrow-expand-all'"
+            ></v-icon>
+          </div>
         </div>
         <PreviewChart
+          ref="previewChartRef"
           class="chart-preview-content"
           v-if="isPreview"
           :is-preview="isPreview"
@@ -249,6 +326,7 @@
 
 <script lang="ts" setup>
 import './style.scss'
+import { useFullscreen } from '@vueuse/core'
 import { onMounted, onBeforeUnmount, ref } from 'vue'
 import * as XLSX from 'xlsx'
 import { isNumber } from 'lodash'
@@ -274,6 +352,7 @@ const searchVariable = ref('')
 const currTab = ref(CHART_CONFIG_ITEMS.Basic.name)
 /** 要渲染的图表信息 */
 const currChartInfo = ref<ChartInfo>(new ChartInfo())
+const chartInfoFormRef = ref()
 const isAtXDim = ref(false)
 const isAtYDim = ref(false)
 /** 配置信息修改提示是否展示 */
@@ -282,6 +361,37 @@ const previewTipVisiable = ref(false)
 const isPreview = ref(false)
 /** 默认打开第一个配置panel */
 const panels = ref<number[]>([0])
+/** 预览元素 */
+const chartPreviewRef = ref(null)
+/** useFullScreen的hook */
+const { toggle, isFullscreen } = useFullscreen(chartPreviewRef)
+/** 是否正在读取文件 */
+const onReadingFile = ref(false)
+/** 预览组件实例 */
+const previewChartRef = ref()
+
+const rules = ref<any>({
+  chartName: [(v: string) => !v || v.length <= 20 || '图表名称长度不能超过20个字符'],
+  yAxisSettingMin: [
+    (v: string) =>
+      v !== '' || currChartInfo.value.yAxisSetting.max !== '' || '最小值和最大值至少配置一个',
+
+    (v: string) =>
+      (v === '' && currChartInfo.value.yAxisSetting.max !== '') ||
+      (v !== '' && currChartInfo.value.yAxisSetting.max === '') ||
+      (v !== '' &&
+        currChartInfo.value.yAxisSetting.max !== '' &&
+        Number(v) < Number(currChartInfo.value.yAxisSetting.max)) ||
+      '最小值大于最大值'
+  ]
+})
+
+/** 图表所有维度的desc */
+const dimDescList = computed(() =>
+  currChartInfo.value.indicatorList
+    .map((indicator) => indicator.desc)
+    .concat(currChartInfo.value.XAxis?.desc!)
+)
 
 onBeforeUnmount(() => {
   chartData.value.clear()
@@ -294,6 +404,11 @@ watch(
   },
   { deep: true }
 )
+
+/** 获取其他维度的描述列表 */
+const getOtherDimDescList = (dim: AxisDimType) => {
+  return dimDescList.value.filter((desc) => desc !== dim.desc)
+}
 
 /** 删除文件数据 */
 const removeFile = (fileName: string) => {
@@ -328,7 +443,7 @@ const handleChange: UploadProps['onChange'] = (uploadFile, uploadFiles) => {
         return
       }
       // 从数据中解析工作簿
-      const workbook = XLSX.read(data, { type: 'binary' })
+      const workbook = XLSX.read(data, { type: 'binary', raw: true })
       // 获取第一个工作表
       const sheetName = workbook.SheetNames[0]
       const sheet = workbook.Sheets[sheetName]
@@ -347,13 +462,18 @@ const handleChange: UploadProps['onChange'] = (uploadFile, uploadFiles) => {
       console.log(error)
       return
     }
+    onReadingFile.value = false
   }
+  onReadingFile.value = true
   reader.readAsBinaryString(uploadFile.raw as Blob)
 }
 
 /** 选择图表类型 */
 const selectChartType = (chartType: string) => {
   currChartInfo.value.chartType = chartType
+  currChartInfo.value.indicatorList.forEach((indicator) => {
+    indicator.chartType = chartType
+  })
   switchChartType(chartType)
 }
 
@@ -372,6 +492,17 @@ const clearLocationIcon = () => {
   document.querySelectorAll('.dim-content')?.forEach((ele) => {
     ele.setAttribute('style', 'background-color: transparent;')
   })
+}
+
+/** 获取唯一的描述 */
+const getUniqueDesc = (variableName: string) => {
+  let desc = variableName
+  let i = 1
+  while (dimDescList.value.includes(desc)) {
+    desc = `${variableName}_${i}`
+    i++
+  }
+  return desc
 }
 
 /** 拖拽放置 */
@@ -393,6 +524,8 @@ const addXAxis = (event: DragEvent) => {
     return ElMessage.warning('X轴只能添加一个维度')
   }
   currChartInfo.value.XAxis = new AxisDim(data)
+  currChartInfo.value.XAxis.desc =
+    currChartInfo.value.XAxis.desc || getUniqueDesc(data.variableName)
   switch (data.type) {
     case VariableFromType.Indicator:
       currChartInfo.value.indicatorList.splice(data.index, 1)
@@ -415,6 +548,8 @@ const addIndicator = (event: DragEvent, targetIndex?: number) => {
   // 获取拖动的数据
   const data = JSON.parse(event.dataTransfer!.getData('varInfo'))
   const newIndicator = new AxisDim(data)
+  newIndicator.desc = newIndicator.desc || getUniqueDesc(newIndicator.variableName)
+  newIndicator.chartType = currChartInfo.value.chartType
   targetIndex = isNumber(targetIndex) ? targetIndex : currChartInfo.value.indicatorList.length
   // 判断拖动的字段来源是指标还是其他
   if (data.type !== 'Indicator') {
@@ -478,16 +613,28 @@ const judgeValid = () => {
 }
 
 /** 预览 */
-const preview = () => {
-  let valid = true
+const preview = async () => {
+  // 验证图表配置
+  let { valid } = await chartInfoFormRef.value.validate()
+  if (!valid) {
+    return ElMessage.error('图表配置项有误，请完善！')
+  }
   valid = judgeValid()
   if (!valid) {
     return
   }
+
   previewTipVisiable.value = false
   isPreview.value = false
   nextTick(() => {
     isPreview.value = true
   })
+}
+
+const downloadChart = () => {
+  if (!previewChartRef.value) {
+    return ElMessage.warning('当前无图表')
+  }
+  previewChartRef.value.downloadChart()
 }
 </script>

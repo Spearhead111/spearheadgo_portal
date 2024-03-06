@@ -10,10 +10,12 @@ export const CHART_CONFIG_ITEMS = {
 }
 
 export const CHART_TYPES = {
-  LINE: 'Line',
+  LINE: 'line',
   LINE_DES: '折线图',
-  SCATTER: 'Scatter',
-  SCATTER_DES: '散点图'
+  SCATTER: 'scatter',
+  SCATTER_DES: '散点图',
+  BAR: 'bar',
+  BAR_DES: '柱状图'
 }
 
 /** 图表类型的icon */
@@ -22,6 +24,11 @@ export const CHART_TYPES_ICON = {
     name: CHART_TYPES.LINE,
     desc: CHART_TYPES.LINE_DES,
     icon: 'mdi-chart-line'
+  },
+  Bar: {
+    name: CHART_TYPES.BAR,
+    desc: CHART_TYPES.BAR_DES,
+    icon: 'mdi-chart-bar'
   },
   Scatter: {
     name: CHART_TYPES.SCATTER,

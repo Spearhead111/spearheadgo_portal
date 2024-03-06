@@ -98,6 +98,32 @@
       .v-label {
         padding: 0;
         font-size: 14px;
+        opacity: 1;
+      }
+    }
+
+    .config-label-num-input {
+      display: flex;
+      align-items: center;
+
+      > span {
+        font-size: 14px;
+        margin-left: 20px;
+      }
+      .v-text-field {
+        margin-left: auto;
+        max-width: 100px;
+        .v-input__control {
+          input {
+            text-align: center;
+          }
+        }
+      }
+    }
+    .config-label-num-input.has-detail {
+      > span {
+        position: relative;
+        top: -10px;
       }
     }
   }
@@ -232,6 +258,23 @@
     padding: 10px;
     .chart-preview-content {
       flex: 1;
+    }
+
+    .more-actions {
+      display: flex;
+      align-items: center;
+      .v-icon {
+        margin-left: 10px;
+      }
+
+      .chart-download-quality-slider {
+        .v-input__control {
+          width: 80px;
+        }
+        .v-label {
+          font-size: 14px;
+        }
+      }
     }
   }
 }

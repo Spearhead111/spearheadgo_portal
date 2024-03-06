@@ -29,27 +29,68 @@
           >设置字段信息
           <v-dialog v-model="dimSettingVisable" persistent width="400" activator="parent">
             <v-card>
-              <v-card-title class="font-18">设置字段信息</v-card-title>
-              <!-- <v-card-text>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                incididunt ut labore et dolore magna aliqua.
-              </v-card-text> -->
-
+              <v-card-title class="font-18 font-bold">设置字段信息</v-card-title>
+              <v-card-text>
+                <v-form ref="dimInfoFormRef">
+                  <v-row>
+                    <v-col cols="12">
+                      <span>字段显示名称</span>
+                      <v-text-field
+                        counter="20"
+                        density="compact"
+                        hide-details="auto"
+                        variant="outlined"
+                        v-model="dimInfoForm.desc"
+                        :rules="rules.desc"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12">
+                      <span>字段类型</span>
+                      <v-select
+                        density="compact"
+                        hide-details
+                        variant="outlined"
+                        v-model="dimInfoForm.dimType"
+                        :items="['Number', 'String', 'Date']"
+                      ></v-select>
+                    </v-col>
+                    <v-col cols="6">
+                      <span>单位</span>
+                      <v-text-field
+                        density="compact"
+                        hide-details
+                        variant="outlined"
+                        v-model="dimInfoForm.unit"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="4" offset="1">
+                      <span>保留小数位</span>
+                      <v-text-field
+                        density="compact"
+                        type="number"
+                        hide-details
+                        variant="outlined"
+                        v-model="dimInfoForm.decimalDigits"
+                      ></v-text-field>
+                    </v-col>
+                  </v-row>
+                </v-form>
+              </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
 
-                <v-btn text="取消" @click="dimSettingVisable = false"></v-btn>
+                <v-btn text="取消" @click="cancelChangeDimInfo"></v-btn>
                 <v-btn
                   color="var(--primary-selected-color)"
                   text="确定"
                   variant="tonal"
-                  @click="dimSettingVisable = false"
+                  @click="changeDimInfo"
                 ></v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
         </v-btn>
-        <v-btn class="sub-menu-btn"
+        <!-- <v-btn class="sub-menu-btn"
           >有子菜单
           <v-icon class="expand-icon" icon="mdi-chevron-right"></v-icon>
           <v-menu activator="parent" location="end" open-on-hover :open-delay="0">
@@ -58,7 +99,7 @@
               <v-btn class="sub-menu-btn">二级菜单2 </v-btn>
             </v-list>
           </v-menu>
-        </v-btn>
+        </v-btn> -->
       </v-list>
     </v-menu>
   </div>
@@ -68,6 +109,7 @@
 import { onMounted, onBeforeUnmount, ref } from 'vue'
 import { type AxisDimType } from '../types'
 import { type DimType } from '../../../constants/chartConfig'
+import { ElMessage } from 'element-plus'
 
 const props = withDefaults(
   defineProps<{
@@ -79,6 +121,8 @@ const props = withDefaults(
     color?: string
     /** 字段在对应维度内的索引 */
     index?: number
+    /** 其他维度字段desc列表 */
+    otherDimDescList?: string[]
     /** 添加dim回调 */
     addDim?: () => void
     /** 删除dim回调 */
@@ -96,10 +140,20 @@ const isAboveSelf = ref(false)
 const dimChipRef = ref()
 /** 字段设置信息的弹窗是否显示 */
 const dimSettingVisable = ref(false)
+const dimInfoFormRef = ref()
+const dimInfoForm = ref<AxisDimType>({ ...props.dim })
+
+const rules = ref<any>({
+  desc: [
+    (v: string) => !!v || '请输字段显示名称',
+    (v: string) => (v && v.length <= 20) || '字段显示名称长度不能超过20个字符',
+    (v: string) =>
+      (v && !props.otherDimDescList?.some((desc) => desc === v)) || '字段显示名称与已有字段重复'
+  ]
+})
 
 /** 删除维度 */
 const deleteDim = () => {
-  console.log(props.index)
   emit('deleteDim', props.index)
 }
 
@@ -132,6 +186,23 @@ const handleDragEnd = (event: DragEvent) => {
   document.querySelectorAll('.dim-content')?.forEach((ele) => {
     ele.setAttribute('style', 'background-color: transparent;')
   })
+}
+
+const cancelChangeDimInfo = () => {
+  dimSettingVisable.value = false
+  dimInfoForm.value = { ...props.dim }
+}
+
+const changeDimInfo = async () => {
+  const { valid } = await dimInfoFormRef.value.validate()
+  if (!valid) {
+    return ElMessage.error('请完善填选项')
+  }
+  dimSettingVisable.value = false
+  props.dim.desc = dimInfoForm.value.desc
+  props.dim.dimType = dimInfoForm.value.dimType
+  props.dim.unit = dimInfoForm.value.unit
+  props.dim.decimalDigits = dimInfoForm.value.decimalDigits
 }
 </script>
 

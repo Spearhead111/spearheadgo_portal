@@ -63,6 +63,9 @@ export class ChartInfo {
   omitDefaultVals: boolean
   /** 缺省值 */
   defaultVal: number
+  /** 下载质量 */
+  pixelRatio: number
+  yAxisSetting: YAxisSetting
   /** X轴 */
   XAxis: AxisDimType | undefined
   /** 字段 */
@@ -74,6 +77,12 @@ export class ChartInfo {
     this.defaultVal = this.omitDefaultVals ? chartInfo?.defaultVal ?? -9999 : -9999
     this.XAxis = chartInfo?.XAxis
     this.indicatorList = chartInfo?.indicatorList ?? []
+    this.pixelRatio = chartInfo?.pixelRatio ?? 2
+    this.yAxisSetting = chartInfo?.yAxisSetting ?? {
+      autoAdapt: true,
+      max: '',
+      min: ''
+    }
   }
   isValid() {
     let valid = true
@@ -96,6 +105,15 @@ export class ChartInfo {
   }
 }
 
+export interface YAxisSetting {
+  /** 自适应 */
+  autoAdapt: boolean
+  /** Y轴最大值 */
+  max: number
+  /** Y轴最小值 */
+  min: number
+}
+
 export interface ChartInfoType {
   /** 图表名 */
   chartName: string
@@ -105,10 +123,14 @@ export interface ChartInfoType {
   omitDefaultVals: boolean
   /** 缺省值 */
   defaultVal: number
+  /** 下载质量 */
+  pixelRatio: number
   /** X轴 */
   XAxis?: AxisDimType
   /** 字段 */
   indicatorList: AxisDim[]
+  /** Y轴设置 */
+  yAxisSetting: YAxisSetting
 }
 
 export class AxisDim {
@@ -124,6 +146,12 @@ export class AxisDim {
   dimCode: string
   /** 字段数据类型 */
   dimType: 'Date' | 'Number' | 'String'
+  /** 字段数据单位 */
+  unit: string
+  /** 小数位数 */
+  decimalDigits: number
+  /** 图表类型 */
+  chartType: string
   constructor(axisDim?: AxisDimType) {
     this.fileName = axisDim?.fileName ?? ''
     this.fileIndex = axisDim?.fileIndex ?? -99
@@ -134,6 +162,9 @@ export class AxisDim {
       this.dimCode = `${this.fileName}_${this.variableName}_${new Date().getTime()}`
     }
     this.dimType = axisDim?.dimType ?? 'Number'
+    this.unit = axisDim?.unit ?? ''
+    this.decimalDigits = isNumber(axisDim?.decimalDigits) ? axisDim.decimalDigits : 2
+    this.chartType = axisDim?.chartType ?? CHART_TYPES.LINE
   }
 }
 
@@ -150,4 +181,10 @@ export interface AxisDimType {
   dimCode?: string
   /** 字段数据类型 */
   dimType: 'Date' | 'Number' | 'String'
+  /** 字段数据单位 */
+  unit: string
+  /** 小数位数 */
+  decimalDigits: number
+  /** 图表类型 */
+  chartType: string
 }
