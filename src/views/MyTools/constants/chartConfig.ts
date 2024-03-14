@@ -18,6 +18,8 @@ export const CHART_TYPES = {
   BAR_DES: '柱状图'
 }
 
+export const CHART_TYPES_LIST = [CHART_TYPES.LINE, CHART_TYPES.BAR, CHART_TYPES.SCATTER]
+
 /** 图表类型的icon */
 export const CHART_TYPES_ICON = {
   Line: {
