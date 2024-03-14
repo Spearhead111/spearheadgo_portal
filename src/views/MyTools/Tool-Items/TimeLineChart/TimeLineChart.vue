@@ -336,6 +336,7 @@ import { ChartData, ChartInfo, type AxisDimType, AxisDim } from './types'
 import {
   CHART_CONFIG_ITEMS,
   CHART_TYPES,
+  CHART_TYPES_LIST,
   CHART_TYPES_ICON,
   INDICATOR_MAX_NUM,
   VariableFromType
@@ -447,19 +448,32 @@ const handleChange: UploadProps['onChange'] = (uploadFile, uploadFiles) => {
       // 获取第一个工作表
       const sheetName = workbook.SheetNames[0]
       const sheet = workbook.Sheets[sheetName]
-      //变量表头
-      const variables = (XLSX.utils.sheet_to_json(sheet, { header: 1 })[0] as string[]).map(
-        (variable) => variable.trim()
-      )
-      // 将工作表转换为JSON对象
-      let jsonData = XLSX.utils.sheet_to_json(sheet, { header: variables, blankrows: true })
-      // 删除变量表头
-      jsonData = jsonData.slice(1)
-      // 存储数据
-      chartData.value.addData(uploadFile.name, variables, jsonData)
+      // 获取图表的类型
+      const chartType = (XLSX.utils.sheet_to_json(sheet, { header: 1 })[0] as string[])[0]
+      // 判断图表类型是否合法
+      if (!CHART_TYPES_LIST.includes(chartType)) {
+        onReadingFile.value = false
+        return ElMessage.error(
+          `您输入数据的图表类型“${chartType}”不在支持的图表类型中，请结合模板检查！`
+        )
+      }
+      console.log('🚀 ~ chartType:', chartType)
+      if ([CHART_TYPES.LINE, CHART_TYPES.BAR, CHART_TYPES.SCATTER].includes(chartType)) {
+        // 变量表头
+        const variables = (
+          Object.values(XLSX.utils.sheet_to_json(sheet, { header: 2 })[0] as any) as string[]
+        ).map((variable) => variable.trim())
+        // 将工作表转换为JSON对象
+        let jsonData = XLSX.utils.sheet_to_json(sheet, { header: variables, blankrows: true })
+        // 删除变量表头
+        jsonData = jsonData.slice(2)
+        // 存储数据
+        chartData.value.addData(uploadFile.name, variables, jsonData)
+      }
     } catch (error) {
-      ElMessage.error(`${uploadFile.name}文件读取失败`)
+      ElMessage.error(`“${uploadFile.name}”文件读取失败`)
       console.log(error)
+      onReadingFile.value = false
       return
     }
     onReadingFile.value = false
