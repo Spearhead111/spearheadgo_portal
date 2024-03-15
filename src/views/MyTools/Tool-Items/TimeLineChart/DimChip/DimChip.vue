@@ -25,7 +25,7 @@
     <!-- 下拉菜单 -->
     <v-menu :activator="dimChipRef">
       <v-list class="chip-menu flex flex-column">
-        <v-btn class="sub-menu-btn"
+        <v-btn class="sub-menu-btn" v-if="showDimSettingBtn()"
           >设置字段信息
           <v-dialog v-model="dimSettingVisable" persistent width="400" activator="parent">
             <v-card>
@@ -90,7 +90,7 @@
             </v-card>
           </v-dialog>
         </v-btn>
-        <v-btn class="sub-menu-btn"
+        <v-btn class="sub-menu-btn" v-if="showDimColorBtn()"
           >设置颜色
           <div class="color-show" :style="{ backgroundColor: dim.color }"></div>
           <v-dialog
@@ -133,7 +133,7 @@
 <script lang="ts" setup>
 import { onMounted, onBeforeUnmount, ref } from 'vue'
 import { type AxisDimType } from '../types'
-import { type DimType } from '../../../constants/chartConfig'
+import { type DimType, CHART_TYPES } from '../../../constants/chartConfig'
 import { ElMessage } from 'element-plus'
 import { SWATCHES } from '@/constants'
 
@@ -244,6 +244,16 @@ const cancelChangeColor = () => {
 const changeColor = () => {
   dimColorPickerShow.value = false
   props.dim.color = originColor.value
+}
+
+/** 是否显示字段设置按钮 */
+const showDimSettingBtn = () => {
+  return ![CHART_TYPES.SANKEY].includes(props.dim.chartType)
+}
+
+/** 是否显示字段颜色按钮 */
+const showDimColorBtn = () => {
+  return ![CHART_TYPES.SANKEY].includes(props.dim.chartType)
 }
 </script>
 
