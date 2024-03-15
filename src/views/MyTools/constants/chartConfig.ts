@@ -15,10 +15,17 @@ export const CHART_TYPES = {
   SCATTER: 'scatter',
   SCATTER_DES: '散点图',
   BAR: 'bar',
-  BAR_DES: '柱状图'
+  BAR_DES: '柱状图',
+  SANKEY: 'sankey',
+  SANKEY_DES: '桑基图'
 }
 
-export const CHART_TYPES_LIST = [CHART_TYPES.LINE, CHART_TYPES.BAR, CHART_TYPES.SCATTER]
+export const CHART_TYPES_LIST = [
+  CHART_TYPES.LINE,
+  CHART_TYPES.BAR,
+  CHART_TYPES.SCATTER,
+  CHART_TYPES.SANKEY
+]
 
 /** 图表类型的icon */
 export const CHART_TYPES_ICON = {
@@ -36,6 +43,11 @@ export const CHART_TYPES_ICON = {
     name: CHART_TYPES.SCATTER,
     desc: CHART_TYPES.SCATTER_DES,
     icon: 'mdi-chart-scatter-plot'
+  },
+  Sankey: {
+    name: CHART_TYPES.SANKEY,
+    desc: CHART_TYPES.SANKEY_DES,
+    icon: 'mdi-chart-sankey-variant'
   }
 }
 
@@ -48,3 +60,57 @@ export const VariableFromType = {
 }
 
 export const INDICATOR_MAX_NUM = 5
+
+export const showXAxis = (chartType: string) => {
+  let isShow = false
+  let dimWrapperName = ''
+  if ([CHART_TYPES.LINE, CHART_TYPES.BAR, CHART_TYPES.SCATTER].includes(chartType)) {
+    isShow = true
+    dimWrapperName = 'X轴'
+  } else if ([CHART_TYPES.SANKEY].includes(chartType)) {
+    isShow = true
+    dimWrapperName = '数据'
+  }
+  return { isShow, dimWrapperName }
+}
+
+export const showIndicator = (chartType: string) => {
+  let isShow = false
+  let dimWrapperName = ''
+  if ([CHART_TYPES.LINE, CHART_TYPES.BAR, CHART_TYPES.SCATTER].includes(chartType)) {
+    isShow = true
+    dimWrapperName = '指标'
+  } else if ([CHART_TYPES.SANKEY].includes(chartType)) {
+    isShow = false
+    dimWrapperName = ''
+  }
+  return { isShow, dimWrapperName }
+}
+
+/** 对应图表类型支持的配置项 */
+export const CHART_SUPPORT_CONFIG = {
+  [CHART_TYPES.LINE]: {
+    dataConfig: {
+      omitDefaultVals: true,
+      isDataZoom: true,
+      rangeAutoAdapt: true
+    }
+  },
+  [CHART_TYPES.BAR]: {
+    dataConfig: {
+      omitDefaultVals: true,
+      isDataZoom: true,
+      rangeAutoAdapt: true
+    }
+  },
+  [CHART_TYPES.SCATTER]: {
+    dataConfig: {
+      omitDefaultVals: true,
+      isDataZoom: true,
+      rangeAutoAdapt: true
+    }
+  },
+  [CHART_TYPES.SANKEY]: {
+    chartStyle:{}
+  }
+}
