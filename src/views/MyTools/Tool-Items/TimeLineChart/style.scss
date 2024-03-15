@@ -132,7 +132,7 @@
     }
 
     .sankey-levels-config {
-      border: 1px solid #e0e0e0;
+      border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
       border-radius: 5px;
       .diy-sankey-levels {
         font-size: 12px;
@@ -141,7 +141,9 @@
           width: 85px;
           margin-bottom: 4px;
           padding: 2px 4px 2px 4px;
-          background-color: #e0f6f9;
+          // background-color: #00bfa5;
+          color: rgb(84, 185, 175);
+          caret-color: rgb(84, 185, 175);
           border-radius: 5px;
         }
       }
@@ -297,4 +299,9 @@
       }
     }
   }
+}
+
+.v-expansion-panel,
+.v-btn {
+  color: rgb(var(--v-theme-primary));
 }
