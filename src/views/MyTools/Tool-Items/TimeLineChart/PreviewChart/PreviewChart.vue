@@ -47,26 +47,9 @@ const initChart = () => {
         left: 'center'
       },
       //@ts-ignore
-      xAxis: {
-        // type: 'value',
-        name: chartInfo.XAxis?.desc,
-        data:
-          chartInfo.chartType === CHART_TYPES.SCATTER
-            ? null
-            : chartData.data[chartInfo.XAxis?.fileName!].colData[chartInfo.XAxis?.variableName!]
-      },
+      xAxis: getXAxis(chartData, chartInfo),
       //@ts-ignore
-      yAxis: {
-        // type: 'value',
-        max:
-          !chartInfo.yAxisSetting.autoAdapt && chartInfo.yAxisSetting.max !== ''
-            ? Number(chartInfo.yAxisSetting.max)
-            : null,
-        min:
-          !chartInfo.yAxisSetting.autoAdapt && chartInfo.yAxisSetting.min !== ''
-            ? Number(chartInfo.yAxisSetting.min)
-            : null
-      },
+      yAxis: getYAxis(chartData, chartInfo),
       series: getSeriesData(chartData, chartInfo),
       // 配置图例
       legend: {
@@ -74,49 +57,14 @@ const initChart = () => {
         // 设置图例位置为底部
         bottom: 45
       },
-      tooltip: {
-        // 触发条件，鼠标悬停时显示
-        trigger: chartInfo.chartType === CHART_TYPES.SCATTER ? 'item' : 'axis',
-        // 样式配置
-        backgroundColor: 'rgba(0,0,0,0.7)',
-        textStyle: {
-          color: '#fff',
-          fontSize: 12
-        },
-        axisPointer: {
-          type: 'line',
-          animation: false,
-          label: {
-            backgroundColor: '#00c0a6',
-            borderColor: '#00c0a6',
-            borderWidth: 1,
-            shadowBlur: 0,
-            shadowOffsetX: 0,
-            shadowOffsetY: 0
-            // color: '#222'
-          }
-        },
-        // 格式化显示内容
-        formatter: tooltipFormatter
-      },
-      grid: {
-        left: '3%',
-        right: '10%',
-        bottom: '10%',
-        containLabel: true
-      },
-      dataZoom: [
-        {
-          type: 'inside'
-        },
-        {
-          type: 'slider',
-          handleStyle: {
-            color: '#00c0a6' // 设置缩放滑块的颜色
-          }
-        }
-      ]
+      //@ts-ignore
+      tooltip: getTooltip(chartData, chartInfo),
+      //@ts-ignore
+      grid: getGrid(chartInfo),
+      //@ts-ignore
+      dataZoom: getDataZoom(chartInfo)
     }
+    console.log('🚀 ~ initChart ~ options:', options)
 
     // 使用配置项初始化图表
     echartsInstance.value.setOption(options)
@@ -138,43 +86,191 @@ watchEffect(() => {
   }
 })
 
+/** 处理X轴数据 */
+const getXAxis = (chartData: ChartData, chartInfo: ChartInfo) => {
+  if ([CHART_TYPES.LINE, CHART_TYPES.BAR, CHART_TYPES.SCATTER].includes(chartInfo.chartType)) {
+    return {
+      // type: 'value',
+      name: chartInfo.XAxis?.desc,
+      data:
+        chartInfo.chartType === CHART_TYPES.SCATTER
+          ? null
+          : chartData.data[chartInfo.XAxis?.fileName!].colData[chartInfo.XAxis?.variableName!]
+    }
+  } else if ([CHART_TYPES.SANKEY].includes(chartInfo.chartType)) {
+    return null
+  }
+}
+
+/** 处理Y轴数据 */
+const getYAxis = (chartData: ChartData, chartInfo: ChartInfo) => {
+  if ([CHART_TYPES.LINE, CHART_TYPES.BAR, CHART_TYPES.SCATTER].includes(chartInfo.chartType)) {
+    return {
+      // type: 'value',
+      max:
+        !chartInfo.yAxisSetting.autoAdapt && chartInfo.yAxisSetting.max !== ''
+          ? Number(chartInfo.yAxisSetting.max)
+          : null,
+      min:
+        !chartInfo.yAxisSetting.autoAdapt && chartInfo.yAxisSetting.min !== ''
+          ? Number(chartInfo.yAxisSetting.min)
+          : null
+    }
+  } else if ([CHART_TYPES.SANKEY].includes(chartInfo.chartType)) {
+    return null
+  }
+}
+
 /** 处理图表数据 */
 const getSeriesData = (chartData: ChartData, chartInfo: ChartInfo) => {
   let seriesData: echarts.SeriesOption[] = []
-  chartInfo.indicatorList.forEach((indicator) => {
-    let seriesDataItem: echarts.SeriesOption = {
-      name: indicator.desc,
-      //@ts-ignore
-      type: indicator.chartType,
-      itemStyle: {
-        color: indicator.color // 设置系列2的颜色
-      },
-      data: chartData.data[indicator.fileName].colData[indicator.variableName]
-    }
-    if (chartInfo.omitDefaultVals) {
-      const defaultVal = Number(chartInfo.defaultVal)
-      seriesDataItem.data = (seriesDataItem.data as any[]).map((item: any) => {
-        return Number(item) === Number(chartInfo.defaultVal) ? '-' : Number(item)
-      })
-    }
-    if (seriesDataItem.type === CHART_TYPES.SCATTER) {
-      const defaultVal = Number(chartInfo.defaultVal)
-      seriesDataItem.data = (seriesDataItem.data as any[]).map((item: any, idx: number) => {
-        const scatterX =
-          chartData.data[chartInfo.XAxis?.fileName!].colData[chartInfo.XAxis?.variableName!][idx]
-        const scatterY = item
-        return chartInfo.omitDefaultVals
-          ? scatterX === defaultVal || scatterY === defaultVal
-            ? null
+  // 处理折线图、柱状图、散点图数据
+  if ([CHART_TYPES.LINE, CHART_TYPES.BAR, CHART_TYPES.SCATTER].includes(chartInfo.chartType)) {
+    chartInfo.indicatorList.forEach((indicator) => {
+      let seriesDataItem: echarts.SeriesOption = {
+        name: indicator.desc,
+        //@ts-ignore
+        type: indicator.chartType,
+        itemStyle: {
+          color: indicator.color // 设置系列2的颜色
+        },
+        data: chartData.data[indicator.fileName].colData[indicator.variableName]
+      }
+      if (chartInfo.omitDefaultVals) {
+        const defaultVal = Number(chartInfo.defaultVal)
+        seriesDataItem.data = (seriesDataItem.data as any[]).map((item: any) => {
+          return Number(item) === Number(chartInfo.defaultVal) ? '-' : Number(item)
+        })
+      }
+      if (seriesDataItem.type === CHART_TYPES.SCATTER) {
+        const defaultVal = Number(chartInfo.defaultVal)
+        seriesDataItem.data = (seriesDataItem.data as any[]).map((item: any, idx: number) => {
+          const scatterX =
+            chartData.data[chartInfo.XAxis?.fileName!].colData[chartInfo.XAxis?.variableName!][idx]
+          const scatterY = item
+          return chartInfo.omitDefaultVals
+            ? scatterX === defaultVal || scatterY === defaultVal
+              ? null
+              : [scatterX, scatterY]
             : [scatterX, scatterY]
-          : [scatterX, scatterY]
+        })
+      }
+
+      seriesData.push(seriesDataItem)
+    })
+  } else if ([CHART_TYPES.SANKEY].includes(chartInfo.chartType)) {
+    // 处理桑基图数据
+    let seriesDataItem: echarts.SeriesOption = {
+      type: 'sankey',
+      emphasis: {
+        focus: 'adjacency'
+      },
+      nodeAlign: chartInfo.nodeAlign,
+      data: chartData.data[chartInfo.XAxis?.fileName as string].otherData.data,
+      links: chartData.data[chartInfo.XAxis?.fileName as string].rowData,
+      orient: chartInfo?.orient,
+      label: {
+        show: true,
+        position: chartInfo?.orient === 'vertical' ? 'top' : 'left'
+      },
+      lineStyle: {
+        //@ts-ignore
+        color: chartInfo.sankeyColorBorder || null,
+        curveness: 0.5
+      }
+    }
+    // 判断是否是自定义的层级化
+    if (chartInfo.sankeyColorBorder === '' && chartInfo.sankeyLevels.length > 0) {
+      //@ts-ignore
+      seriesDataItem.levels = chartInfo.sankeyLevels.map((level) => {
+        return {
+          depth: level.depth,
+          itemStyle: {
+            color: level.color
+          },
+          lineStyle: {
+            color: 'source',
+            opacity: 0.6
+          }
+        }
       })
     }
-
     seriesData.push(seriesDataItem)
-  })
-
+  }
   return seriesData
+}
+
+/** 处理tooltip格式 */
+const getTooltip = (chartData: ChartData, chartInfo: ChartInfo) => {
+  if ([CHART_TYPES.LINE, CHART_TYPES.BAR, CHART_TYPES.SCATTER].includes(chartInfo.chartType)) {
+    return {
+      // 触发条件，鼠标悬停时显示
+      trigger: chartInfo.chartType === CHART_TYPES.SCATTER ? 'item' : 'axis',
+      // 样式配置
+      backgroundColor: 'rgba(0,0,0,0.7)',
+      textStyle: {
+        color: '#fff',
+        fontSize: 12
+      },
+      axisPointer: {
+        type: 'line',
+        animation: false,
+        label: {
+          backgroundColor: '#00c0a6',
+          borderColor: '#00c0a6',
+          borderWidth: 1,
+          shadowBlur: 0,
+          shadowOffsetX: 0,
+          shadowOffsetY: 0
+          // color: '#222'
+        }
+      },
+      // 格式化显示内容
+      formatter: tooltipFormatter
+    }
+  } else if ([CHART_TYPES.SANKEY].includes(chartInfo.chartType)) {
+    return {
+      trigger: 'item',
+      triggerOn: 'mousemove'
+    }
+  }
+}
+
+/** 处理grid配置 */
+const getGrid = (chartInfo: ChartInfo) => {
+  if ([CHART_TYPES.SANKEY].includes(chartInfo.chartType)) {
+    return null
+  } else {
+    return {
+      left: 50,
+      right: 50,
+      bottom: 100,
+      top: 50
+    }
+  }
+}
+
+const getDataZoom = (chartInfo: ChartInfo) => {
+  console.log(chartInfo)
+  if (chartInfo.isDataZoom) {
+    return [
+      {
+        type: 'slider',
+        show: true,
+        xAxisIndex: [0],
+        start: 0,
+        end: 100
+      },
+      {
+        type: 'inside',
+        xAxisIndex: [0],
+        start: 0,
+        end: 100
+      }
+    ]
+  } else if ([CHART_TYPES.SANKEY].includes(chartInfo.chartType)) {
+    return null
+  }
 }
 
 /** 获取值的内容 */
