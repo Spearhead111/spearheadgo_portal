@@ -17,7 +17,7 @@
         <template #tip>
           <div class="el-upload__tip flex align-center justify-content-between">
             <div>
-              <span>支持识别excel/csv文件</span>
+              <span class="c-t">支持识别excel/csv文件</span>
               <v-tooltip
                 width="360"
                 location="top"
@@ -33,7 +33,7 @@
               </v-tooltip>
             </div>
             <el-link
-              href="https://file.spearheadgo.com/file/tools/图表数据模板.xlsx"
+              href="https://file.spearheadgo.com/file/tools/数据模板.xlsx"
               :underline="false"
               type="primary"
             >
