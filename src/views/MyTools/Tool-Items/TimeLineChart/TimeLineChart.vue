@@ -251,6 +251,7 @@
                       v-model="currChartInfo.orient"
                       color="#54b9af"
                       borderless
+                      mandatory
                       variant="outlined"
                     >
                       <v-btn class="px-2" value="horizontal" density="compact">
@@ -269,6 +270,7 @@
                       v-model="currChartInfo.nodeAlign"
                       color="#54b9af"
                       borderless
+                      mandatory
                       variant="outlined"
                     >
                       <v-btn class="px-2" value="left" density="compact">
@@ -301,6 +303,7 @@
                         color="#54b9af"
                         variant="text"
                         borderless
+                        mandatory
                         group
                       >
                         <v-btn class="px-1" size="small" value="source"> 来源 </v-btn>
