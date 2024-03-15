@@ -64,7 +64,6 @@ const initChart = () => {
       //@ts-ignore
       dataZoom: getDataZoom(chartInfo)
     }
-    console.log('🚀 ~ initChart ~ options:', options)
 
     // 使用配置项初始化图表
     echartsInstance.value.setOption(options)
@@ -251,7 +250,6 @@ const getGrid = (chartInfo: ChartInfo) => {
 }
 
 const getDataZoom = (chartInfo: ChartInfo) => {
-  console.log(chartInfo)
   if (chartInfo.isDataZoom) {
     return [
       {

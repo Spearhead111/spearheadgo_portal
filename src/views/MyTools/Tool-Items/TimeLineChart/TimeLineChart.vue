@@ -813,6 +813,5 @@ const addSankeyLevel = () => {
     depth: currChartInfo.value.sankeyLevels.length,
     color: SWATCHES_FLAT[currChartInfo.value.sankeyLevels.length]
   })
-  console.log(currChartInfo.value.sankeyLevels)
 }
 </script>
