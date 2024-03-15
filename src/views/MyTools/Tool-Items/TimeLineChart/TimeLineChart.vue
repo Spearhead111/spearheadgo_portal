@@ -119,8 +119,8 @@
       <v-window v-model="currTab" class="flex height-100 width-100">
         <!-- 基础配置 -->
 
-        <v-form ref="chartInfoFormRef" class="height-100">
-          <v-window-item :value="CHART_CONFIG_ITEMS.Basic.name" class="tab-item-wrapper">
+        <v-window-item :value="CHART_CONFIG_ITEMS.Basic.name" class="tab-item-wrapper">
+          <v-form ref="chartInfoFormRef" class="height-100 overflow-y-auto">
             <!-- 图表类型 -->
             <p class="font-bold">图表类型</p>
             <ul class="chart-types-ul">
@@ -340,8 +340,9 @@
                 </v-expansion-panel-text>
               </v-expansion-panel>
             </v-expansion-panels>
-          </v-window-item>
-        </v-form>
+          </v-form>
+        </v-window-item>
+
         <!-- 分析 -->
         <v-window-item :value="CHART_CONFIG_ITEMS.Analysis.name" class="tab-item-wrapper"
           >敬请期待！
