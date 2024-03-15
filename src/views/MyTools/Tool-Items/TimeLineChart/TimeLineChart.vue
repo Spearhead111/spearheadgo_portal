@@ -116,10 +116,10 @@
           <span>{{ tabItem.desc }}</span>
         </v-tab>
       </v-tabs>
-      <v-window v-model="currTab" class="flex height-100">
+      <v-window v-model="currTab" class="flex height-100 width-100">
         <!-- 基础配置 -->
 
-        <v-form ref="chartInfoFormRef">
+        <v-form ref="chartInfoFormRef" class="height-100">
           <v-window-item :value="CHART_CONFIG_ITEMS.Basic.name" class="tab-item-wrapper">
             <!-- 图表类型 -->
             <p class="font-bold">图表类型</p>
@@ -164,6 +164,7 @@
                 </v-expansion-panel-text>
               </v-expansion-panel>
               <v-expansion-panel
+                v-if="CHART_SUPPORT_CONFIG[currChartInfo.chartType].dataConfig"
                 class="config-item-wrapper"
                 :elevation="0"
                 expand-icon="mdi-menu-down"
@@ -172,6 +173,7 @@
               >
                 <v-expansion-panel-text>
                   <v-switch
+                    v-if="CHART_SUPPORT_CONFIG[currChartInfo.chartType].dataConfig?.omitDefaultVals"
                     v-model="currChartInfo.omitDefaultVals"
                     class="config-switch"
                     hide-details
@@ -192,6 +194,7 @@
                     ></v-text-field>
                   </div>
                   <v-switch
+                    v-if="CHART_SUPPORT_CONFIG[currChartInfo.chartType].dataConfig?.rangeAutoAdapt"
                     v-model="currChartInfo.yAxisSetting.autoAdapt"
                     class="config-switch"
                     hide-details
@@ -223,6 +226,114 @@
                       ></v-text-field>
                     </div>
                   </template>
+                  <v-switch
+                    v-if="CHART_SUPPORT_CONFIG[currChartInfo.chartType].dataConfig?.isDataZoom"
+                    v-model="currChartInfo.isDataZoom"
+                    class="config-switch"
+                    hide-details
+                    label="数据缩放"
+                    color="var(--primary-selected-color)"
+                  ></v-switch>
+                </v-expansion-panel-text>
+              </v-expansion-panel>
+              <v-expansion-panel
+                v-if="CHART_SUPPORT_CONFIG[currChartInfo.chartType].chartStyle"
+                class="config-item-wrapper"
+                :elevation="0"
+                expand-icon="mdi-menu-down"
+                collapse-icon="mdi-menu-up"
+                title="样式"
+              >
+                <v-expansion-panel-text>
+                  <p class="font-bold mt-2">图表走向</p>
+                  <v-col class="pa-0" cols="12">
+                    <v-btn-toggle
+                      v-model="currChartInfo.orient"
+                      color="#54b9af"
+                      borderless
+                      variant="outlined"
+                    >
+                      <v-btn class="px-2" value="horizontal" density="compact">
+                        <span class="hidden-sm-and-down">水平</span>
+                        <v-icon end> mdi-align-horizontal-distribute </v-icon>
+                      </v-btn>
+                      <v-btn class="px-2" value="vertical" density="compact">
+                        <span class="hidden-sm-and-down">垂直</span>
+                        <v-icon end> mdi-align-vertical-distribute </v-icon>
+                      </v-btn>
+                    </v-btn-toggle>
+                  </v-col>
+                  <p class="font-bold mt-2">对齐方式</p>
+                  <v-col class="pa-0" cols="12">
+                    <v-btn-toggle
+                      v-model="currChartInfo.nodeAlign"
+                      color="#54b9af"
+                      borderless
+                      variant="outlined"
+                    >
+                      <v-btn class="px-2" value="left" density="compact">
+                        <span class="hidden-sm-and-down">左</span>
+                        <v-icon end> mdi-format-align-left </v-icon>
+                      </v-btn>
+                      <!-- <v-btn class="px-2" value="justify" density="compact">
+                        <span class="hidden-sm-and-down">对齐</span>
+                        <v-icon end> mdi-format-align-justify </v-icon>
+                      </v-btn> -->
+                      <v-btn
+                        class="px-2"
+                        value="justify"
+                        density="compact"
+                        append-icon="mdi-format-align-justify"
+                      >
+                        对齐
+                      </v-btn>
+                      <v-btn class="px-2" value="right" density="compact">
+                        <span class="hidden-sm-and-down">右</span>
+                        <v-icon end> mdi-format-align-right </v-icon>
+                      </v-btn>
+                    </v-btn-toggle>
+                  </v-col>
+                  <template v-if="currChartInfo.chartType === CHART_TYPES.SANKEY">
+                    <p class="font-bold mt-2">色边颜色</p>
+                    <v-col class="sankey-levels-config pa-0">
+                      <v-btn-toggle
+                        v-model="currChartInfo.sankeyColorBorder"
+                        color="#54b9af"
+                        variant="text"
+                        borderless
+                        group
+                      >
+                        <v-btn class="px-1" size="small" value="source"> 来源 </v-btn>
+                        <v-btn class="px-1" size="small" value="target"> 流向 </v-btn>
+                        <v-btn class="px-1" size="small" value="gradient"> 渐变 </v-btn>
+                        <v-btn class="px-1" size="small" value=""> 层级化 </v-btn>
+                      </v-btn-toggle>
+                      <ul class="diy-sankey-levels px-3" v-if="!currChartInfo.sankeyColorBorder">
+                        <li v-for="level in currChartInfo.sankeyLevels">
+                          <span class="mr-3"
+                            >层级<b class="pl-2">{{ level.depth + 1 }}</b></span
+                          >
+                          <el-color-picker
+                            v-model="level.color"
+                            size="small"
+                            show-alpha
+                            :predefine="SWATCHES_FLAT"
+                          />
+                        </li>
+                        <v-btn
+                          class="px-1 mb-1"
+                          append-icon="mdi-plus-circle"
+                          variant="text"
+                          elevation="0"
+                          size="small"
+                          color="#4db6ac"
+                          @click="addSankeyLevel"
+                        >
+                          增加层级
+                        </v-btn>
+                      </ul>
+                    </v-col>
+                  </template>
                 </v-expansion-panel-text>
               </v-expansion-panel>
             </v-expansion-panels>
@@ -236,9 +347,9 @@
     </div>
     <div class="chart-show-wrapper">
       <!-- 维度配置 -->
-      <div class="chart-dim-config-wrapper">
+      <div class="chart-dim-config-wrapper" v-if="showXAxis(currChartInfo.chartType).isShow">
         <div class="dim-item-content">
-          <span class="dim-name">X轴</span>
+          <span class="dim-name">{{ showXAxis(currChartInfo.chartType).dimWrapperName }}</span>
           <div
             :class="['dim-content', { 'show-location-icon': isAtXDim }]"
             @dragover.prevent="isAtXDim = true"
@@ -258,8 +369,8 @@
             <span class="dim-tips" v-else>拖拽左侧字段</span>
           </div>
         </div>
-        <div class="dim-item-content">
-          <span class="dim-name">指标</span>
+        <div class="dim-item-content" v-if="showIndicator(currChartInfo.chartType).isShow">
+          <span class="dim-name">{{ showIndicator(currChartInfo.chartType).dimWrapperName }}</span>
           <div
             :class="['dim-content', { 'show-location-icon': isAtYDim }]"
             @dragover.prevent="isAtYDim = true"
@@ -339,10 +450,14 @@ import {
   CHART_TYPES_LIST,
   CHART_TYPES_ICON,
   INDICATOR_MAX_NUM,
-  VariableFromType
+  VariableFromType,
+  showXAxis,
+  showIndicator,
+  CHART_SUPPORT_CONFIG
 } from '../../constants/chartConfig'
 import DimChip from './DimChip/DimChip.vue'
 import PreviewChart from './PreviewChart/PreviewChart.vue'
+import { SWATCHES_FLAT } from '@/constants'
 
 const fileList = ref<UploadUserFile[]>([])
 /** 上传的文件数据 */
@@ -406,6 +521,20 @@ watch(
   { deep: true }
 )
 
+/** 监听桑基图的色边样式，如果是层级化则初始化自定义桑基图层级 */
+watch(
+  () => currChartInfo.value.sankeyColorBorder,
+  (newValue, oldValue) => {
+    currChartInfo.value.sankeyLevels =
+      newValue === ''
+        ? [
+            { depth: 0, color: '#f28761' },
+            { depth: 1, color: '#ff88e0' }
+          ]
+        : []
+  }
+)
+
 /** 获取其他维度的描述列表 */
 const getOtherDimDescList = (dim: AxisDimType) => {
   return dimDescList.value.filter((desc) => desc !== dim.desc)
@@ -457,19 +586,16 @@ const handleChange: UploadProps['onChange'] = (uploadFile, uploadFiles) => {
           `您输入数据的图表类型“${chartType}”不在支持的图表类型中，请结合模板检查！`
         )
       }
-      console.log('🚀 ~ chartType:', chartType)
-      if ([CHART_TYPES.LINE, CHART_TYPES.BAR, CHART_TYPES.SCATTER].includes(chartType)) {
-        // 变量表头
-        const variables = (
-          Object.values(XLSX.utils.sheet_to_json(sheet, { header: 2 })[0] as any) as string[]
-        ).map((variable) => variable.trim())
-        // 将工作表转换为JSON对象
-        let jsonData = XLSX.utils.sheet_to_json(sheet, { header: variables, blankrows: true })
-        // 删除变量表头
-        jsonData = jsonData.slice(2)
-        // 存储数据
-        chartData.value.addData(uploadFile.name, variables, jsonData)
-      }
+      // 变量表头
+      const variables = (
+        Object.values(XLSX.utils.sheet_to_json(sheet, { header: 2 })[0] as any) as string[]
+      ).map((variable) => variable.trim())
+      // 将工作表转换为JSON对象
+      let jsonData = XLSX.utils.sheet_to_json(sheet, { header: variables, blankrows: true })
+      // 删除变量表头
+      jsonData = jsonData.slice(2)
+      // 存储数据
+      chartData.value.addData(uploadFile.name, variables, jsonData, { chartType })
     } catch (error) {
       ElMessage.error(`“${uploadFile.name}”文件读取失败`)
       console.log(error)
@@ -484,11 +610,14 @@ const handleChange: UploadProps['onChange'] = (uploadFile, uploadFiles) => {
 
 /** 选择图表类型 */
 const selectChartType = (chartType: string) => {
+  if (currChartInfo.value.chartType === chartType) {
+    return
+  }
+  switchChartType(chartType)
   currChartInfo.value.chartType = chartType
   currChartInfo.value.indicatorList.forEach((indicator) => {
     indicator.chartType = chartType
   })
-  switchChartType(chartType)
 }
 
 /** 拖拽开始 */
@@ -527,24 +656,35 @@ const addXAxis = (event: DragEvent) => {
   // 获取拖动的数据
   const data = JSON.parse(event.dataTransfer!.getData('varInfo'))
   if (
+    (currChartInfo.value.chartType === CHART_TYPES.SANKEY &&
+      chartData.value.fileTypes[data.fileName] !== CHART_TYPES.SANKEY) ||
+    (currChartInfo.value.chartType !== CHART_TYPES.SANKEY &&
+      chartData.value.fileTypes[data.fileName] === CHART_TYPES.SANKEY)
+  ) {
+    // 判断字段数据是否是桑基图类型
+    return ElMessage.error('桑基图字段只支持桑基图类型')
+  } else if (
     currChartInfo.value.XAxis &&
     data.fileName === (currChartInfo.value.XAxis as AxisDimType).fileName &&
-    data.variableName === (currChartInfo.value.XAxis as AxisDimType).variableName
+    data.variableName === (currChartInfo.value.XAxis as AxisDimType).variableName &&
+    data.type === VariableFromType.XAxis
   ) {
     // 如果是同一个字段，则不进行处理
     return
   } else if (currChartInfo.value.XAxis) {
     // 如果已经有x轴字段，则不允许添加
-    return ElMessage.warning('X轴只能添加一个维度')
+    return ElMessage.warning(
+      `${showXAxis(currChartInfo.value.chartType).dimWrapperName}只能添加一个维度`
+    )
   }
   currChartInfo.value.XAxis = new AxisDim(data)
   currChartInfo.value.XAxis.desc =
     currChartInfo.value.XAxis.desc || getUniqueDesc(data.variableName)
+  currChartInfo.value.XAxis.chartType = currChartInfo.value.chartType
   switch (data.type) {
     case VariableFromType.Indicator:
       currChartInfo.value.indicatorList.splice(data.index, 1)
       break
-
     default:
       break
   }
@@ -561,6 +701,10 @@ const addIndicator = (event: DragEvent, targetIndex?: number) => {
   event.preventDefault()
   // 获取拖动的数据
   const data = JSON.parse(event.dataTransfer!.getData('varInfo'))
+  if (chartData.value.fileTypes[data.fileName] === CHART_TYPES.SANKEY) {
+    // 判断字段数据是否是桑基图类型
+    return ElMessage.error('桑基图字段只支持桑基图类型')
+  }
   const newIndicator = new AxisDim(data)
   newIndicator.desc = newIndicator.desc || getUniqueDesc(newIndicator.variableName)
   newIndicator.chartType = currChartInfo.value.chartType
@@ -604,6 +748,10 @@ const deleteIndicator = (index: number) => {
 
 /** 切换图表类型，配置有相应的变化 */
 const switchChartType = (chartType: string) => {
+  // 桑基图的x轴放的是数据变量，切换到其他图表类型时，需要清空x轴
+  if (currChartInfo.value.chartType === CHART_TYPES.SANKEY && chartType !== CHART_TYPES.SANKEY) {
+    currChartInfo.value.XAxis = undefined
+  }
   switch (chartType) {
     case CHART_TYPES.LINE:
       currChartInfo.value.indicatorList = currChartInfo.value.indicatorList.slice(
@@ -613,6 +761,10 @@ const switchChartType = (chartType: string) => {
       break
     case CHART_TYPES.SCATTER:
       currChartInfo.value.indicatorList = currChartInfo.value.indicatorList.slice(0, 1)
+      break
+    case CHART_TYPES.SANKEY:
+      currChartInfo.value.XAxis = undefined
+      currChartInfo.value.indicatorList = []
       break
     default:
       break
@@ -650,5 +802,13 @@ const downloadChart = () => {
     return ElMessage.warning('当前无图表')
   }
   previewChartRef.value.downloadChart()
+}
+
+const addSankeyLevel = () => {
+  currChartInfo.value.sankeyLevels.push({
+    depth: currChartInfo.value.sankeyLevels.length,
+    color: SWATCHES_FLAT[currChartInfo.value.sankeyLevels.length]
+  })
+  console.log(currChartInfo.value.sankeyLevels)
 }
 </script>

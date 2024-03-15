@@ -4,6 +4,8 @@ import { CHART_TYPES } from '../../constants/chartConfig'
 export class ChartData {
   /** 包含的所有文件名 */
   fileNames: string[]
+  /** 文件的图表数据类型 */
+  fileTypes: { [key: string]: string }
   /** 变量 */
   variables: { [key: string]: string[] }
   /** 各文件的数据 */
@@ -11,24 +13,38 @@ export class ChartData {
 
   constructor() {
     this.fileNames = []
+    this.fileTypes = {}
     this.variables = {}
     this.data = {}
   }
   /** 添加数据 */
-  addData(fileName: string, variables: string[], newData: any[]) {
-    this.fileNames.push(fileName)
-    this.variables[fileName] = [...variables]
-    this.data[fileName] = new FileData(fileName, variables, newData)
+  addData(fileName: string, variables: string[], newData: any[], chartOtherInfo: any) {
+    const { chartType } = chartOtherInfo
+    if ([CHART_TYPES.LINE, CHART_TYPES.BAR, CHART_TYPES.SCATTER].includes(chartType)) {
+      this.fileNames.push(fileName)
+      this.fileTypes[fileName] = 'common'
+      this.variables[fileName] = [...variables]
+      this.data[fileName] = new FileData(fileName, variables, newData, chartType)
+    } else if (chartType === CHART_TYPES.SANKEY) {
+      this.fileNames.push(fileName)
+      this.fileTypes[fileName] = CHART_TYPES.SANKEY
+      this.variables[fileName] = [`桑基图-${fileName}`]
+      this.data[fileName] = new FileData(fileName, variables, newData, chartType)
+    } else {
+      console.log(chartType)
+    }
   }
   /** 删除数据 */
   deleteData(fileName: string) {
     this.fileNames = this.fileNames.filter((name) => name !== fileName)
+    delete this.fileTypes[fileName]
     delete this.variables[fileName]
     delete this.data[fileName]
   }
   /** 清除数据 */
   clear() {
     this.fileNames = []
+    this.fileTypes = {}
     this.variables = {}
     this.data = {}
   }
@@ -43,7 +59,9 @@ export class FileData {
   rowData: { [key: string]: any }[]
   /** 列数据，一列数据为该变量的数值数组 */
   colData: { [key: string]: any[] }
-  constructor(fileName: string, variables: string[], newData: any[]) {
+  /** 其他数据, 根据不同的图表类型转换 */
+  otherData: any
+  constructor(fileName: string, variables: string[], newData: any[], chartType: string) {
     this.fileName = fileName
     this.variables = [...variables]
     this.rowData = [...newData]
@@ -51,6 +69,15 @@ export class FileData {
     variables.forEach((varable) => {
       this.colData[varable] = newData.map((row) => row[varable])
     })
+    if (chartType === CHART_TYPES.SANKEY) {
+      this.variables = [`桑基图-${fileName}`]
+      // 桑基图的nodes是source和target的并集
+      this.otherData = {
+        data: [...new Set(this.colData.source.concat(this.colData.target))].map((name) => ({
+          name
+        }))
+      }
+    }
   }
 }
 
@@ -63,6 +90,16 @@ export class ChartInfo {
   omitDefaultVals: boolean
   /** 缺省值 */
   defaultVal: number
+  /** 是否显示数据缩放 */
+  isDataZoom: boolean
+  /** 节点对齐方式 */
+  nodeAlign?: 'justify' | 'left' | 'right'
+  /** 桑基图的色边颜色 */
+  sankeyColorBorder: string
+  /** 桑基图的自定义层级样式 */
+  sankeyLevels: { depth: number; color: string }[]
+  /** 图表方向 */
+  orient: 'horizontal' | 'vertical'
   /** 下载质量 */
   pixelRatio: number
   yAxisSetting: YAxisSetting
@@ -73,6 +110,7 @@ export class ChartInfo {
   constructor(chartInfo?: ChartInfoType) {
     this.chartName = chartInfo?.chartName ?? ''
     this.chartType = chartInfo?.chartType ?? CHART_TYPES.LINE
+    this.isDataZoom = chartInfo?.isDataZoom ?? true
     this.omitDefaultVals = chartInfo?.omitDefaultVals ?? false
     this.defaultVal = this.omitDefaultVals ? chartInfo?.defaultVal ?? -9999 : -9999
     this.XAxis = chartInfo?.XAxis
@@ -83,11 +121,17 @@ export class ChartInfo {
       max: '',
       min: ''
     }
+    this.nodeAlign = chartInfo?.nodeAlign ?? 'justify'
+    this.sankeyColorBorder = chartInfo?.sankeyColorBorder ?? 'source'
+    this.sankeyLevels = chartInfo?.sankeyLevels ?? []
+    this.orient = chartInfo?.orient ?? 'horizontal'
   }
   isValid() {
     let valid = true
     let message = ''
     switch (this.chartType) {
+      case CHART_TYPES.SCATTER:
+      case CHART_TYPES.BAR:
       case CHART_TYPES.LINE:
         if (!this.XAxis || !this.XAxis.dimCode) {
           valid = false
@@ -97,7 +141,13 @@ export class ChartInfo {
           message = '至少选择一个指标'
         }
         break
-      case CHART_TYPES.SCATTER:
+
+      case CHART_TYPES.SANKEY:
+        if (!this.XAxis) {
+          valid = false
+          message = '请选择桑基图数据'
+        }
+        break
       default:
         break
     }
@@ -123,6 +173,16 @@ export interface ChartInfoType {
   omitDefaultVals: boolean
   /** 缺省值 */
   defaultVal: number
+  /** 是否显示数据缩放 */
+  isDataZoom: boolean
+  /** 节点对齐方式 */
+  nodeAlign?: 'justify' | 'left' | 'right'
+  /** 桑基图的色边颜色 */
+  sankeyColorBorder: string
+  /** 桑基图的自定义层级样式 */
+  sankeyLevels: { depth: number; color: string }[]
+  /** 图表方向 */
+  orient: 'horizontal' | 'vertical'
   /** 下载质量 */
   pixelRatio: number
   /** X轴 */
