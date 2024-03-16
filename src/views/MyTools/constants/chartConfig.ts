@@ -96,6 +96,7 @@ export const CHART_SUPPORT_CONFIG = {
       rangeAutoAdapt: true
     },
     chartStyle: {
+      // orient: true,
       showArea: true,
       stack: true
     }

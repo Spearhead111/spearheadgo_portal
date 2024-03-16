@@ -52,11 +52,7 @@ const initChart = () => {
       yAxis: getYAxis(chartData, chartInfo),
       series: getSeriesData(chartData, chartInfo),
       // 配置图例
-      legend: {
-        data: chartInfo.indicatorList.map((indicator) => indicator.desc),
-        // 设置图例位置为底部
-        bottom: 45
-      },
+      legend: getLegend(chartInfo),
       //@ts-ignore
       tooltip: getTooltip(chartData, chartInfo),
       //@ts-ignore
@@ -86,17 +82,36 @@ watchEffect(() => {
   }
 })
 
+const getLegend = (chartInfo: ChartInfo) => {
+  return {
+    data: chartInfo.indicatorList.map((indicator) => indicator.desc),
+    // 设置图例位置为底部
+    bottom: chartInfo.isDataZoom ? 45 : 0
+  }
+}
+
 /** 处理X轴数据 */
 const getXAxis = (chartData: ChartData, chartInfo: ChartInfo) => {
   if ([CHART_TYPES.LINE, CHART_TYPES.BAR, CHART_TYPES.SCATTER].includes(chartInfo.chartType)) {
-    return {
-      type: chartInfo.orient === 'vertical' ? 'value' : 'category',
-      name: chartInfo.orient === 'vertical' ? '' : chartInfo.XAxis?.desc,
+    const xAxis = {
+      type: 'category',
+      name: chartInfo.XAxis?.desc,
       data:
         chartInfo.chartType === CHART_TYPES.SCATTER
           ? null
-          : chartData.data[chartInfo.XAxis?.fileName!].colData[chartInfo.XAxis?.variableName!]
+          : chartData.data[chartInfo.XAxis?.fileName!].colData[chartInfo.XAxis?.variableName!],
+      splitLine: {
+        show: false
+      }
     }
+    if (chartInfo.chartType === CHART_TYPES.BAR) {
+      if (chartInfo.orient === 'vertical') {
+        xAxis.type = 'value'
+        xAxis.name = chartInfo.XAxis?.desc as string
+        xAxis.data = null
+      }
+    }
+    return xAxis
   } else if ([CHART_TYPES.SANKEY].includes(chartInfo.chartType)) {
     return null
   }
@@ -106,8 +121,8 @@ const getXAxis = (chartData: ChartData, chartInfo: ChartInfo) => {
 const getYAxis = (chartData: ChartData, chartInfo: ChartInfo) => {
   if ([CHART_TYPES.LINE, CHART_TYPES.BAR, CHART_TYPES.SCATTER].includes(chartInfo.chartType)) {
     const yAxis = {
-      type: chartInfo.orient === 'horizontal' ? 'value' : 'category',
-      name: chartInfo.orient === 'horizontal' ? '' : chartInfo.XAxis?.desc,
+      type: 'value',
+      name: '',
       max:
         !chartInfo.yAxisSetting.autoAdapt && chartInfo.yAxisSetting.max !== ''
           ? Number(chartInfo.yAxisSetting.max)
@@ -118,19 +133,26 @@ const getYAxis = (chartData: ChartData, chartInfo: ChartInfo) => {
           : null,
       axisLabel: {
         rotate: 0 // 设置 x 轴标签旋转角度为 45 度
+      },
+      splitLine: {
+        // show: false
       }
     }
-    if (chartInfo.orient === 'vertical') {
-      yAxis.type = 'category'
-      //@ts-ignore
-      yAxis.data =
-        chartInfo.chartType === CHART_TYPES.SCATTER
-          ? null
-          : chartData.data[chartInfo.XAxis?.fileName!].colData[chartInfo.XAxis?.variableName!]
-      yAxis.axisLabel = {
-        rotate: 90
+    if (chartInfo.chartType === CHART_TYPES.BAR) {
+      if (chartInfo.orient === 'vertical') {
+        yAxis.type = 'category'
+        yAxis.name = chartInfo.XAxis?.desc as string
+        //@ts-ignore
+        yAxis.data =
+          chartInfo.chartType === CHART_TYPES.SCATTER
+            ? null
+            : chartData.data[chartInfo.XAxis?.fileName!].colData[chartInfo.XAxis?.variableName!]
+        yAxis.axisLabel = {
+          rotate: 90
+        }
       }
     }
+
     return yAxis
   } else if ([CHART_TYPES.SANKEY].includes(chartInfo.chartType)) {
     return null
@@ -274,12 +296,9 @@ const getGrid = (chartInfo: ChartInfo) => {
   if ([CHART_TYPES.SANKEY].includes(chartInfo.chartType)) {
     return null
   } else {
-    return {
-      left: 50,
-      right: 50,
-      bottom: 100,
-      top: 50
-    }
+    return chartInfo.isDataZoom
+      ? { left: 50, right: 60, bottom: 100, top: 50 }
+      : { left: 30, right: 30, bottom: 50, top: 30 }
   }
 }
 
@@ -290,6 +309,8 @@ const getDataZoom = (chartInfo: ChartInfo) => {
         type: 'slider',
         show: true,
         xAxisIndex: [0],
+        height: 20,
+        width: '90%',
         start: 0,
         end: 100
       },
@@ -298,6 +319,14 @@ const getDataZoom = (chartInfo: ChartInfo) => {
         xAxisIndex: [0],
         start: 0,
         end: 100
+      },
+      {
+        show: true,
+        yAxisIndex: [0],
+        filterMode: 'empty',
+        width: 20,
+        height: '75%',
+        left: '97%'
       }
     ]
   } else if ([CHART_TYPES.SANKEY].includes(chartInfo.chartType)) {
