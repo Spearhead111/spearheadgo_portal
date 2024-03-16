@@ -247,6 +247,14 @@
               >
                 <v-expansion-panel-text>
                   <v-switch
+                    v-if="CHART_SUPPORT_CONFIG[currChartInfo.chartType].chartStyle?.showGridLine"
+                    v-model="currChartInfo.showGridLine"
+                    class="config-switch"
+                    hide-details
+                    label="显示网格线"
+                    color="var(--primary-selected-color)"
+                  ></v-switch>
+                  <v-switch
                     v-if="CHART_SUPPORT_CONFIG[currChartInfo.chartType].chartStyle?.showLabel"
                     v-model="currChartInfo.showLabel"
                     class="config-switch"

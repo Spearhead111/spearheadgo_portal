@@ -96,7 +96,7 @@ export const CHART_SUPPORT_CONFIG = {
       rangeAutoAdapt: true
     },
     chartStyle: {
-      // orient: true,
+      showGridLine: true,
       showArea: true,
       stack: true
     }
@@ -108,6 +108,7 @@ export const CHART_SUPPORT_CONFIG = {
       rangeAutoAdapt: true
     },
     chartStyle: {
+      showGridLine: true,
       orient: true,
       stack: true,
       showLabel: true
@@ -118,10 +119,14 @@ export const CHART_SUPPORT_CONFIG = {
       omitDefaultVals: true,
       isDataZoom: true,
       rangeAutoAdapt: true
+    },
+    chartStyle: {
+      showGridLine: true
     }
   },
   [CHART_TYPES.SANKEY]: {
     chartStyle: {
+      showGridLine: true,
       orient: true,
       nodeAlign: true
     }

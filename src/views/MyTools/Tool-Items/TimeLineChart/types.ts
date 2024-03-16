@@ -106,6 +106,8 @@ export class ChartInfo {
   isStack: boolean
   /** 是否展示标签 */
   showLabel: boolean
+  /** 是否展示网格线 */
+  showGridLine: boolean
   /** 下载质量 */
   pixelRatio: number
   yAxisSetting: YAxisSetting
@@ -134,6 +136,7 @@ export class ChartInfo {
     this.showArea = chartInfo?.showArea ?? false
     this.isStack = chartInfo?.isStack ?? false
     this.showLabel = chartInfo?.showLabel ?? false
+    this.showGridLine = chartInfo?.showGridLine ?? true
   }
   isValid() {
     let valid = true
@@ -198,6 +201,8 @@ export interface ChartInfoType {
   isStack: boolean
   /** 是否展示标签 */
   showLabel: boolean
+  /** 是否展示网格线 */
+  showGridLine: boolean
   /** 下载质量 */
   pixelRatio: number
   /** X轴 */

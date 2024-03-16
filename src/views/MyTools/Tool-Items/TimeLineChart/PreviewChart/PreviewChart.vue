@@ -101,7 +101,7 @@ const getXAxis = (chartData: ChartData, chartInfo: ChartInfo) => {
           ? null
           : chartData.data[chartInfo.XAxis?.fileName!].colData[chartInfo.XAxis?.variableName!],
       splitLine: {
-        show: false
+        show: chartInfo.showGridLine
       }
     }
     if (chartInfo.chartType === CHART_TYPES.BAR) {
@@ -131,11 +131,14 @@ const getYAxis = (chartData: ChartData, chartInfo: ChartInfo) => {
         !chartInfo.yAxisSetting.autoAdapt && chartInfo.yAxisSetting.min !== ''
           ? Number(chartInfo.yAxisSetting.min)
           : null,
+      axisLine: {
+        show: true
+      },
       axisLabel: {
         rotate: 0 // 设置 x 轴标签旋转角度为 45 度
       },
       splitLine: {
-        // show: false
+        show: chartInfo.showGridLine
       }
     }
     if (chartInfo.chartType === CHART_TYPES.BAR) {
