@@ -102,6 +102,12 @@ const getXAxis = (chartData: ChartData, chartInfo: ChartInfo) => {
           : chartData.data[chartInfo.XAxis?.fileName!].colData[chartInfo.XAxis?.variableName!],
       splitLine: {
         show: chartInfo.showGridLine
+      },
+      axisLine: {
+        show: true
+      },
+      axisTick: {
+        show: true
       }
     }
     if (chartInfo.chartType === CHART_TYPES.BAR) {
@@ -139,6 +145,9 @@ const getYAxis = (chartData: ChartData, chartInfo: ChartInfo) => {
       },
       splitLine: {
         show: chartInfo.showGridLine
+      },
+      axisTick: {
+        show: true
       }
     }
     if (chartInfo.chartType === CHART_TYPES.BAR) {
