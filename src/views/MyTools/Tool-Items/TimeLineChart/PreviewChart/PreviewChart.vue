@@ -113,7 +113,7 @@ const getXAxis = (chartData: ChartData, chartInfo: ChartInfo) => {
     if (chartInfo.chartType === CHART_TYPES.BAR) {
       if (chartInfo.orient === 'vertical') {
         xAxis.type = 'value'
-        xAxis.name = chartInfo.XAxis?.desc as string
+        xAxis.name = ''
         xAxis.data = null
       }
     }

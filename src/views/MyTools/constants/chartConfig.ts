@@ -126,7 +126,6 @@ export const CHART_SUPPORT_CONFIG = {
   },
   [CHART_TYPES.SANKEY]: {
     chartStyle: {
-      showGridLine: true,
       orient: true,
       nodeAlign: true
     }
