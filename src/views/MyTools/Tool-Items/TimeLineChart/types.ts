@@ -100,6 +100,12 @@ export class ChartInfo {
   sankeyLevels: { depth: number; color: string }[]
   /** 图表方向 */
   orient: 'horizontal' | 'vertical'
+  /** 是否展示面积 */
+  showArea: boolean
+  /** 是否是堆叠 */
+  isStack: boolean
+  /** 是否展示标签 */
+  showLabel: boolean
   /** 下载质量 */
   pixelRatio: number
   yAxisSetting: YAxisSetting
@@ -125,6 +131,9 @@ export class ChartInfo {
     this.sankeyColorBorder = chartInfo?.sankeyColorBorder ?? 'source'
     this.sankeyLevels = chartInfo?.sankeyLevels ?? []
     this.orient = chartInfo?.orient ?? 'horizontal'
+    this.showArea = chartInfo?.showArea ?? false
+    this.isStack = chartInfo?.isStack ?? false
+    this.showLabel = chartInfo?.showLabel ?? false
   }
   isValid() {
     let valid = true
@@ -183,6 +192,12 @@ export interface ChartInfoType {
   sankeyLevels: { depth: number; color: string }[]
   /** 图表方向 */
   orient: 'horizontal' | 'vertical'
+  /** 是否展示面积 */
+  showArea: boolean
+  /** 是否是堆叠 */
+  isStack: boolean
+  /** 是否展示标签 */
+  showLabel: boolean
   /** 下载质量 */
   pixelRatio: number
   /** X轴 */

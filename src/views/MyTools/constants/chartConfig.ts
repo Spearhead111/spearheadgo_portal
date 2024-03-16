@@ -94,6 +94,10 @@ export const CHART_SUPPORT_CONFIG = {
       omitDefaultVals: true,
       isDataZoom: true,
       rangeAutoAdapt: true
+    },
+    chartStyle: {
+      showArea: true,
+      stack: true
     }
   },
   [CHART_TYPES.BAR]: {
@@ -101,6 +105,11 @@ export const CHART_SUPPORT_CONFIG = {
       omitDefaultVals: true,
       isDataZoom: true,
       rangeAutoAdapt: true
+    },
+    chartStyle: {
+      orient: true,
+      stack: true,
+      showLabel: true
     }
   },
   [CHART_TYPES.SCATTER]: {
@@ -111,6 +120,9 @@ export const CHART_SUPPORT_CONFIG = {
     }
   },
   [CHART_TYPES.SANKEY]: {
-    chartStyle:{}
+    chartStyle: {
+      orient: true,
+      nodeAlign: true
+    }
   }
 }

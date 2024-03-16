@@ -120,19 +120,19 @@
         <!-- 基础配置 -->
 
         <v-window-item :value="CHART_CONFIG_ITEMS.Basic.name" class="tab-item-wrapper">
+          <!-- 图表类型 -->
+          <p class="font-bold">图表类型</p>
+          <ul class="chart-types-ul">
+            <li
+              v-for="chartType in CHART_TYPES_ICON"
+              :class="[{ 'chart-type__selected': currChartInfo.chartType === chartType.name }]"
+              @click="selectChartType(chartType.name)"
+            >
+              <v-icon size="26" :icon="chartType.icon"></v-icon>
+              <span class="font-12">{{ chartType.desc }}</span>
+            </li>
+          </ul>
           <v-form ref="chartInfoFormRef" class="height-100 overflow-y-auto">
-            <!-- 图表类型 -->
-            <p class="font-bold">图表类型</p>
-            <ul class="chart-types-ul">
-              <li
-                v-for="chartType in CHART_TYPES_ICON"
-                :class="[{ 'chart-type__selected': currChartInfo.chartType === chartType.name }]"
-                @click="selectChartType(chartType.name)"
-              >
-                <v-icon size="26" :icon="chartType.icon"></v-icon>
-                <span class="font-12">{{ chartType.desc }}</span>
-              </li>
-            </ul>
             <!-- 基础配置项 -->
             <p class="font-bold mt-2">基础配置</p>
             <v-expansion-panels
@@ -234,6 +234,7 @@
                     label="数据缩放"
                     color="var(--primary-selected-color)"
                   ></v-switch>
+                  <template v-if="!currChartInfo.yAxisSetting.autoAdapt"> a21 </template>
                 </v-expansion-panel-text>
               </v-expansion-panel>
               <v-expansion-panel
@@ -245,56 +246,89 @@
                 title="样式"
               >
                 <v-expansion-panel-text>
-                  <p class="font-bold mt-2">图表走向</p>
-                  <v-col class="pa-0" cols="12">
-                    <v-btn-toggle
-                      v-model="currChartInfo.orient"
-                      color="#54b9af"
-                      borderless
-                      mandatory
-                      variant="outlined"
-                    >
-                      <v-btn class="px-2" value="horizontal" density="compact">
-                        <span class="hidden-sm-and-down">水平</span>
-                        <v-icon end> mdi-align-horizontal-distribute </v-icon>
-                      </v-btn>
-                      <v-btn class="px-2" value="vertical" density="compact">
-                        <span class="hidden-sm-and-down">垂直</span>
-                        <v-icon end> mdi-align-vertical-distribute </v-icon>
-                      </v-btn>
-                    </v-btn-toggle>
-                  </v-col>
-                  <p class="font-bold mt-2">对齐方式</p>
-                  <v-col class="pa-0" cols="12">
-                    <v-btn-toggle
-                      v-model="currChartInfo.nodeAlign"
-                      color="#54b9af"
-                      borderless
-                      mandatory
-                      variant="outlined"
-                    >
-                      <v-btn class="px-2" value="left" density="compact">
-                        <span class="hidden-sm-and-down">左</span>
-                        <v-icon end> mdi-format-align-left </v-icon>
-                      </v-btn>
-                      <!-- <v-btn class="px-2" value="justify" density="compact">
+                  <v-switch
+                    v-if="CHART_SUPPORT_CONFIG[currChartInfo.chartType].chartStyle?.showLabel"
+                    v-model="currChartInfo.showLabel"
+                    class="config-switch"
+                    hide-details
+                    label="是否展示数值"
+                    color="var(--primary-selected-color)"
+                  ></v-switch>
+                  <v-switch
+                    v-if="CHART_SUPPORT_CONFIG[currChartInfo.chartType].chartStyle?.stack"
+                    v-model="currChartInfo.isStack"
+                    class="config-switch"
+                    hide-details
+                    label="是否堆叠"
+                    color="var(--primary-selected-color)"
+                  ></v-switch>
+                  <v-switch
+                    v-if="CHART_SUPPORT_CONFIG[currChartInfo.chartType].chartStyle?.showArea"
+                    v-model="currChartInfo.showArea"
+                    class="config-switch"
+                    hide-details
+                    label="展示面积"
+                    color="var(--primary-selected-color)"
+                  ></v-switch>
+
+                  <template v-if="CHART_SUPPORT_CONFIG[currChartInfo.chartType].chartStyle?.orient">
+                    <p class="font-bold mt-2">图表走向</p>
+                    <v-col class="pa-0" cols="12">
+                      <v-btn-toggle
+                        v-model="currChartInfo.orient"
+                        color="#54b9af"
+                        borderless
+                        mandatory
+                        variant="outlined"
+                      >
+                        <v-btn class="px-2" value="horizontal" density="compact">
+                          <span class="hidden-sm-and-down">水平</span>
+                          <v-icon end> mdi-align-horizontal-distribute </v-icon>
+                        </v-btn>
+                        <v-btn class="px-2" value="vertical" density="compact">
+                          <span class="hidden-sm-and-down">垂直</span>
+                          <v-icon end> mdi-align-vertical-distribute </v-icon>
+                        </v-btn>
+                      </v-btn-toggle>
+                    </v-col>
+                  </template>
+
+                  <template
+                    v-if="CHART_SUPPORT_CONFIG[currChartInfo.chartType].chartStyle?.nodeAlign"
+                  >
+                    <p class="font-bold mt-2">对齐方式</p>
+                    <v-col class="pa-0" cols="12">
+                      <v-btn-toggle
+                        v-model="currChartInfo.nodeAlign"
+                        color="#54b9af"
+                        borderless
+                        mandatory
+                        variant="outlined"
+                      >
+                        <v-btn class="px-2" value="left" density="compact">
+                          <span class="hidden-sm-and-down">左</span>
+                          <v-icon end> mdi-format-align-left </v-icon>
+                        </v-btn>
+                        <!-- <v-btn class="px-2" value="justify" density="compact">
                         <span class="hidden-sm-and-down">对齐</span>
                         <v-icon end> mdi-format-align-justify </v-icon>
                       </v-btn> -->
-                      <v-btn
-                        class="px-2"
-                        value="justify"
-                        density="compact"
-                        append-icon="mdi-format-align-justify"
-                      >
-                        对齐
-                      </v-btn>
-                      <v-btn class="px-2" value="right" density="compact">
-                        <span class="hidden-sm-and-down">右</span>
-                        <v-icon end> mdi-format-align-right </v-icon>
-                      </v-btn>
-                    </v-btn-toggle>
-                  </v-col>
+                        <v-btn
+                          class="px-1"
+                          value="justify"
+                          density="compact"
+                          append-icon="mdi-format-align-justify"
+                        >
+                          对齐
+                        </v-btn>
+                        <v-btn class="px-2" value="right" density="compact">
+                          <span class="hidden-sm-and-down">右</span>
+                          <v-icon end> mdi-format-align-right </v-icon>
+                        </v-btn>
+                      </v-btn-toggle>
+                    </v-col></template
+                  >
+
                   <template v-if="currChartInfo.chartType === CHART_TYPES.SANKEY">
                     <p class="font-bold mt-2">色边颜色</p>
                     <v-col class="sankey-levels-config pa-0">

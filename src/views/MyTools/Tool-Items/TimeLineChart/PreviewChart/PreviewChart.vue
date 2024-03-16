@@ -62,7 +62,8 @@ const initChart = () => {
       //@ts-ignore
       grid: getGrid(chartInfo),
       //@ts-ignore
-      dataZoom: getDataZoom(chartInfo)
+      dataZoom: getDataZoom(chartInfo),
+      toolbox: {}
     }
 
     // 使用配置项初始化图表
@@ -89,8 +90,8 @@ watchEffect(() => {
 const getXAxis = (chartData: ChartData, chartInfo: ChartInfo) => {
   if ([CHART_TYPES.LINE, CHART_TYPES.BAR, CHART_TYPES.SCATTER].includes(chartInfo.chartType)) {
     return {
-      // type: 'value',
-      name: chartInfo.XAxis?.desc,
+      type: chartInfo.orient === 'vertical' ? 'value' : 'category',
+      name: chartInfo.orient === 'vertical' ? '' : chartInfo.XAxis?.desc,
       data:
         chartInfo.chartType === CHART_TYPES.SCATTER
           ? null
@@ -104,8 +105,9 @@ const getXAxis = (chartData: ChartData, chartInfo: ChartInfo) => {
 /** 处理Y轴数据 */
 const getYAxis = (chartData: ChartData, chartInfo: ChartInfo) => {
   if ([CHART_TYPES.LINE, CHART_TYPES.BAR, CHART_TYPES.SCATTER].includes(chartInfo.chartType)) {
-    return {
-      // type: 'value',
+    const yAxis = {
+      type: chartInfo.orient === 'horizontal' ? 'value' : 'category',
+      name: chartInfo.orient === 'horizontal' ? '' : chartInfo.XAxis?.desc,
       max:
         !chartInfo.yAxisSetting.autoAdapt && chartInfo.yAxisSetting.max !== ''
           ? Number(chartInfo.yAxisSetting.max)
@@ -113,8 +115,23 @@ const getYAxis = (chartData: ChartData, chartInfo: ChartInfo) => {
       min:
         !chartInfo.yAxisSetting.autoAdapt && chartInfo.yAxisSetting.min !== ''
           ? Number(chartInfo.yAxisSetting.min)
-          : null
+          : null,
+      axisLabel: {
+        rotate: 0 // 设置 x 轴标签旋转角度为 45 度
+      }
     }
+    if (chartInfo.orient === 'vertical') {
+      yAxis.type = 'category'
+      //@ts-ignore
+      yAxis.data =
+        chartInfo.chartType === CHART_TYPES.SCATTER
+          ? null
+          : chartData.data[chartInfo.XAxis?.fileName!].colData[chartInfo.XAxis?.variableName!]
+      yAxis.axisLabel = {
+        rotate: 90
+      }
+    }
+    return yAxis
   } else if ([CHART_TYPES.SANKEY].includes(chartInfo.chartType)) {
     return null
   }
@@ -153,6 +170,23 @@ const getSeriesData = (chartData: ChartData, chartInfo: ChartInfo) => {
               : [scatterX, scatterY]
             : [scatterX, scatterY]
         })
+      } else if (seriesDataItem.type === CHART_TYPES.LINE) {
+        // @ts-ignore
+        chartInfo.showArea && (seriesDataItem.areaStyle = {})
+        // @ts-ignore
+        chartInfo.isStack && (seriesDataItem.stack = 'Total')
+      } else if (seriesDataItem.type === CHART_TYPES.BAR) {
+        // @ts-ignore
+        chartInfo.isStack &&
+          // @ts-ignore
+          (seriesDataItem.stack = 'Ad') &&
+          (seriesDataItem.emphasis = {
+            focus: 'series'
+          })
+        // @ts-ignore
+        seriesDataItem.label = {
+          show: chartInfo.showLabel
+        }
       }
 
       seriesData.push(seriesDataItem)
